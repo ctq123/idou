@@ -2,9 +2,9 @@ import React, { PureComponent } from 'react';
 import { Button, Drawer } from 'antd';
 import { DSL } from './dsl';
 
-import prettier from "prettier/esm/standalone.mjs";
+import prettier from 'prettier/esm/standalone.mjs';
 // import parserBabel from "prettier/esm/parser-babel.mjs";
-import parserHTML from "prettier/esm/parser-html.mjs";
+import parserHTML from 'prettier/esm/parser-html.mjs';
 
 // prettier.format("const html = /* HTML */ `<DIV> </DIV>`", {
 //   parser: "babel",
@@ -79,10 +79,10 @@ class GenerateVue extends PureComponent {
     let xml = '';
     switch (componentName) {
       case 'Page':
-        renderData.data = dataSource || {}
-        this.getLifeCycle(lifeCycle)
-        this.getMethods(methods)
-        this.getImports(imports)
+        renderData.data = dataSource || {};
+        this.getLifeCycle(lifeCycle);
+        this.getMethods(methods);
+        this.getImports(imports);
         const childStr = (children || [])
           .map((item: any) => this.generateTemplate(item))
           .join('\n');
@@ -171,11 +171,11 @@ class GenerateVue extends PureComponent {
 
   getImports = (item: object) => {
     Object.entries(item).forEach(([k, v]) => {
-      const importStr = `import ${k} from ${v}`
+      const importStr = `import ${k} from ${v}`;
       // @ts-ignore
       renderData.imports.push(importStr);
     });
-  }
+  };
 
   getMethods = (item: object) => {
     Object.entries(item).forEach(([k, v]) => {
@@ -183,7 +183,7 @@ class GenerateVue extends PureComponent {
       // @ts-ignore
       renderData.methods.push(newFunc);
     });
-  }
+  };
 
   getEventStr = (item: object, extraMap: IObject = {}) => {
     let funcStr = '';
@@ -219,7 +219,7 @@ class GenerateVue extends PureComponent {
   };
 
   generateVue = () => {
-    const vue = `
+    const vueCode = `
         <template>
           ${renderData.template}
         </template>
@@ -229,9 +229,7 @@ class GenerateVue extends PureComponent {
 
           export default {
             data() {
-              return ${
-                JSON.stringify(renderData.data, null, 2)
-              }
+              return ${JSON.stringify(renderData.data, null, 2)}
             }
             ${renderData.lifecycles.join(',\n')}
             ,
@@ -258,12 +256,12 @@ class GenerateVue extends PureComponent {
           }
           </style>
       `;
-    return prettier.format(vue, {
-      parser: "vue",
+    return prettier.format(vueCode, {
+      parser: 'vue',
       plugins: [parserHTML],
       printWidth: 80,
-      singleQuote: true
-    })
+      singleQuote: true,
+    });
   };
 
   handleGenerate = () => {
