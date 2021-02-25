@@ -47,6 +47,7 @@ const DSL = {
               componentName: 'Button',
               props: {
                 type: 'primary',
+                htmlType: 'submit'
               },
               children: '搜索',
               onClick: `function search() {
@@ -124,8 +125,6 @@ const DSL = {
       lg: 12,
       xl: 6,
     },
-    list: [],
-    form: {},
     pagination: {
       currentPage: 1,
       pageSize: 20,

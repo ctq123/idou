@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { PureComponent } from 'react';
 import { Button, Drawer } from 'antd';
 import { DSL } from './dsl';
@@ -89,16 +90,19 @@ class GenerateVue extends PureComponent {
         xml = `<div class='main-container'>\n${childStr}\n</div>`;
         break;
       case 'Form':
+        const formDataKey = dataKey || 'form'
+        renderData.data[formDataKey] = {}
+
         const formItems = (children || [])
           .map((item: any) => {
             const { key, label, initValue } = item || {};
             const itemPropStr = key
               ? `label="${label}" prop="${key}"`
               : `label="${label}"`;
-            const vmodel = key && dataKey ? `${dataKey}.${key}` : '';
-            if (key && dataKey) {
+            const vmodel = key && formDataKey ? `${formDataKey}.${key}` : '';
+            if (key && formDataKey) {
               // @ts-ignore
-              renderData.data[dataKey][key] =
+              renderData.data[formDataKey][key] =
                 initValue !== undefined ? initValue : '';
             }
             const itemChildren = (item.children || [])
@@ -112,7 +116,7 @@ class GenerateVue extends PureComponent {
           })
           .join('\n');
 
-        xml = `<el-form ${objStr(props)} :model="${dataKey}">
+        xml = `<el-form ${objStr(props)} :model="${formDataKey}">
           <el-row :gutter="20">
           ${formItems}
           </el-row>
@@ -131,12 +135,14 @@ class GenerateVue extends PureComponent {
         )} ${buttonEventStr}>${children}</el-button>`;
         break;
       case 'Table':
+        const listKey = dataKey || 'list'
+        renderData.data[listKey] = []
         const columns = (children || [])
           .map((item: any) => {
             return `<el-table-column ${objStr(item)}></el-table-column>`;
           })
           .join('\n');
-        xml = `<el-table :data="${dataKey}" border style="width: 100%">\n${columns}\n</el-table>\n`;
+        xml = `<el-table :data="${listKey}" border style="width: 100%">\n${columns}\n</el-table>\n`;
         break;
       case 'Pagination':
         const paginationEventStr = this.getEventStr(schemaDSL, {
@@ -171,7 +177,7 @@ class GenerateVue extends PureComponent {
 
   getImports = (item: object) => {
     Object.entries(item).forEach(([k, v]) => {
-      const importStr = `import ${k} from ${v}`;
+      const importStr = `import ${k} from "${v}"`;
       // @ts-ignore
       renderData.imports.push(importStr);
     });
