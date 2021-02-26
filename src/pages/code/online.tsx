@@ -21,7 +21,7 @@ const Online = (props: IProps) => {
     const html=`<div id="app"></div>`
     const project = {
       files: {
-        "index.ts": code,
+        "index.vue": code,
         "index.html": html
       },
       title: "Dynamically Generated Project",
