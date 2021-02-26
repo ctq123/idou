@@ -126,7 +126,7 @@ export default class GenerateReact extends PureComponent {
             const itemChildren = (item.children || [])
               .map((child: any) => this.generateTemplate(child))
               .join('');
-            return `<Col {...colProps}>
+            return `<Col {...this.state.colProps}>
             <Form.Item ${itemPropStr}>
               ${itemChildren}
             </Form.Item>
@@ -161,12 +161,12 @@ export default class GenerateReact extends PureComponent {
 
         xml = `
         <Table
-          columns={columns}
-          dataSource={${listKey}}
+          columns={this.state.columns}
+          dataSource={this.state.${listKey}}
           onChange={this.handleTableChange.bind(this)}
           pagination={
             {
-              ...pagination,
+              ...this.state.pagination,
               showTotal: (s: any) => \`共 \${s} 条\`,
               showSizeChanger: false
             }
@@ -174,6 +174,11 @@ export default class GenerateReact extends PureComponent {
         >
         </Table>
         `;
+        break;
+      case 'Pagination':
+        this.getEventStr(schemaDSL, {
+          onPageChange: 'handleTableChange',
+        })
         break;
       case 'Button':
         this.pushComponent(componentName)
@@ -224,11 +229,11 @@ export default class GenerateReact extends PureComponent {
     });
   };
 
-  getEventStr = (item: object) => {
+  getEventStr = (item: object, extraMap?: IObject = {}) => {
     let funcStr = '';
     Object.entries(item).forEach(([k, v]) => {
       if (typeof v === 'string' && v.includes('function')) {
-        const { newFunc, newFuncName, args } = this.transformFunc(v);
+        const { newFunc, newFuncName, args } = this.transformFunc(v, extraMap[k]);
         if (k === 'onClick' && item?.componentName === 'Button' && item?.props?.htmlType === 'submit') {// 需要将事件绑定到Form上
           submitName = newFuncName
         } else {
