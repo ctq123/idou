@@ -22,6 +22,10 @@ const DSLStr = JSON.stringify(DSL, function (_, v) {
 interface IObject {
   [key: string]: any;
 }
+interface IProps {
+  generateCode?: any;
+  showGenerateButton?: boolean;
+}
 
 let renderData = {
   codeStr: '',
@@ -44,7 +48,7 @@ const lifeCycleMap = {
 // 通用事件
 const commonFunc = ['onClick', 'onChange', 'onBlur', 'onFocus', 'onClear'];
 
-class GenerateVue extends PureComponent {
+class GenerateVue extends PureComponent<IProps> {
   state = {
     visible: false,
   };
@@ -281,6 +285,14 @@ class GenerateVue extends PureComponent {
     this.setState({ visible: true });
   };
 
+  getSourceCode = () => {
+    this.initData();
+    const schema = JSON.parse(DSLStr);
+    renderData.template = this.generateTemplate(schema);
+    renderData.codeStr = this.generateVue();
+    return renderData.codeStr
+  }
+
   initData = () => {
     renderData = {
       codeStr: '',
@@ -293,8 +305,12 @@ class GenerateVue extends PureComponent {
     };
   };
 
+  
+
   render() {
+    const { showGenerateButton } = this.props
     return (
+      showGenerateButton && 
       <>
         <Button type="primary" onClick={() => this.handleGenerate()}>
           生成Vue文件
@@ -309,6 +325,7 @@ class GenerateVue extends PureComponent {
         >
           <pre>{renderData.codeStr}</pre>
         </Drawer>
+        
       </>
     );
   }

@@ -7,6 +7,11 @@ import prettier from 'prettier/esm/standalone.mjs';
 import parserBabel from "prettier/esm/parser-babel.mjs";
 import parserHTML from 'prettier/esm/parser-html.mjs';
 
+interface IProps {
+  generateCode?: any;
+  showGenerateButton?: boolean;
+}
+
 const DSLStr = JSON.stringify(DSL, function (_, v) {
   if (typeof v === 'function') {
     return v.toString();
@@ -27,7 +32,7 @@ let renderData = {
 };
 
 let submitName = 'submit'
-export default class GenerateReact extends PureComponent {
+export default class GenerateReact extends PureComponent<IProps> {
   state = {
     visible: false,
   };
@@ -261,17 +266,6 @@ export default class GenerateReact extends PureComponent {
     return { newFunc, newFuncName: newFuncName || funcName, args };
   };
 
-  handleGenerate = () => {
-    this.initData();
-    const schema = JSON.parse(DSLStr);
-    console.log('schema', DSLStr);
-    renderData.template = this.generateTemplate(schema);
-    renderData.codeStr = this.generateReact();
-    console.log('renderData', renderData);
-
-    this.setState({ visible: true });
-  };
-
   initData = () => {
     renderData = {
       codeStr: '',
@@ -286,8 +280,29 @@ export default class GenerateReact extends PureComponent {
     };
   };
 
+  handleGenerate = () => {
+    this.initData();
+    const schema = JSON.parse(DSLStr);
+    console.log('schema', DSLStr);
+    renderData.template = this.generateTemplate(schema);
+    renderData.codeStr = this.generateReact();
+    console.log('renderData', renderData);
+
+    this.setState({ visible: true });
+  };
+
+  getSourceCode = () => {
+    this.initData();
+    const schema = JSON.parse(DSLStr);
+    renderData.template = this.generateTemplate(schema);
+    renderData.codeStr = this.generateReact();
+    return renderData.codeStr
+  }
+
   render() {
+    const { showGenerateButton } = this.props
     return (
+      showGenerateButton && 
       <>
         <Button type="primary" onClick={() => this.handleGenerate()}>
           生成React文件
