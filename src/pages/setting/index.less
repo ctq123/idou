@@ -1,0 +1,78 @@
+.container {
+  font-family: PingFang SC;
+  font-weight: 500;
+  font-size: 14px;
+  color: #2b2c3c;
+  .c-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    box-shadow: 0px 0px 5px rgba(153, 153, 153, 0.2);
+    height: 50px;
+    padding: 0px 24px;
+    .h-left {
+      display: flex;
+      img {
+        width: 30px;
+        height: 30px;
+      }
+      .title {
+        margin-left: 8px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+    .h-center {
+      display: flex;
+      button + button {
+        margin-left: 8px;
+      }
+    }
+    .h-right {
+      display: flex;
+      button + button {
+        margin-left: 8px;
+      }
+    }
+  }
+  .c-body {
+    display: flex;
+    min-height: calc(100vh - 50px);
+    .b-left {
+      padding: 0px 8px;
+      width: 300px;
+      border-right: 1px solid #f1f1f5;
+      :global {
+        .ant-tabs-tabpane {
+          padding-bottom: 8px;
+        }
+      }
+      .template {
+        padding: 0 5px;
+        .item {
+          padding: 16px;
+          border: 1px solid #f1f1f5;
+          box-shadow: 5px 5px 5px rgba(153, 153, 153, 0.2);
+          text-align: center;
+          img {
+            width: 230px;
+            height: 150px;
+          }
+          .title {
+            margin-top: 8px;
+          }
+        }
+        .item + .item {
+          margin-top: 8px;
+        }
+      }
+    }
+    .b-right {
+      flex: 1;
+      .content {
+        background-color: #ffffff;
+      }
+    }
+  }
+}
