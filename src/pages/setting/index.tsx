@@ -6,7 +6,9 @@ import {
   EyeOutlined,
   DownloadOutlined,
 } from '@ant-design/icons';
+import Parser from './components/Parser';
 import { templates, tabs } from './const';
+import { DSL } from './const/dsl';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
@@ -65,7 +67,9 @@ export default function IndexPage() {
           </Tabs>
         </div>
         <div className={styles['b-right']}>
-          <div className={styles['content']}></div>
+          <div className={styles['content']}>
+            <Parser dsl={DSL} />
+          </div>
         </div>
       </div>
     </div>
