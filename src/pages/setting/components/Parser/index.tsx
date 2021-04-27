@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-  Button,
-  Input,
-  Select,
-  DatePicker,
-  Form,
-  Row,
-  Col,
-  Table,
-  Pagination,
-} from 'antd';
-
+import 'antd/dist/antd.css';
+const antd = require('antd');
 interface IObject {
   [key: string]: any;
 }
@@ -45,6 +35,9 @@ const generateComponent = (componentDSL: IComponent) => {
       );
       return <div>{childNodes}</div>;
     case 'Form':
+      const Form = antd['Form'];
+      const Row = antd['Row'];
+      const Col = antd['Col'];
       const formNodes = (children || []).map((item: any) => {
         const { key, label, initValue } = item || {};
         const itemProps = {
@@ -74,6 +67,7 @@ const generateComponent = (componentDSL: IComponent) => {
         </Form>
       );
     case 'Table':
+      const Table = antd['Table'];
       const columns = (children || []).map((item: any) => {
         return {
           ...item,
@@ -94,11 +88,9 @@ const generateComponent = (componentDSL: IComponent) => {
           }}
         ></Table>
       );
-    case 'Button':
-      return <Button {...props}>{children}</Button>;
     default:
-      const ComponentName = componentName;
-      return <ComponentName {...props}></ComponentName>;
+      console.log('componentName', componentName, props);
+      return React.createElement(antd[componentName], props, children);
   }
 };
 
