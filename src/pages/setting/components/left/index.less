@@ -1,0 +1,29 @@
+.b-left {
+  padding: 0px 8px;
+  width: 300px;
+  border-right: 1px solid #f1f1f5;
+  :global {
+    .ant-tabs-tabpane {
+      padding-bottom: 8px;
+    }
+  }
+  .template {
+    padding: 0 5px;
+    .item {
+      padding: 16px;
+      border: 1px solid #f1f1f5;
+      box-shadow: 5px 5px 5px rgba(153, 153, 153, 0.2);
+      text-align: center;
+      img {
+        width: 230px;
+        height: 150px;
+      }
+      .title {
+        margin-top: 8px;
+      }
+    }
+    .item + .item {
+      margin-top: 8px;
+    }
+  }
+}

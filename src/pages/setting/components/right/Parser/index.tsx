@@ -1,14 +1,11 @@
 import React, { Fragment, useState } from 'react';
 import { v1 } from 'uuid';
-import {
-  ArrowUpOutlined,
-  ArrowDownOutlined,
-  CopyOutlined,
-  DeleteOutlined,
-} from '@ant-design/icons';
+import SelectBox from '../SelectBox';
 import styles from './index.less';
 import 'antd/dist/antd.css';
+
 const antd = require('antd');
+
 interface IObject {
   [key: string]: any;
 }
@@ -140,22 +137,7 @@ const Parser = (props: Iprops) => {
   return (
     <div className={styles['container']}>
       {generateComponent(props.dsl)}
-      <div className={styles['select-box']} style={selectStyle}>
-        <div className={styles['top']}>
-          <span title="上移">
-            <ArrowUpOutlined />
-          </span>
-          <span title="下移">
-            <ArrowDownOutlined />
-          </span>
-          <span title="复制">
-            <CopyOutlined />
-          </span>
-          <span title="删除">
-            <DeleteOutlined />
-          </span>
-        </div>
-      </div>
+      <SelectBox style={selectStyle} />
     </div>
   );
 };
