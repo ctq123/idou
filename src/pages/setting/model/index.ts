@@ -13,62 +13,62 @@ interface Position {
 
 /**
  * 编辑数组
- * @param source
  * @param arr
  * @param obj
+ * @param index
  * @param type
  * @returns
  */
 const editArray = (
-  source: Position,
-  arr: Array<any> = [],
-  obj = null,
-  type = 'remove',
+  arr: any,
+  obj: IObject | null,
+  index: number,
+  type: string,
 ) => {
   let target = null;
-  switch (type) {
-    case 'add':
-      [target] = arr.splice(source.index, 0, obj);
-      break;
-    case 'remove':
-      [target] = arr.splice(source.index, 1);
-      break;
-    case 'replace':
-      [target] = arr.splice(source.index, 1, obj);
-      break;
-    default:
-      break;
+  if (Array.isArray(arr)) {
+    switch (type) {
+      case 'add':
+        [target] = arr.splice(index, 0, obj);
+        break;
+      case 'delete':
+        [target] = arr.splice(index, 1);
+        break;
+      case 'replace':
+        [target] = arr.splice(index, 1, obj);
+        break;
+      default:
+        break;
+    }
   }
   return target;
 };
 
 /**
  * 递归处理数组
- * @param arr
+ * @param list
  * @param obj
+ * @param position
  * @param type
- * @param source
  * @returns
  */
 const handleTarget = (
-  source: Position,
-  arr: Array<any> = [],
-  obj = null,
-  type = 'remove',
+  list: any,
+  obj: IObject,
+  position: Position,
+  type: string,
 ): any => {
   // 递归处理
-  if (Array.isArray(arr)) {
-    const targetParent = arr
-      .filter(Boolean)
-      .find(({ uuid }) => uuid === source.uuid);
-    if (targetParent) {
-      return editArray(source, targetParent.children, obj, type);
+  if (Array.isArray(list) && position) {
+    const parent = list.find(({ uuid }) => uuid === position.uuid);
+    if (parent) {
+      return editArray(parent.children, obj, position.index, type);
     }
     // BFS广度优先遍历
-    for (let i = 0; i < arr.length; i++) {
-      if (arr[i]) {
-        const t = handleTarget(source, arr[i].children, obj, type);
-        if (t) return t;
+    for (let i = 0; i < list.length; i++) {
+      if (list[i]) {
+        const target = handleTarget(list[i].children, obj, position, type);
+        if (target) return target;
       }
     }
   }
@@ -76,42 +76,91 @@ const handleTarget = (
 };
 
 /**
+ * 处理dsl的component变更
+ * @param dsl
+ * @param component
+ * @param position
+ * @param type
+ * @returns
+ */
+const handleDSLComponentChange = (
+  dsl: IObject,
+  component: IObject,
+  position: Position,
+  type: string,
+) => {
+  const newDSL = cloneDeep(dsl);
+  const newList = [newDSL];
+  const target = handleTarget(newList, component, position, type);
+  return { newDSL, target };
+};
+
+/**
  * 为dsl添加uuid
  * @param data
  * @returns
  */
-const addUuid = (data: IObject) => {
-  if (data) {
-    data.uuid = v1();
-    if (Array.isArray(data.children)) {
-      data.children.forEach((item) => addUuid(item));
+const initDSL = (data: IObject) => {
+  const copyData = cloneDeep(data);
+  const addUuid = (data: IObject) => {
+    if (data) {
+      data.uuid = v1();
+      if (Array.isArray(data.children)) {
+        data.children.forEach((item) => addUuid(item));
+      }
     }
-  }
-  return data;
-};
-
-const handleDLSChange = (oldDSL: IObject, newData = null, type = 'init') => {
-  const copyDSL = cloneDeep(oldDSL);
-  const newList: Array<any> = [copyDSL];
-  switch (type) {
-    case 'init':
-      return addUuid(copyDSL);
-    case 'add':
-    default:
-      break;
-  }
+  };
+  addUuid(copyData);
+  return copyData;
 };
 
 const initState = {
-  dsl: handleDLSChange(DSL, null, 'init'),
+  dsl: initDSL(DSL),
 };
 
 const reducer = (state: any, action: any) => {
   const { type, data } = action;
+  const { component, from, to } = data || {};
+  console.log('data', data);
   switch (type) {
-    case 'change':
-      const newDSL = { ...state.DSL, ...data };
-      return { ...state, DSL: newDSL };
+    case 'component/add':
+      const { newDSL: addDSL } = handleDSLComponentChange(
+        state.dsl,
+        component,
+        to,
+        'add',
+      );
+      return { ...state, dsl: addDSL };
+    case 'component/replace':
+      const { newDSL: replaceDSL } = handleDSLComponentChange(
+        state.dsl,
+        component,
+        from,
+        'replace',
+      );
+      return { ...state, dsl: replaceDSL };
+    case 'component/delete':
+      const { newDSL: deleteDSL } = handleDSLComponentChange(
+        state.dsl,
+        component,
+        from,
+        'delete',
+      );
+      return { ...state, dsl: deleteDSL };
+    case 'component/move':
+      const { newDSL: moveDSL1, target } = handleDSLComponentChange(
+        state.dsl,
+        component,
+        from,
+        'delete',
+      );
+      const { newDSL: moveDSL2 } = handleDSLComponentChange(
+        moveDSL1,
+        target,
+        to,
+        'add',
+      );
+      return { ...state, dsl: moveDSL2 };
     default:
       return state;
   }

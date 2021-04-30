@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import {
   ArrowUpOutlined,
   ArrowDownOutlined,
@@ -9,23 +9,24 @@ import styles from './index.less';
 
 interface IProps {
   style: object;
+  handleCB: Function;
 }
 
 const SelectBox = (props: IProps) => {
-  const { style } = props;
+  const { style, handleCB } = props;
   return (
     <div className={styles['select-box']} style={style}>
       <div className={styles['top']}>
-        <span title="上移">
+        <span title="上移" onClick={() => handleCB('up')}>
           <ArrowUpOutlined />
         </span>
-        <span title="下移">
+        <span title="下移" onClick={() => handleCB('down')}>
           <ArrowDownOutlined />
         </span>
-        <span title="复制">
+        <span title="复制" onClick={() => handleCB('copy')}>
           <CopyOutlined />
         </span>
-        <span title="删除">
+        <span title="删除" onClick={() => handleCB('delete')}>
           <DeleteOutlined />
         </span>
       </div>

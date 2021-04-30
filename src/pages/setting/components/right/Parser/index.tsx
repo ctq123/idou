@@ -1,6 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useReducer, useState } from 'react';
+import cloneDeep from 'lodash/cloneDeep';
 import { v1 } from 'uuid';
 import SelectBox from '../SelectBox';
+import { reducer, initState } from '@/pages/setting/model';
 import styles from './index.less';
 import 'antd/dist/antd.css';
 
@@ -27,14 +29,17 @@ interface DSL {
   imports?: IObject;
 }
 
-interface Iprops {
-  dsl: DSL;
-}
-
-const Parser = (props: Iprops) => {
+const Parser = () => {
+  const [state, dispatch] = useReducer(reducer, initState);
   const [selectStyle, setSelectStyle] = useState({});
+  const [activeComponent, setActiveComponent] = useState<any>({});
 
-  const handleComponentClick = (e: any) => {
+  const handleComponentClick = (
+    e: any,
+    item: any,
+    parentUuid: any,
+    index: number,
+  ) => {
     e && e.stopPropagation();
     try {
       const t = e.currentTarget;
@@ -48,50 +53,128 @@ const Parser = (props: Iprops) => {
         height,
         display: 'block',
       });
+      setActiveComponent({
+        item,
+        parentUuid,
+        index,
+      });
     } catch (e) {}
   };
-  const generateComponent = (componentDSL: IComponent) => {
-    const { componentName, children, props } = componentDSL;
+  const handleOptCB = (action: string) => {
+    const { index, parentUuid, item } = activeComponent;
+    let type = null;
+    let data: any = {};
+    let from: any = {};
+    let to: any = {};
+    switch (action) {
+      case 'up':
+        type = 'component/move';
+        if (index === 0) {
+          to['index'] = 0;
+          to['uuid'] = parentUuid;
+        } else {
+          to['index'] = index - 1;
+          to['uuid'] = parentUuid;
+        }
+        from['index'] = index;
+        from['uuid'] = parentUuid;
+        data = item;
+        break;
+      case 'down':
+        type = 'component/move';
+        to['index'] = index + 1;
+        to['uuid'] = parentUuid;
+        from['index'] = index;
+        from['uuid'] = parentUuid;
+        data = item;
+        break;
+      case 'copy':
+        type = 'component/add';
+        to['index'] = index + 1;
+        to['uuid'] = parentUuid;
+        data = cloneDeep(item);
+        data['key'] = data['key'] + '-' + Math.random().toString(36).slice(-8);
+        if (data['label']) {
+          data['label'] = data['label'] + ' 复制';
+        }
+        break;
+      case 'delete':
+        type = 'component/delete';
+        from['index'] = index;
+        from['uuid'] = parentUuid;
+        data = item;
+        break;
+      default:
+        break;
+    }
+    if (type) {
+      dispatch({
+        type,
+        data: {
+          component: data,
+          from,
+          to,
+        },
+      });
+      setSelectStyle({});
+    }
+  };
+  const generateComponent = (
+    componentDSL: IComponent,
+    parentUuid: any,
+    index: number,
+  ) => {
+    const { componentName, children, props, uuid } = componentDSL;
+    console.log('componentDSL', componentDSL);
     const recursionParser = () => {
       switch (componentName) {
         case 'Page':
-          const childNodes = (children || []).map((item: any) =>
-            generateComponent(item),
-          );
+          const childNodes = (children || [])
+            .filter(Boolean)
+            .map((item: any, i: number) => generateComponent(item, uuid, i));
           return <div className={styles['page']}>{childNodes}</div>;
         case 'Form':
           const Form = antd['Form'];
           const Row = antd['Row'];
           const Col = antd['Col'];
-          const formNodes = (children || []).map((item: any, i: number) => {
-            const { key, label, initValue } = item || {};
-            const itemProps = {
-              name: key,
-              label,
-              initialValue: initValue,
-            };
-            const colProps = {
-              xs: 24,
-              sm: 12,
-              lg: 8,
-              xl: 8,
-            };
-            return (
-              <Col
-                key={i}
-                {...colProps}
-                onClick={(e: any) => handleComponentClick(e)}
-              >
-                <Form.Item {...itemProps}>
-                  {(item.children || []).map((item: any) =>
-                    generateComponent(item),
-                  )}
-                </Form.Item>
-              </Col>
-            );
-          });
+          const formNodes = (children || [])
+            .filter(Boolean)
+            .map((item: any, i: number) => {
+              const { key, label, initValue } = item || {};
+              console.log('Form item', item);
+              const itemProps = {
+                name: key,
+                label,
+                initialValue: initValue,
+              };
+              const colProps: any = {
+                xs: 24,
+                sm: 12,
+                lg: 8,
+                xl: 8,
+              };
+              if (key) {
+                colProps.onClick = (e: any) =>
+                  handleComponentClick(e, item, uuid, i);
+              }
+              return (
+                <Col key={i} {...colProps}>
+                  <Form.Item {...itemProps}>
+                    {(item.children || [])
+                      .filter(Boolean)
+                      .map((item: any, j: number) =>
+                        generateComponent(item, uuid, j),
+                      )}
+                  </Form.Item>
+                </Col>
+              );
+            });
           return (
-            <div onClick={(e: any) => handleComponentClick(e)}>
+            <div
+              onClick={(e: any) =>
+                handleComponentClick(e, componentDSL, parentUuid, index)
+              }
+            >
               <Form {...props} onFinish={() => {}}>
                 <Row gutter={24}>{formNodes}</Row>
               </Form>
@@ -99,7 +182,7 @@ const Parser = (props: Iprops) => {
           );
         case 'Table':
           const Table = antd['Table'];
-          const columns = (children || []).map((item: any) => {
+          const columns = (children || []).filter(Boolean).map((item: any) => {
             return {
               ...item,
               title: item.label,
@@ -107,7 +190,11 @@ const Parser = (props: Iprops) => {
             };
           });
           return (
-            <div onClick={(e: any) => handleComponentClick(e)}>
+            <div
+              onClick={(e: any) =>
+                handleComponentClick(e, componentDSL, parentUuid, index)
+              }
+            >
               <Table
                 columns={columns}
                 dataSource={[]}
@@ -136,8 +223,11 @@ const Parser = (props: Iprops) => {
   };
   return (
     <div className={styles['container']}>
-      {generateComponent(props.dsl)}
-      <SelectBox style={selectStyle} />
+      {generateComponent(state.dsl, null, 0)}
+      <SelectBox
+        style={selectStyle}
+        handleCB={(action: string) => handleOptCB(action)}
+      />
     </div>
   );
 };
