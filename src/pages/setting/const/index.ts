@@ -21,12 +21,12 @@ export const templates = [
     code: 'detail',
     label: '弹窗详情',
     img:
-      'https://cdn.poizon.com/node-common/2e551b524137349523ea1b1c53e5835c.png',
+      'https://cdn.poizon.com/node-common/8d2b5a58f7d80bf166706b5d8a9df571.png',
   },
   {
     code: 'form',
     label: '表单编辑',
     img:
-      'https://cdn.poizon.com/node-common/8d2b5a58f7d80bf166706b5d8a9df571.png',
+      'https://cdn.poizon.com/node-common/2e551b524137349523ea1b1c53e5835c.png',
   },
 ];

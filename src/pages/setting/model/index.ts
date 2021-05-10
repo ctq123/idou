@@ -116,6 +116,7 @@ const initDSL = (data: IObject) => {
 
 const initState = {
   dsl: initDSL(DSL),
+  selectedComponent: null,
 };
 
 const reducer = (state: any, action: any) => {
@@ -161,6 +162,8 @@ const reducer = (state: any, action: any) => {
         'add',
       );
       return { ...state, dsl: moveDSL2 };
+    case 'component/selected':
+      return { ...state, selectedComponent: data };
     default:
       return state;
   }

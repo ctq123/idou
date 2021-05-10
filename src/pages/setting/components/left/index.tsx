@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import { Button, Tabs } from 'antd';
 import {
   MobileOutlined,
@@ -7,12 +7,22 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import { templates, tabs } from '../../const';
+import { reducer, initState } from '@/pages/setting/model';
+import Setting from './Setting';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
 
 const Left = () => {
+  const [state, dispatch] = useReducer(reducer, initState);
   const [tab, setTab] = useState('template');
+  const [selectedComponent, setSelectedComponent] = useState(null);
+  useEffect(() => {
+    setSelectedComponent(state.selectedComponent);
+    if (state.selectedComponent) {
+      setTab('setting');
+    }
+  }, [state.selectedComponent]);
 
   const generateTabPane = () => {
     switch (tab) {
@@ -29,6 +39,8 @@ const Left = () => {
         );
       case 'component':
       case 'setting':
+        const { component = {} } = selectedComponent || {};
+        return <Setting component={component} />;
       default:
         return '';
     }

@@ -58,6 +58,16 @@ const Parser = () => {
         parentUuid,
         index,
       });
+      dispatch({
+        type: 'component/selected',
+        data: {
+          component: item,
+          from: {
+            index,
+            uuid: parentUuid,
+          },
+        },
+      });
     } catch (e) {}
   };
 
@@ -118,6 +128,10 @@ const Parser = () => {
         },
       });
       setSelectStyle({});
+      dispatch({
+        type: 'component/selected',
+        data: null,
+      });
     }
   };
   const generateComponent = (
@@ -195,19 +209,23 @@ const Parser = () => {
                 handleComponentClick(e, componentDSL, parentUuid, index)
               }
             >
-              <Table
-                columns={columns}
-                dataSource={[]}
-                pagination={{
-                  current: 1,
-                  pageSize: 20,
-                  total: 0,
-                  showTotal: (s: any) => `共 ${s} 条`,
-                  showSizeChanger: false,
-                }}
-              ></Table>
+              <Table columns={columns} dataSource={[]}></Table>
             </div>
           );
+        case 'Pagination':
+          const Pagination = antd['Pagination'];
+          return (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginTop: 24,
+              }}
+            >
+              <Pagination />
+            </div>
+          );
+          break;
         default:
           const newProps = {
             ...props,
