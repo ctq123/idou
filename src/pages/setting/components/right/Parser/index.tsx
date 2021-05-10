@@ -60,6 +60,7 @@ const Parser = () => {
       });
     } catch (e) {}
   };
+
   const handleOptCB = (action: string) => {
     const { index, parentUuid, item } = activeComponent;
     let type = null;
@@ -125,7 +126,6 @@ const Parser = () => {
     index: number,
   ) => {
     const { componentName, children, props, uuid } = componentDSL;
-    console.log('componentDSL', componentDSL);
     const recursionParser = () => {
       switch (componentName) {
         case 'Page':
