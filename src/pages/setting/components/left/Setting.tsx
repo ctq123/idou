@@ -34,22 +34,20 @@ const Setting = (props: IProps) => {
               <Space key={field.key} align="baseline">
                 <Form.Item
                   {...field}
-                  label="label"
                   name={[field.name, 'label']}
                   fieldKey={[field.fieldKey, 'label']}
                   rules={[{ required: true, message: '请输入label' }]}
                 >
-                  <Input />
+                  <Input placeholder="label" />
                 </Form.Item>
 
                 <Form.Item
                   {...field}
-                  label="key"
                   name={[field.name, 'key']}
                   fieldKey={[field.fieldKey, 'key']}
                   rules={[{ required: true, message: '请输入key' }]}
                 >
-                  <Input />
+                  <Input placeholder="key" />
                 </Form.Item>
 
                 <Form.Item
@@ -61,12 +59,11 @@ const Setting = (props: IProps) => {
                   {() => (
                     <Form.Item
                       {...field}
-                      label="类型"
                       name={[field.name, 'type']}
                       fieldKey={[field.fieldKey, 'type']}
                       rules={[{ required: true, message: '请选择类型' }]}
                     >
-                      <Select style={{ width: 130 }}>
+                      <Select style={{ width: 130 }} placeholder="类型">
                         {(components[componentName] || []).map((item: any) => (
                           <Option key={item} value={item}>
                             {item}
