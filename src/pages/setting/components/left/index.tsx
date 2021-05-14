@@ -9,6 +9,7 @@ import {
 import { templates, tabs } from '../../const';
 import { Context } from '@/pages/setting/model';
 import Setting from './Setting';
+import CodeEditor from '../codeEditor';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
@@ -23,7 +24,6 @@ const Left = () => {
     setSelectedComponent(appContext.state.selectedComponent);
     if (appContext.state.selectedComponent) {
       setTab('setting');
-      setDeawerVisible(true);
     }
   }, [appContext.state.selectedComponent]);
 
@@ -51,27 +51,15 @@ const Left = () => {
 
   return (
     <div className={styles['b-left']}>
-      <div className={styles['resize-box']} />
+      <div className={styles['resize-box']} title="左右拖动" />
       <div className={styles['content-box']}>
-        <Tabs defaultActiveKey={tab} onChange={(k) => setTab(k)}>
+        <Tabs activeKey={tab} onChange={(k) => setTab(k)}>
           {(tabs || []).map((item, i) => (
             <TabPane tab={item.label} key={item.code}>
               {generateTabPane()}
             </TabPane>
           ))}
         </Tabs>
-        <Drawer
-          title="Basic Drawer"
-          placement={'left'}
-          closable={false}
-          onClose={() => setDeawerVisible(false)}
-          visible={false}
-          key={'left'}
-        >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-        </Drawer>
       </div>
     </div>
   );
