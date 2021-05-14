@@ -1,8 +1,8 @@
-import React, { Fragment, useReducer, useState } from 'react';
+import React, { Fragment, useContext, useState } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { v1 } from 'uuid';
 import SelectBox from '../SelectBox';
-import { reducer, initState } from '@/pages/setting/model';
+import { Context } from '@/pages/setting/model';
 import styles from './index.less';
 import 'antd/dist/antd.css';
 
@@ -30,10 +30,11 @@ interface DSL {
 }
 
 const Parser = () => {
-  const [state, dispatch] = useReducer(reducer, initState);
+  const appContext: any = useContext(Context);
   const [selectStyle, setSelectStyle] = useState({});
   const [activeComponent, setActiveComponent] = useState<any>({});
 
+  console.log('Parser, state', appContext.state);
   const handleComponentClick = (
     e: any,
     item: any,
@@ -58,7 +59,7 @@ const Parser = () => {
         parentUuid,
         index,
       });
-      dispatch({
+      appContext.dispatch({
         type: 'component/selected',
         data: {
           component: item,
@@ -119,7 +120,7 @@ const Parser = () => {
         break;
     }
     if (type) {
-      dispatch({
+      appContext.dispatch({
         type,
         data: {
           component: data,
@@ -128,7 +129,7 @@ const Parser = () => {
         },
       });
       setSelectStyle({});
-      dispatch({
+      appContext.dispatch({
         type: 'component/selected',
         data: null,
       });
@@ -241,7 +242,7 @@ const Parser = () => {
   };
   return (
     <div className={styles['container']}>
-      {generateComponent(state.dsl, null, 0)}
+      {generateComponent(appContext.state.dsl, null, 0)}
       <SelectBox
         style={selectStyle}
         handleCB={(action: string) => handleOptCB(action)}

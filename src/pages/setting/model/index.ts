@@ -1,3 +1,4 @@
+import React from 'react';
 import { v1 } from 'uuid';
 import cloneDeep from 'lodash/cloneDeep';
 import { DSL } from './dsl';
@@ -163,10 +164,13 @@ const reducer = (state: any, action: any) => {
       );
       return { ...state, dsl: moveDSL2 };
     case 'component/selected':
+      console.log('component/selected');
       return { ...state, selectedComponent: data };
     default:
       return state;
   }
 };
 
-export { initState, reducer };
+const Context = React.createContext(null);
+
+export { initState, reducer, Context };

@@ -1,5 +1,5 @@
-import React, { useState, useReducer, useEffect } from 'react';
-import { Button, Tabs } from 'antd';
+import React, { useState, useContext, useEffect } from 'react';
+import { Button, Tabs, Drawer } from 'antd';
 import {
   MobileOutlined,
   LaptopOutlined,
@@ -7,22 +7,25 @@ import {
   DownloadOutlined,
 } from '@ant-design/icons';
 import { templates, tabs } from '../../const';
-import { reducer, initState } from '@/pages/setting/model';
+import { Context } from '@/pages/setting/model';
 import Setting from './Setting';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
 
 const Left = () => {
-  const [state, dispatch] = useReducer(reducer, initState);
   const [tab, setTab] = useState('template');
   const [selectedComponent, setSelectedComponent] = useState(null);
+  const [deawerVisible, setDeawerVisible] = useState(false);
+  const appContext: any = useContext(Context);
+  console.log('Left state', appContext.state);
   useEffect(() => {
-    setSelectedComponent(state.selectedComponent);
-    if (state.selectedComponent) {
+    setSelectedComponent(appContext.state.selectedComponent);
+    if (appContext.state.selectedComponent) {
       setTab('setting');
+      setDeawerVisible(true);
     }
-  }, [state.selectedComponent]);
+  }, [appContext.state.selectedComponent]);
 
   const generateTabPane = () => {
     switch (tab) {
@@ -48,13 +51,28 @@ const Left = () => {
 
   return (
     <div className={styles['b-left']}>
-      <Tabs defaultActiveKey={tab} onChange={(k) => setTab(k)}>
-        {(tabs || []).map((item, i) => (
-          <TabPane tab={item.label} key={item.code}>
-            {generateTabPane()}
-          </TabPane>
-        ))}
-      </Tabs>
+      <div className={styles['resize-box']} />
+      <div className={styles['content-box']}>
+        <Tabs defaultActiveKey={tab} onChange={(k) => setTab(k)}>
+          {(tabs || []).map((item, i) => (
+            <TabPane tab={item.label} key={item.code}>
+              {generateTabPane()}
+            </TabPane>
+          ))}
+        </Tabs>
+        <Drawer
+          title="Basic Drawer"
+          placement={'left'}
+          closable={false}
+          onClose={() => setDeawerVisible(false)}
+          visible={false}
+          key={'left'}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Drawer>
+      </div>
     </div>
   );
 };

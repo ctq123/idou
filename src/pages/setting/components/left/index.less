@@ -1,29 +1,48 @@
 .b-left {
-  padding: 0px 8px;
-  width: 300px;
+  position: relative;
   border-right: 1px solid #f1f1f5;
-  :global {
-    .ant-tabs-tabpane {
-      padding-bottom: 8px;
-    }
+  .resize-box {
+    width: 300px;
+    resize: horizontal;
+    cursor: col-resize;
+    opacity: 0;
+    overflow-x: scroll;
   }
-  .template {
-    padding: 0 5px;
-    .item {
-      padding: 16px;
-      border: 1px solid #f1f1f5;
-      box-shadow: 5px 5px 5px rgba(153, 153, 153, 0.2);
-      text-align: center;
-      img {
-        width: 230px;
-        height: 150px;
+  .resize-box::-webkit-scrollbar {
+    width: 300px;
+    min-height: calc(100vh - 50px);
+    opacity: 0;
+  }
+  .content-box {
+    position: absolute;
+    top: 0px;
+    left: 8px;
+    right: 8px;
+    overflow-x: hidden;
+    min-height: calc(100vh - 50px);
+    :global {
+      .ant-tabs-tabpane {
+        padding-bottom: 8px;
       }
-      .title {
+    }
+    .template {
+      padding: 0 5px;
+      .item {
+        padding: 16px;
+        border: 1px solid #f1f1f5;
+        box-shadow: 5px 5px 5px rgba(153, 153, 153, 0.2);
+        text-align: center;
+        img {
+          width: 230px;
+          height: 150px;
+        }
+        .title {
+          margin-top: 8px;
+        }
+      }
+      .item + .item {
         margin-top: 8px;
       }
-    }
-    .item + .item {
-      margin-top: 8px;
     }
   }
 }
