@@ -16,7 +16,7 @@ const { TabPane } = Tabs;
 
 const Left = () => {
   const [tab, setTab] = useState('template');
-  const [selectedComponent, setSelectedComponent] = useState(null);
+  const [selectedComponent, setSelectedComponent]: any = useState(null);
   const [deawerVisible, setDeawerVisible] = useState(false);
   const appContext: any = useContext(Context);
   console.log('Left state', appContext.state);
@@ -26,6 +26,19 @@ const Left = () => {
       setTab('setting');
     }
   }, [appContext.state.selectedComponent]);
+
+  const handleSettingCB = (com: any) => {
+    const { from } = selectedComponent;
+    if (com) {
+      appContext.dispatch({
+        type: 'component/replace',
+        data: {
+          component: com,
+          from,
+        },
+      });
+    }
+  };
 
   const generateTabPane = () => {
     switch (tab) {
@@ -43,7 +56,12 @@ const Left = () => {
       case 'component':
       case 'setting':
         const { component = {} } = selectedComponent || {};
-        return <Setting component={component} />;
+        return (
+          <Setting
+            component={component}
+            handleCB={(com: any) => handleSettingCB(com)}
+          />
+        );
       default:
         return '';
     }

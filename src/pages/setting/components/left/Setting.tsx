@@ -1,9 +1,12 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button, Space, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import cloneDeep from 'lodash/cloneDeep';
+import { v1 } from 'uuid';
 
 interface IProps {
   component?: any;
+  handleCB?: any;
 }
 
 const { Option } = Select;
@@ -34,7 +37,6 @@ const Setting = (props: IProps) => {
           if (componentName !== 'Form') {
             nodes = [props.component];
           }
-          console.log('nodes', nodes);
           return (nodes || [])
             .map((item: any) => {
               if (item.key) {
@@ -56,6 +58,47 @@ const Setting = (props: IProps) => {
 
   const onFinish = (values: any) => {
     console.log('Received values of form:', values);
+    const { configs } = values || {};
+    if (configs) {
+      const component = cloneDeep(props.component);
+      switch (componentName) {
+        case 'Table':
+          let tableChild = [];
+          if (configs.length) {
+            // const optItem = component.children
+            tableChild = configs.map((item: any, i: number) => {
+              return { uuid: v1(), key: item.key, label: item.label };
+            });
+          }
+          component.children = tableChild;
+          break;
+        case 'Form':
+          const tIndex = component.children.findIndex((it: any) => !it.key);
+          const optItem =
+            tIndex > -1 ? component.children.splice(tIndex, 1) : [];
+          let formChild = [];
+          if (configs.length) {
+            formChild = configs.map((item: any, i: number) => {
+              return {
+                uuid: v1(),
+                key: item.key,
+                label: item.label,
+                children: [{ componentName: item.type, props: {}, uuid: v1() }],
+              };
+            });
+          }
+          component.children = [].concat(formChild, optItem);
+          break;
+        default:
+          if (configs.length) {
+            component['key'] = configs[0].key;
+            component['label'] = configs[0].label;
+            component['children'][0]['componentName'] = configs[0].type;
+          }
+          break;
+      }
+      props.handleCB && props.handleCB(component);
+    }
   };
 
   const generateFormItem = (field: any) => {
@@ -118,7 +161,7 @@ const Setting = (props: IProps) => {
                   rules={[{ required: true, message: '请选择类型' }]}
                 >
                   <Select style={{ width: 130 }} placeholder="类型">
-                    {(components[componentName] || []).map((item: any) => (
+                    {(components['Form'] || []).map((item: any) => (
                       <Option key={item} value={item}>
                         {item}
                       </Option>
