@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input, Button, Space, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -13,67 +13,133 @@ const components: any = {
 };
 
 const Setting = (props: IProps) => {
-  const { componentName = 'Form', children } = props.component || {};
+  console.log('props', props);
+  const { componentName, children, uuid } = props.component || {};
   const [form] = Form.useForm();
+  useEffect(() => {
+    const getInitialValue = () => {
+      switch (componentName) {
+        case 'Table':
+          return (children || [])
+            .map((item: any) => {
+              if (item.key) {
+                return { key: item.key, label: item.label };
+              }
+              return null;
+            })
+            .filter(Boolean);
+        case 'Form':
+        default:
+          let nodes = children;
+          if (componentName !== 'Form') {
+            nodes = [props.component];
+          }
+          console.log('nodes', nodes);
+          return (nodes || [])
+            .map((item: any) => {
+              if (item.key) {
+                return {
+                  key: item.key,
+                  label: item.label,
+                  type: item?.children[0]?.componentName,
+                };
+              }
+              return null;
+            })
+            .filter(Boolean);
+      }
+    };
+    form.setFieldsValue({
+      configs: getInitialValue(),
+    });
+  }, [uuid]);
 
   const onFinish = (values: any) => {
     console.log('Received values of form:', values);
   };
 
+  const generateFormItem = (field: any) => {
+    switch (componentName) {
+      case 'Table':
+        return (
+          <>
+            <Form.Item
+              {...field}
+              name={[field.name, 'label']}
+              fieldKey={[field.fieldKey, 'label']}
+              rules={[{ required: true, message: '请输入label' }]}
+            >
+              <Input placeholder="label" />
+            </Form.Item>
+
+            <Form.Item
+              {...field}
+              name={[field.name, 'key']}
+              fieldKey={[field.fieldKey, 'key']}
+              rules={[{ required: true, message: '请输入key' }]}
+            >
+              <Input placeholder="key" />
+            </Form.Item>
+          </>
+        );
+      case 'Form':
+      default:
+        return (
+          <>
+            <Form.Item
+              {...field}
+              name={[field.name, 'label']}
+              fieldKey={[field.fieldKey, 'label']}
+              rules={[{ required: true, message: '请输入label' }]}
+            >
+              <Input placeholder="label" />
+            </Form.Item>
+
+            <Form.Item
+              {...field}
+              name={[field.name, 'key']}
+              fieldKey={[field.fieldKey, 'key']}
+              rules={[{ required: true, message: '请输入key' }]}
+            >
+              <Input placeholder="key" />
+            </Form.Item>
+
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, curValues) =>
+                prevValues.type !== curValues.type
+              }
+            >
+              {() => (
+                <Form.Item
+                  {...field}
+                  name={[field.name, 'type']}
+                  fieldKey={[field.fieldKey, 'type']}
+                  rules={[{ required: true, message: '请选择类型' }]}
+                >
+                  <Select style={{ width: 130 }} placeholder="类型">
+                    {(components[componentName] || []).map((item: any) => (
+                      <Option key={item} value={item}>
+                        {item}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              )}
+            </Form.Item>
+          </>
+        );
+    }
+  };
+
   return (
-    <Form
-      form={form}
-      name="dynamic_form_nest_item"
-      onFinish={onFinish}
-      autoComplete="off"
-    >
+    <Form form={form} name="dynamic_form_nest_item" onFinish={onFinish}>
       <Form.List name="configs">
         {(fields, { add, remove }) => (
           <>
             {fields.map((field) => (
               <Space key={field.key} align="baseline">
-                <Form.Item
-                  {...field}
-                  name={[field.name, 'label']}
-                  fieldKey={[field.fieldKey, 'label']}
-                  rules={[{ required: true, message: '请输入label' }]}
-                >
-                  <Input placeholder="label" />
-                </Form.Item>
-
-                <Form.Item
-                  {...field}
-                  name={[field.name, 'key']}
-                  fieldKey={[field.fieldKey, 'key']}
-                  rules={[{ required: true, message: '请输入key' }]}
-                >
-                  <Input placeholder="key" />
-                </Form.Item>
-
-                <Form.Item
-                  noStyle
-                  shouldUpdate={(prevValues, curValues) =>
-                    prevValues.type !== curValues.type
-                  }
-                >
-                  {() => (
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'type']}
-                      fieldKey={[field.fieldKey, 'type']}
-                      rules={[{ required: true, message: '请选择类型' }]}
-                    >
-                      <Select style={{ width: 130 }} placeholder="类型">
-                        {(components[componentName] || []).map((item: any) => (
-                          <Option key={item} value={item}>
-                            {item}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  )}
-                </Form.Item>
-
+                {generateFormItem(field)}
                 <MinusCircleOutlined onClick={() => remove(field.name)} />
               </Space>
             ))}
@@ -84,9 +150,7 @@ const Setting = (props: IProps) => {
                 onClick={() => add()}
                 block
                 icon={<PlusOutlined />}
-              >
-                添加
-              </Button>
+              ></Button>
             </Form.Item>
           </>
         )}
