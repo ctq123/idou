@@ -17,9 +17,8 @@ const { TabPane } = Tabs;
 const Left = () => {
   const [tab, setTab] = useState('template');
   const [selectedComponent, setSelectedComponent]: any = useState(null);
-  const [deawerVisible, setDeawerVisible] = useState(false);
+  // const [deawerVisible, setDeawerVisible] = useState(false);
   const appContext: any = useContext(Context);
-  console.log('Left state', appContext.state);
   useEffect(() => {
     setSelectedComponent(appContext.state.selectedComponent);
     if (appContext.state.selectedComponent) {
