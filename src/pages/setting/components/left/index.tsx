@@ -56,10 +56,11 @@ const Left = () => {
       case 'setting':
         const { component = {} } = selectedComponent || {};
         return (
-          <Setting
-            component={component}
-            handleCB={(com: any) => handleSettingCB(com)}
-          />
+          // <Setting
+          //   component={component}
+          //   handleCB={(com: any) => handleSettingCB(com)}
+          // />
+          <CodeEditor value={component} />
         );
       default:
         return '';
