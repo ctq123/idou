@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input, Button, Space, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import cloneDeep from 'lodash/cloneDeep';
-import { v1 } from 'uuid';
+import { getUid } from '@/utils';
 
 interface IProps {
   component?: any;
@@ -67,7 +67,7 @@ const Setting = (props: IProps) => {
           if (configs.length) {
             // const optItem = component.children
             tableChild = configs.map((item: any, i: number) => {
-              return { uuid: v1(), key: item.key, label: item.label };
+              return { uuid: getUid(), key: item.key, label: item.label };
             });
           }
           component.children = tableChild;
@@ -80,10 +80,12 @@ const Setting = (props: IProps) => {
           if (configs.length) {
             formChild = configs.map((item: any, i: number) => {
               return {
-                uuid: v1(),
+                uuid: getUid(),
                 key: item.key,
                 label: item.label,
-                children: [{ componentName: item.type, props: {}, uuid: v1() }],
+                children: [
+                  { componentName: item.type, props: {}, uuid: getUid() },
+                ],
               };
             });
           }

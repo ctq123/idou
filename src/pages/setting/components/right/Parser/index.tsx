@@ -1,8 +1,8 @@
 import React, { Fragment, useContext, useState } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import { v1 } from 'uuid';
 import SelectBox from '../SelectBox';
 import { Context } from '@/pages/setting/model';
+import { getUid } from '@/utils';
 import styles from './index.less';
 import 'antd/dist/antd.css';
 
@@ -105,7 +105,7 @@ const Parser = () => {
         to['index'] = index + 1;
         to['uuid'] = parentUuid;
         data = cloneDeep(item);
-        data['key'] = data['key'] + '-' + Math.random().toString(36).slice(-8);
+        data['key'] = data['key'] + '1';
         if (data['label']) {
           data['label'] = data['label'] + ' 复制';
         }
@@ -235,7 +235,7 @@ const Parser = () => {
       }
     };
     if (componentName) {
-      const key = v1();
+      const key = getUid();
       return <Fragment key={key}>{recursionParser()}</Fragment>;
     }
     return null;

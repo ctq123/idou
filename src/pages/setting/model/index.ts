@@ -1,7 +1,7 @@
 import React from 'react';
-import { v1 } from 'uuid';
 import cloneDeep from 'lodash/cloneDeep';
 import { DSL } from './dsl';
+import { getUid } from '@/utils';
 
 interface IObject {
   [key: string]: any;
@@ -104,11 +104,9 @@ const handleDSLComponentChange = (
 const initDSL = (data: IObject) => {
   const copyData = cloneDeep(data);
   const addUuid = (data: IObject) => {
-    if (data) {
-      data.uuid = v1();
-      if (Array.isArray(data.children)) {
-        data.children.forEach((item) => addUuid(item));
-      }
+    if (data && Array.isArray(data.children)) {
+      data.uuid = getUid();
+      data.children.forEach((item) => addUuid(item));
     }
   };
   addUuid(copyData);
