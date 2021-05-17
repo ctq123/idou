@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Space, Select, Drawer } from 'antd';
+import {
+  Form,
+  Input,
+  Button,
+  Space,
+  Select,
+  Drawer,
+  Dropdown,
+  Menu,
+} from 'antd';
 import {
   MinusCircleOutlined,
   PlusOutlined,
   SaveOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
 } from '@ant-design/icons';
 import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
@@ -196,12 +207,29 @@ const Setting = (props: IProps) => {
     <>
       <Form form={form} name="dynamic_form_nest_item" onFinish={onFinish}>
         <Form.List name="configs">
-          {(fields, { add, remove }) => (
+          {(fields, { add, remove, move }) => (
             <>
-              {fields.map((field) => (
+              {fields.map((field, i) => (
                 <Space key={field.key} align="baseline">
                   {generateFormItem(field)}
-                  <MinusCircleOutlined onClick={() => remove(field.name)} />
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<ArrowUpOutlined />}
+                    onClick={() => move(i, i - 1)}
+                  />
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<ArrowDownOutlined />}
+                    onClick={() => move(i, i + 1)}
+                  />
+                  <Button
+                    type="link"
+                    size="small"
+                    icon={<MinusCircleOutlined />}
+                    onClick={() => remove(field.name)}
+                  />
                 </Space>
               ))}
 
