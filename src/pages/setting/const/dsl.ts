@@ -16,7 +16,9 @@ const DSL = {
           children: [
             {
               componentName: 'Input',
-              props: {},
+              props: {
+                placeholder: '请输入',
+              },
             },
           ],
         },
@@ -26,7 +28,9 @@ const DSL = {
           children: [
             {
               componentName: 'Select',
-              props: {},
+              props: {
+                placeholder: '请选择',
+              },
               options: [
                 { value: '0', label: '审批中' },
                 { value: '1', label: '已通过' },
@@ -36,12 +40,34 @@ const DSL = {
           ],
         },
         {
-          label: '订单号',
-          key: 'orderNo',
+          label: '创建时间',
+          key: 'createTime',
           children: [
             {
-              componentName: 'Input',
-              props: {},
+              componentName: 'RangePicker',
+              props: {
+                placeholder: ['开始日期', '结束日期'],
+              },
+            },
+          ],
+        },
+        {
+          label: '商品名称',
+          key: 'productName',
+          children: [
+            {
+              componentName: 'AutoComplete',
+              props: {
+                placeholder: '请输入',
+              },
+              options: [],
+              onSearch: `function handleSearchText(searchText) {
+                this.queryProductName(searchText);
+                this.productNameOptions = []
+              }`,
+              onSelect: `function handleSelect(data) {
+                this.productName = data;
+              }`,
             },
           ],
         },

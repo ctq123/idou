@@ -1,6 +1,6 @@
 import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import { DSL } from './dsl';
+import { DSL } from '../const/dsl';
 import { getUid } from '@/utils';
 
 interface IObject {

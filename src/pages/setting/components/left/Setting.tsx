@@ -9,16 +9,13 @@ import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
 import CodeDrawer from '../codeEditor/CodeDrawer';
 import { getUid } from '@/utils';
+import { FormComponentObj, ComponentsDSL } from '../../const/componentDSL';
 interface IProps {
   component?: any;
   handleCB?: any;
 }
 
 const { Option } = Select;
-
-const components: any = {
-  Form: ['Input', 'Select'],
-};
 
 const Setting = (props: IProps) => {
   console.log('props', props);
@@ -85,11 +82,13 @@ const Setting = (props: IProps) => {
           let formChild = [];
           if (configs.length) {
             formChild = configs.map((item: any, i: number) => {
+              // @ts-ignore
+              const childNode = ComponentsDSL[item.type];
               return {
                 ...component.children[i],
                 key: item.key,
                 label: item.label,
-                children: [{ componentName: item.type, props: {} }],
+                children: [childNode],
               };
             });
           }
@@ -99,7 +98,8 @@ const Setting = (props: IProps) => {
           if (configs.length) {
             component['key'] = configs[0].key;
             component['label'] = configs[0].label;
-            component['children'][0]['componentName'] = configs[0].type;
+            // @ts-ignore
+            component['children'] = [ComponentsDSL[configs[0].type]];
           }
           break;
       }
@@ -178,7 +178,7 @@ const Setting = (props: IProps) => {
                   rules={[{ required: true, message: '请选择类型' }]}
                 >
                   <Select style={{ width: 130 }} placeholder="类型">
-                    {(components['Form'] || []).map((item: any) => (
+                    {Object.keys(FormComponentObj).map((item: any) => (
                       <Option key={item} value={item}>
                         {item}
                       </Option>

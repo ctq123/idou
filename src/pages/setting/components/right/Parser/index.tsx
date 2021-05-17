@@ -221,17 +221,26 @@ const Parser = () => {
               <Pagination />
             </div>
           );
+        case 'Select':
+          const Select = antd['Select'];
+          const { Option } = Select;
+          const { options = [] } = componentDSL;
+          return (
+            <Select {...props}>
+              {options.map((item: any) => (
+                <Option value={item.value}>{item.label}</Option>
+              ))}
+            </Select>
+          );
+        case 'RangePicker':
+          const DatePicker = antd['DatePicker'];
+          const { RangePicker } = DatePicker;
+          return <RangePicker {...props} />;
         default:
-          let newProps = {
-            ...props,
-          };
-          let newChildren = {
-            ...children,
-          };
           return React.createElement(
             antd[componentName],
-            newProps,
-            newChildren,
+            { ...props },
+            children,
           );
       }
     };
