@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { Fragment, useContext, useState } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import SelectBox from '../SelectBox';
@@ -221,10 +222,17 @@ const Parser = () => {
             </div>
           );
         default:
-          const newProps = {
+          let newProps = {
             ...props,
           };
-          return React.createElement(antd[componentName], newProps, children);
+          let newChildren = {
+            ...children,
+          };
+          return React.createElement(
+            antd[componentName],
+            newProps,
+            newChildren,
+          );
       }
     };
     if (componentName) {
