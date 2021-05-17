@@ -1,9 +1,14 @@
-import React, { useEffect } from 'react';
-import { Form, Input, Button, Space, Select } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Button, Space, Select, Drawer } from 'antd';
+import {
+  MinusCircleOutlined,
+  PlusOutlined,
+  SaveOutlined,
+} from '@ant-design/icons';
 import cloneDeep from 'lodash/cloneDeep';
+import isEmpty from 'lodash/isEmpty';
+import CodeDrawer from '../codeEditor/CodeDrawer';
 import { getUid } from '@/utils';
-
 interface IProps {
   component?: any;
   handleCB?: any;
@@ -18,6 +23,7 @@ const components: any = {
 const Setting = (props: IProps) => {
   console.log('props', props);
   const { componentName, children, uuid } = props.component || {};
+  const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   useEffect(() => {
     const getInitialValue = () => {
@@ -67,7 +73,7 @@ const Setting = (props: IProps) => {
           if (configs.length) {
             // const optItem = component.children
             tableChild = configs.map((item: any, i: number) => {
-              return { uuid: getUid(), key: item.key, label: item.label };
+              return { key: item.key, label: item.label };
             });
           }
           component.children = tableChild;
@@ -80,12 +86,10 @@ const Setting = (props: IProps) => {
           if (configs.length) {
             formChild = configs.map((item: any, i: number) => {
               return {
-                uuid: getUid(),
+                ...component.children[i],
                 key: item.key,
                 label: item.label,
-                children: [
-                  { componentName: item.type, props: {}, uuid: getUid() },
-                ],
+                children: [{ componentName: item.type, props: {} }],
               };
             });
           }
@@ -99,7 +103,18 @@ const Setting = (props: IProps) => {
           }
           break;
       }
+      component['uuid'] = getUid(); // 更新uuid，让监听uuid变化的组件都能同步更新
       props.handleCB && props.handleCB(component);
+    }
+  };
+
+  const handleCodeCB = (obj: any) => {
+    const { visible, code } = obj;
+    setVisible(visible);
+    if (props.component && !isEmpty(code)) {
+      code['uuid'] = getUid(); // 更新uuid，让监听uuid变化的组件都能同步更新
+      console.log('code', code);
+      props.handleCB && props.handleCB(code);
     }
   };
 
@@ -178,34 +193,49 @@ const Setting = (props: IProps) => {
   };
 
   return (
-    <Form form={form} name="dynamic_form_nest_item" onFinish={onFinish}>
-      <Form.List name="configs">
-        {(fields, { add, remove }) => (
-          <>
-            {fields.map((field) => (
-              <Space key={field.key} align="baseline">
-                {generateFormItem(field)}
-                <MinusCircleOutlined onClick={() => remove(field.name)} />
-              </Space>
-            ))}
+    <>
+      <Form form={form} name="dynamic_form_nest_item" onFinish={onFinish}>
+        <Form.List name="configs">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map((field) => (
+                <Space key={field.key} align="baseline">
+                  {generateFormItem(field)}
+                  <MinusCircleOutlined onClick={() => remove(field.name)} />
+                </Space>
+              ))}
 
-            <Form.Item>
-              <Button
-                type="dashed"
-                onClick={() => add()}
-                block
-                icon={<PlusOutlined />}
-              ></Button>
-            </Form.Item>
-          </>
-        )}
-      </Form.List>
-      <Form.Item>
-        <Button type="primary" htmlType="submit">
-          提交
-        </Button>
-      </Form.Item>
-    </Form>
+              <Form.Item>
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  block
+                  icon={<PlusOutlined />}
+                ></Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            提交
+          </Button>
+          <Button
+            style={{ marginLeft: 8 }}
+            type="primary"
+            danger
+            onClick={() => setVisible(true)}
+          >
+            代码编辑
+          </Button>
+        </Form.Item>
+      </Form>
+      <CodeDrawer
+        component={props.component}
+        visible={visible}
+        handleCB={(val: any) => handleCodeCB(val)}
+      />
+    </>
   );
 };
 

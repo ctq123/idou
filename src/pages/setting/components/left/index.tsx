@@ -9,7 +9,6 @@ import {
 import { templates, tabs } from '../../const';
 import { Context } from '@/pages/setting/model';
 import Setting from './Setting';
-import CodeEditor from '../codeEditor';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
@@ -17,7 +16,6 @@ const { TabPane } = Tabs;
 const Left = () => {
   const [tab, setTab] = useState('template');
   const [selectedComponent, setSelectedComponent]: any = useState(null);
-  // const [deawerVisible, setDeawerVisible] = useState(false);
   const appContext: any = useContext(Context);
   useEffect(() => {
     setSelectedComponent(appContext.state.selectedComponent);
@@ -31,6 +29,13 @@ const Left = () => {
     if (com) {
       appContext.dispatch({
         type: 'component/replace',
+        data: {
+          component: com,
+          from,
+        },
+      });
+      appContext.dispatch({
+        type: 'component/selected',
         data: {
           component: com,
           from,
@@ -56,11 +61,10 @@ const Left = () => {
       case 'setting':
         const { component = {} } = selectedComponent || {};
         return (
-          // <Setting
-          //   component={component}
-          //   handleCB={(com: any) => handleSettingCB(com)}
-          // />
-          <CodeEditor value={component} />
+          <Setting
+            component={component}
+            handleCB={(com: any) => handleSettingCB(com)}
+          />
         );
       default:
         return '';

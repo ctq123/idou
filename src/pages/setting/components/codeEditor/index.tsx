@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { PureComponent } from 'react';
+import { message } from 'antd';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import serialize from 'serialize-javascript';
 
@@ -7,24 +8,32 @@ interface IProps {
   [key: string]: any;
 }
 const CONFIG = `const config = `;
+class CodeEditor extends PureComponent<IProps> {
+  editorRef: any = null;
 
-const CodeEditor = (props: IProps) => {
-  const editorRef: any = React.useRef(null);
-
-  const setEditorValue = (val: any) => {
+  setEditorValue = (val: any) => {
     return `${CONFIG}${serialize(val, { space: 2, unsafe: true })}`;
   };
 
-  const getEditorValue = () => {
-    return editorRef.current.getValue().slice(CONFIG.length);
+  getEditorValue = () => {
+    const value = this.editorRef.getValue().slice(CONFIG.length);
+    const deserialize = (code: any) => {
+      return eval('(' + code + ')');
+    };
+    try {
+      const code = deserialize(value);
+      return code;
+    } catch (e) {
+      message.error(`JSON 格式错误`);
+    }
   };
 
-  const onEditorDidMount = (editor: any, monaco: any) => {
-    editorRef.current = editor;
+  onEditorDidMount = (editor: any, monaco: any) => {
+    this.editorRef = editor;
     editor.onKeyDown((e: any) => {
       if (e.shiftKey) {
-        editorRef.current &&
-          editorRef.current.trigger(
+        this.editorRef &&
+          this.editorRef.trigger(
             'auto completion',
             'editor.action.triggerSuggest',
           );
@@ -46,23 +55,26 @@ const CodeEditor = (props: IProps) => {
     });
   };
 
-  return (
-    <Editor
-      height={`calc(100vh - ${100}px)`}
-      language="javascript"
-      onMount={onEditorDidMount}
-      options={{
-        selectOnLineNumbers: true,
-        renderSideBySide: false,
-        overviewRulerBorder: false,
-        tabSize: 2,
-        minimap: {
-          enabled: false,
-        },
-      }}
-      value={setEditorValue(props.value)}
-    />
-  );
-};
+  render() {
+    const { value } = this.props;
+    return (
+      <Editor
+        height={`calc(100vh - ${100}px)`}
+        language="javascript"
+        onMount={this.onEditorDidMount}
+        options={{
+          selectOnLineNumbers: true,
+          renderSideBySide: false,
+          overviewRulerBorder: false,
+          tabSize: 2,
+          // minimap: {
+          //   enabled: false,
+          // },
+        }}
+        value={this.setEditorValue(value)}
+      />
+    );
+  }
+}
 
 export default CodeEditor;
