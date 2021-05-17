@@ -147,7 +147,7 @@ const Parser = () => {
           const childNodes = (children || [])
             .filter(Boolean)
             .map((item: any, i: number) => generateComponent(item, uuid, i));
-          return <div className={styles['page']}>{childNodes}</div>;
+          return <div className={`${styles['page']}`}>{childNodes}</div>;
         case 'Form':
           const Form = antd['Form'];
           const Row = antd['Row'];
@@ -216,17 +216,10 @@ const Parser = () => {
         case 'Pagination':
           const Pagination = antd['Pagination'];
           return (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                marginTop: 24,
-              }}
-            >
+            <div className={styles['flex-end']}>
               <Pagination />
             </div>
           );
-          break;
         default:
           const newProps = {
             ...props,
