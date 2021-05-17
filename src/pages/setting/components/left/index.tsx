@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { templates, tabs } from '../../const';
 import { Context } from '@/pages/setting/model';
+import { componentList } from '../../const/componentDSL';
 import Setting from './Setting';
 import styles from './index.less';
 
@@ -58,6 +59,24 @@ const Left = () => {
           </div>
         );
       case 'component':
+        return (
+          <div className={styles['component']}>
+            {(componentList || []).map((item, i) => (
+              <div key={i} className={styles['item']}>
+                <img
+                  alt="图片"
+                  src={
+                    'https://cdn.poizon.com/node-common/c6780a17e71588e6fd40054d541969e8.png'
+                  }
+                />
+                <div>
+                  <h3>{item.key}</h3>
+                  <div>{item.name}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
       case 'setting':
         const { component = {} } = selectedComponent || {};
         return (

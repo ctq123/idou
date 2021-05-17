@@ -98,16 +98,21 @@ const ComponentsDSL = {
  * 组件名称，dsl片段
  * 用于显示
  */
-const componentList = [
-  { name: '输入框', componentDSL: ComponentsDSL['Input'] },
-  { name: '选择器', componentDSL: ComponentsDSL['Select'] },
-  { name: '日期范围', componentDSL: ComponentsDSL['RangePicker'] },
-  { name: '自动完成', componentDSL: ComponentsDSL['AutoComplete'] },
-  { name: '按钮', componentDSL: ComponentsDSL['Button'] },
-  { name: '表单', componentDSL: ComponentsDSL['Form'] },
-  { name: '表格', componentDSL: ComponentsDSL['Table'] },
-  { name: '分页', componentDSL: ComponentsDSL['Pagination'] },
-];
+const componentNames = {
+  Input: '输入框',
+  Select: '选择器',
+  RangePicker: '日期范围',
+  AutoComplete: '自动完成',
+  Button: '按钮',
+  Form: '表单',
+  Table: '表格',
+  Pagination: '分页',
+};
+
+const componentList = Object.entries(componentNames).map(([k, v]) => {
+  // @ts-ignore
+  return { key: k, name: v, componentDSL: ComponentsDSL[k] };
+});
 
 /**
  * form表单中的组件
