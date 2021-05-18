@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, message, Tooltip } from 'antd';
 import { MobileOutlined, LaptopOutlined, EyeOutlined } from '@ant-design/icons';
 import { Context } from '@/pages/setting/model';
 import CodeDrawer from '../codeEditor/CodeDrawer';
@@ -30,6 +30,10 @@ const Header = () => {
     setVisible(visible);
   };
 
+  const handleMobile = () => {
+    message.warn('功能尚在开发中……');
+  };
+
   return (
     <div className={styles['c-header']}>
       <div className={styles['h-left']}>
@@ -40,12 +44,24 @@ const Header = () => {
         <div className={styles['title']}>荒原</div>
       </div>
       <div className={styles['h-center']}>
-        <Button type="link" icon={<MobileOutlined />}></Button>
-        <Button type="link" icon={<LaptopOutlined />}></Button>
+        <Button
+          type="link"
+          icon={<MobileOutlined />}
+          onClick={() => handleMobile()}
+        ></Button>
+        <Button
+          type="link"
+          icon={<LaptopOutlined />}
+          onClick={() => handleMobile()}
+        ></Button>
       </div>
       <div className={styles['h-right']}>
         <Tooltip title="预览">
-          <Button type="link" icon={<EyeOutlined />}></Button>
+          <Button
+            type="link"
+            icon={<EyeOutlined />}
+            onClick={() => handleMobile()}
+          ></Button>
         </Tooltip>
         <Button type="primary" onClick={() => handleGenerate()}>
           生成源码

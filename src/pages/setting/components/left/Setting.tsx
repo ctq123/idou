@@ -324,6 +324,7 @@ const Setting = (props: IProps) => {
       <CodeDrawer
         value={props.component}
         visible={visible}
+        type="component"
         handleCB={(val: any) => handleCodeCB(val)}
       />
     </>

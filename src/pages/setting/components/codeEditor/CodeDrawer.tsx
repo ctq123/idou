@@ -40,6 +40,7 @@ const CodeDrawer = (props: IProps) => {
     message.success('复制成功');
   };
   const handleDown = () => {
+    message.warn('功能尚在开发中……');
     // const code = codeRef.current.getEditorValue();
     // console.log('code', code);
     // const val = serialize(code, { space: 2 });
@@ -93,6 +94,7 @@ const CodeDrawer = (props: IProps) => {
     >
       <CodeEditor
         value={props.value}
+        type={type}
         ref={(ref: any) => (codeRef.current = ref)}
       />
     </Drawer>

@@ -3,7 +3,7 @@ import parserBabel from 'prettier/esm/parser-babel.mjs';
 import parserHTML from 'prettier/esm/parser-html.mjs';
 // import parserCSS from 'prettier/esm/parser-postcss.mjs';
 // import parserGraphql from 'prettier/esm/parser-graphql.mjs';
-
+import { message } from 'antd';
 // import prettier from 'https://unpkg.com/prettier@2.3.0/esm/standalone.mjs';
 // import parserBabel from 'https://unpkg.com/prettier@2.3.0/esm/parser-babel.mjs';
 // import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
@@ -64,21 +64,20 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     imports,
   } = schemaDSL || {};
   const objStr = (obj: any) =>
-    Object.entries(obj)
-      .map(([k, v]) => {
-        if (['Table'].includes(componentName)) {
-          if (k === 'key') {
-            // 需要转化
-            k = 'prop';
-          }
+    Object.entries(obj).reduce((pre, [k, v]) => {
+      console.log('k, v', k, v);
+      if (['Table'].includes(componentName)) {
+        if (k === 'key') {
+          // 需要转化
+          k = 'prop';
         }
-        if (typeof v !== 'string') {
-          return `:${k}="${v}"`;
-        } else {
-          return `${k}="${v}"`;
-        }
-      })
-      .join(' ');
+      }
+      if (typeof v !== 'string') {
+        return `${pre} :${k}="${JSON.stringify(v).replace(/\"/g, "'")}"`;
+      } else {
+        return `${pre} ${k}="${v}"`;
+      }
+    }, '');
 
   let xml = '';
   switch (componentName) {
@@ -328,10 +327,15 @@ const generateVue = () => {
 };
 
 const getSourceCode = (DSL: any) => {
-  initData();
-  renderData.template = generateTemplate(DSL);
-  renderData.codeStr = generateVue();
-  return renderData.codeStr;
+  try {
+    initData();
+    renderData.template = generateTemplate(DSL);
+    renderData.codeStr = generateVue();
+    return renderData.codeStr;
+  } catch (e) {
+    console.error(e);
+    message.error('生成源码异常');
+  }
 };
 
 export { getSourceCode };
