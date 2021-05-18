@@ -149,12 +149,11 @@ const DSL = {
           label: '姓名',
         },
         {
-          key: 'buyerIdCardNo',
-          label: '身份证号',
-        },
-        {
           key: 'amount',
           label: '订单金额',
+          render: `function(_, row) {
+            return {{ Number(row.amount) / 100 }}
+          }`,
         },
         {
           key: 'status',
@@ -163,10 +162,9 @@ const DSL = {
         {
           key: 'createTime',
           label: '创建时间',
-        },
-        {
-          key: 'modifyTime',
-          label: '修改时间',
+          render: `function(_, row) {
+            return <span>{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}</span>
+          }`,
         },
       ],
     },

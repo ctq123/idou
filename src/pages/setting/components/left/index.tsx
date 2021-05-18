@@ -1,11 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Button, Tabs, Drawer } from 'antd';
-import {
-  MobileOutlined,
-  LaptopOutlined,
-  EyeOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
 import { templates, tabs } from '../../const';
 import { Context } from '@/pages/setting/model';
 import { componentList } from '../../const/componentDSL';

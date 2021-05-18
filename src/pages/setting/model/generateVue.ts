@@ -1,7 +1,7 @@
 import prettier from 'prettier/esm/standalone.mjs';
 import parserBabel from 'prettier/esm/parser-babel.mjs';
 import parserHTML from 'prettier/esm/parser-html.mjs';
-// import parserCSS from 'prettier/esm/parser-postcss.mjs';
+import parserCSS from 'prettier/esm/parser-postcss.mjs';
 // import parserGraphql from 'prettier/esm/parser-graphql.mjs';
 import { message } from 'antd';
 // import prettier from 'https://unpkg.com/prettier@2.3.0/esm/standalone.mjs';
@@ -200,7 +200,20 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             newProps['prop'] = item.key;
             delete newProps.key;
           }
-          return `<el-table-column ${getPropsStr(newProps)}></el-table-column>`;
+          if (item.render) {
+            delete newProps.render;
+            const { funcBody } = transformFunc(item.render);
+            return `<el-table-column ${getPropsStr(newProps)}>
+            <template slot-scope="{{ row }}">${funcBody.replace(
+              'return',
+              '',
+            )}</template>
+            </el-table-column>`;
+          } else {
+            return `<el-table-column ${getPropsStr(
+              newProps,
+            )}></el-table-column>`;
+          }
         })
         .join('\n');
       xml = `<el-table :data="${listKey}" border style="width: 100%">\n${columns}\n</el-table>\n`;
@@ -291,10 +304,13 @@ const transformFunc = (func: any, newFuncName = '') => {
   const end = funcStr.indexOf('(');
   const funcName = funcStr.slice(start, end);
   let newFunc = funcStr.slice(start);
+  let funcBodyStart = funcStr.indexOf('{') + 1;
+  let funcBodyEnd = funcStr.lastIndexOf('}');
+  let funcBody = funcStr.slice(funcBodyStart, funcBodyEnd);
   if (newFuncName) {
     newFunc = newFunc.replace(funcName, newFuncName);
   }
-  return { newFunc, newFuncName: newFuncName || funcName };
+  return { newFunc, newFuncName: newFuncName || funcName, funcBody };
 };
 
 const generateVue = () => {
@@ -339,7 +355,7 @@ const generateVue = () => {
   // return vueCode;
   return prettier.format(vueCode, {
     parser: 'vue',
-    plugins: [parserHTML, parserBabel],
+    plugins: [parserHTML, parserBabel, parserCSS],
     printWidth: 80,
     singleQuote: true,
   });
