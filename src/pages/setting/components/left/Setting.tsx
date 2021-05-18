@@ -129,7 +129,7 @@ const Setting = (props: IProps) => {
     }
   };
 
-  const generateFormItem = (field: any) => {
+  const generateFormItem = (field: any, remove: any, move: any, i: number) => {
     switch (componentName) {
       case 'Table':
         return (
@@ -151,9 +151,90 @@ const Setting = (props: IProps) => {
             >
               <Input placeholder="key" />
             </Form.Item>
+            <Button
+              type="link"
+              size="small"
+              icon={<ArrowUpOutlined />}
+              onClick={() => move(i, i - 1)}
+            />
+            <Button
+              type="link"
+              size="small"
+              icon={<ArrowDownOutlined />}
+              onClick={() => move(i, i + 1)}
+            />
+            <Button
+              type="link"
+              size="small"
+              icon={<MinusCircleOutlined />}
+              onClick={() => remove(field.name)}
+            />
           </>
         );
       case 'Form':
+        return (
+          <>
+            <Form.Item
+              {...field}
+              name={[field.name, 'label']}
+              fieldKey={[field.fieldKey, 'label']}
+              rules={[{ required: true, message: '请输入label' }]}
+            >
+              <Input placeholder="label" />
+            </Form.Item>
+
+            <Form.Item
+              {...field}
+              name={[field.name, 'key']}
+              fieldKey={[field.fieldKey, 'key']}
+              rules={[{ required: true, message: '请输入key' }]}
+            >
+              <Input placeholder="key" />
+            </Form.Item>
+
+            <Form.Item
+              noStyle
+              shouldUpdate={(prevValues, curValues) =>
+                prevValues.type !== curValues.type
+              }
+            >
+              {() => (
+                <Form.Item
+                  {...field}
+                  name={[field.name, 'type']}
+                  fieldKey={[field.fieldKey, 'type']}
+                  rules={[{ required: true, message: '请选择类型' }]}
+                >
+                  <Select style={{ width: 130 }} placeholder="类型">
+                    {Object.keys(FormComponentObj).map((item: any) => (
+                      <Option key={item} value={item}>
+                        {item}
+                      </Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              )}
+            </Form.Item>
+            <Button
+              type="link"
+              size="small"
+              icon={<ArrowUpOutlined />}
+              onClick={() => move(i, i - 1)}
+            />
+            <Button
+              type="link"
+              size="small"
+              icon={<ArrowDownOutlined />}
+              onClick={() => move(i, i + 1)}
+            />
+            <Button
+              type="link"
+              size="small"
+              icon={<MinusCircleOutlined />}
+              onClick={() => remove(field.name)}
+            />
+          </>
+        );
       default:
         return (
           <>
@@ -211,25 +292,7 @@ const Setting = (props: IProps) => {
             <>
               {fields.map((field, i) => (
                 <Space key={field.key} align="baseline">
-                  {generateFormItem(field)}
-                  <Button
-                    type="link"
-                    size="small"
-                    icon={<ArrowUpOutlined />}
-                    onClick={() => move(i, i - 1)}
-                  />
-                  <Button
-                    type="link"
-                    size="small"
-                    icon={<ArrowDownOutlined />}
-                    onClick={() => move(i, i + 1)}
-                  />
-                  <Button
-                    type="link"
-                    size="small"
-                    icon={<MinusCircleOutlined />}
-                    onClick={() => remove(field.name)}
-                  />
+                  {generateFormItem(field, remove, move, i)}
                 </Space>
               ))}
 
@@ -259,7 +322,7 @@ const Setting = (props: IProps) => {
         </Form.Item>
       </Form>
       <CodeDrawer
-        component={props.component}
+        value={props.component}
         visible={visible}
         handleCB={(val: any) => handleCodeCB(val)}
       />

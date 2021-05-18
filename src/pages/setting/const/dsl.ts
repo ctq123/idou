@@ -52,6 +52,36 @@ const DSL = {
           ],
         },
         {
+          label: '商品类目',
+          key: 'categoryIds',
+          children: [
+            {
+              componentName: 'Select',
+              props: {
+                placeholder: '请选择',
+              },
+              options: [
+                {
+                  value: 1,
+                  label: '鞋',
+                  children: [
+                    {
+                      value: 100,
+                      label: '运动鞋',
+                      children: [
+                        {
+                          value: 200,
+                          label: '篮球鞋',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: '商品名称',
           key: 'productName',
           children: [

@@ -141,7 +141,7 @@ const Parser = () => {
     parentUuid: any,
     index: number,
   ) => {
-    const { componentName, children, props, uuid } = componentDSL;
+    const { componentName, children, props, uuid, options = [] } = componentDSL;
     const recursionParser = () => {
       switch (componentName) {
         case 'Page':
@@ -224,7 +224,6 @@ const Parser = () => {
         case 'Select':
           const Select = antd['Select'];
           const { Option } = Select;
-          const { options = [] } = componentDSL;
           return (
             <Select {...props}>
               {options.map((item: any) => (
@@ -232,6 +231,13 @@ const Parser = () => {
               ))}
             </Select>
           );
+        case 'Cascader':
+          const Cascader = antd['Cascader'];
+          const cascaderProps = {
+            ...props,
+            options,
+          };
+          return <Cascader {...cascaderProps}></Cascader>;
         case 'RangePicker':
           const DatePicker = antd['DatePicker'];
           const { RangePicker } = DatePicker;

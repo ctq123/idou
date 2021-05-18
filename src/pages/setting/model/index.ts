@@ -2,6 +2,7 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { DSL } from '../const/dsl';
 import { getUid } from '@/utils';
+import { getSourceCode } from './generateVue';
 
 interface IObject {
   [key: string]: any;
@@ -116,6 +117,8 @@ const initDSL = (data: IObject) => {
 const initState = {
   dsl: initDSL(DSL),
   selectedComponent: null,
+  vueCode: null,
+  showVueCode: false,
 };
 
 const reducer = (state: any, action: any) => {
@@ -162,8 +165,11 @@ const reducer = (state: any, action: any) => {
       );
       return { ...state, dsl: moveDSL2 };
     case 'component/selected':
-      console.log('component/selected');
       return { ...state, selectedComponent: data };
+    case 'generate/vue':
+      const newDSL = cloneDeep(state.dsl);
+      const vueCode = getSourceCode(newDSL);
+      return { ...state, vueCode, showVueCode: !state.showVueCode };
     default:
       return state;
   }

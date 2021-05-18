@@ -26,6 +26,30 @@ const ComponentsDSL = {
       placeholder: ['开始日期', '结束日期'],
     },
   },
+  Cascader: {
+    componentName: 'Cascader',
+    props: {
+      placeholder: '请选择',
+    },
+    options: [
+      {
+        value: 1,
+        label: '鞋',
+        children: [
+          {
+            value: 100,
+            label: '运动鞋',
+            children: [
+              {
+                value: 200,
+                label: '篮球鞋',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
   AutoComplete: {
     componentName: 'AutoComplete',
     props: {
@@ -102,6 +126,7 @@ const componentNames = {
   Input: '输入框',
   Select: '选择器',
   RangePicker: '日期范围',
+  Cascader: '级联选择',
   AutoComplete: '自动完成',
   Button: '按钮',
   Form: '表单',
@@ -121,6 +146,7 @@ const FormComponentObj = {
   Input: ComponentsDSL['Input'],
   Select: ComponentsDSL['Select'],
   RangePicker: ComponentsDSL['RangePicker'],
+  Cascader: ComponentsDSL['Cascader'],
   AutoComplete: ComponentsDSL['AutoComplete'],
 };
 

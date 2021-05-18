@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Drawer, Tooltip } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
+import { Button, Drawer, Tooltip, message } from 'antd';
+import {
+  SaveOutlined,
+  CopyOutlined,
+  DownloadOutlined,
+} from '@ant-design/icons';
+import copy from 'copy-to-clipboard';
 import CodeEditor from './index';
+import { serialize, deserialize } from '@/utils';
 import styles from './CodeDrawer.less';
 
 interface IProps {
-  component: any;
+  value: any;
   visible: boolean;
+  type?: 'component' | 'vue';
   handleCB?: any;
 }
 
 const CodeDrawer = (props: IProps) => {
-  const { handleCB } = props;
+  const { handleCB, type = 'component' } = props;
   const codeRef: any = React.useRef(null);
 
   const onClose = () => {
@@ -19,23 +26,58 @@ const CodeDrawer = (props: IProps) => {
   };
 
   const handleSave = () => {
-    console.log('codeRef.current', codeRef.current);
     const code = codeRef.current.getEditorValue();
     console.log('code', code);
     if (code) {
       handleCB && handleCB({ visible: false, code });
     }
   };
+  const handleCopy = () => {
+    const code = codeRef.current.getEditorValue();
+    console.log('code', code);
+    const val = serialize(code, { space: 2 });
+    copy(deserialize(val));
+    message.success('复制成功');
+  };
+  const handleDown = () => {
+    // const code = codeRef.current.getEditorValue();
+    // console.log('code', code);
+    // const val = serialize(code, { space: 2 });
+    // const str = deserialize(val)
+  };
   const titleNode = () => (
     <div className={styles['title-con']}>
-      <div className={styles['title']}>代码编辑</div>
-      <Tooltip title="保存">
-        <Button
-          type="link"
-          icon={<SaveOutlined />}
-          onClick={() => handleSave()}
-        ></Button>
-      </Tooltip>
+      <div className={styles['title']}>
+        {type === 'component' ? '代码编辑' : 'vue源码'}
+      </div>
+      {type === 'component' ? (
+        <div>
+          <Tooltip title="保存">
+            <Button
+              type="link"
+              icon={<SaveOutlined />}
+              onClick={() => handleSave()}
+            ></Button>
+          </Tooltip>
+        </div>
+      ) : (
+        <div>
+          <Tooltip title="复制">
+            <Button
+              type="link"
+              icon={<CopyOutlined />}
+              onClick={() => handleCopy()}
+            ></Button>
+          </Tooltip>
+          <Tooltip title="下载">
+            <Button
+              type="link"
+              icon={<DownloadOutlined />}
+              onClick={() => handleDown()}
+            ></Button>
+          </Tooltip>
+        </div>
+      )}
     </div>
   );
   return (
@@ -50,7 +92,7 @@ const CodeDrawer = (props: IProps) => {
       headerStyle={{ padding: 8 }}
     >
       <CodeEditor
-        value={props.component}
+        value={props.value}
         ref={(ref: any) => (codeRef.current = ref)}
       />
     </Drawer>

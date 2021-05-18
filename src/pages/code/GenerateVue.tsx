@@ -94,8 +94,8 @@ class GenerateVue extends PureComponent<IProps> {
         xml = `<div class='main-container'>\n${childStr}\n</div>`;
         break;
       case 'Form':
-        const formDataKey = dataKey || 'form'
-        renderData.data[formDataKey] = {}
+        const formDataKey = dataKey || 'form';
+        renderData.data[formDataKey] = {};
 
         const formItems = (children || [])
           .map((item: any) => {
@@ -139,8 +139,8 @@ class GenerateVue extends PureComponent<IProps> {
         )} ${buttonEventStr}>${children}</el-button>`;
         break;
       case 'Table':
-        const listKey = dataKey || 'list'
-        renderData.data[listKey] = []
+        const listKey = dataKey || 'list';
+        renderData.data[listKey] = [];
         const columns = (children || [])
           .map((item: any) => {
             return `<el-table-column ${objStr(item)}></el-table-column>`;
@@ -240,7 +240,7 @@ class GenerateVue extends PureComponent<IProps> {
           export default {
             data() {
               return ${JSON.stringify(renderData.data, null, 2)}
-            }
+            },
             ${renderData.lifecycles.join(',\n')}
             ,
             methods: {
@@ -290,8 +290,8 @@ class GenerateVue extends PureComponent<IProps> {
     const schema = JSON.parse(DSLStr);
     renderData.template = this.generateTemplate(schema);
     renderData.codeStr = this.generateVue();
-    return renderData.codeStr
-  }
+    return renderData.codeStr;
+  };
 
   initData = () => {
     renderData = {
@@ -305,28 +305,26 @@ class GenerateVue extends PureComponent<IProps> {
     };
   };
 
-  
-
   render() {
-    const { showGenerateButton } = this.props
+    const { showGenerateButton } = this.props;
     return (
-      showGenerateButton && 
-      <>
-        <Button type="primary" onClick={() => this.handleGenerate()}>
-          生成Vue文件
-        </Button>
-        <Drawer
-          title="Basic Drawer"
-          placement="right"
-          closable={false}
-          onClose={() => this.setState({ visible: false })}
-          width={800}
-          visible={this.state.visible}
-        >
-          <pre>{renderData.codeStr}</pre>
-        </Drawer>
-        
-      </>
+      showGenerateButton && (
+        <>
+          <Button type="primary" onClick={() => this.handleGenerate()}>
+            生成Vue文件
+          </Button>
+          <Drawer
+            title="Basic Drawer"
+            placement="right"
+            closable={false}
+            onClose={() => this.setState({ visible: false })}
+            width={800}
+            visible={this.state.visible}
+          >
+            <pre>{renderData.codeStr}</pre>
+          </Drawer>
+        </>
+      )
     );
   }
 }
