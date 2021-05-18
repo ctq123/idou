@@ -129,156 +129,184 @@ const Setting = (props: IProps) => {
     }
   };
 
-  const generateFormItem = (field: any, remove: any, move: any, i: number) => {
+  const generateFormItem = (fields: any, remove: any, move: any, add: any) => {
     switch (componentName) {
       case 'Table':
         return (
           <>
-            <Form.Item
-              {...field}
-              name={[field.name, 'label']}
-              fieldKey={[field.fieldKey, 'label']}
-              rules={[{ required: true, message: '请输入label' }]}
-            >
-              <Input placeholder="label" />
-            </Form.Item>
+            {fields.map((field: any, i: number) => (
+              <Space key={field.key} align="baseline">
+                <Form.Item
+                  {...field}
+                  name={[field.name, 'label']}
+                  fieldKey={[field.fieldKey, 'label']}
+                  rules={[{ required: true, message: '请输入label' }]}
+                >
+                  <Input placeholder="label" />
+                </Form.Item>
 
-            <Form.Item
-              {...field}
-              name={[field.name, 'key']}
-              fieldKey={[field.fieldKey, 'key']}
-              rules={[{ required: true, message: '请输入key' }]}
-            >
-              <Input placeholder="key" />
+                <Form.Item
+                  {...field}
+                  name={[field.name, 'key']}
+                  fieldKey={[field.fieldKey, 'key']}
+                  rules={[{ required: true, message: '请输入key' }]}
+                >
+                  <Input placeholder="key" />
+                </Form.Item>
+                <Button
+                  type="link"
+                  size="small"
+                  icon={<ArrowUpOutlined />}
+                  onClick={() => move(i, i - 1)}
+                />
+                <Button
+                  type="link"
+                  size="small"
+                  icon={<ArrowDownOutlined />}
+                  onClick={() => move(i, i + 1)}
+                />
+                <Button
+                  type="link"
+                  size="small"
+                  icon={<MinusCircleOutlined />}
+                  onClick={() => remove(field.name)}
+                />
+              </Space>
+            ))}
+            <Form.Item>
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                block
+                icon={<PlusOutlined />}
+              ></Button>
             </Form.Item>
-            <Button
-              type="link"
-              size="small"
-              icon={<ArrowUpOutlined />}
-              onClick={() => move(i, i - 1)}
-            />
-            <Button
-              type="link"
-              size="small"
-              icon={<ArrowDownOutlined />}
-              onClick={() => move(i, i + 1)}
-            />
-            <Button
-              type="link"
-              size="small"
-              icon={<MinusCircleOutlined />}
-              onClick={() => remove(field.name)}
-            />
           </>
         );
       case 'Form':
         return (
           <>
-            <Form.Item
-              {...field}
-              name={[field.name, 'label']}
-              fieldKey={[field.fieldKey, 'label']}
-              rules={[{ required: true, message: '请输入label' }]}
-            >
-              <Input placeholder="label" />
-            </Form.Item>
-
-            <Form.Item
-              {...field}
-              name={[field.name, 'key']}
-              fieldKey={[field.fieldKey, 'key']}
-              rules={[{ required: true, message: '请输入key' }]}
-            >
-              <Input placeholder="key" />
-            </Form.Item>
-
-            <Form.Item
-              noStyle
-              shouldUpdate={(prevValues, curValues) =>
-                prevValues.type !== curValues.type
-              }
-            >
-              {() => (
+            {fields.map((field: any, i: number) => (
+              <Space key={field.key} align="baseline">
                 <Form.Item
                   {...field}
-                  name={[field.name, 'type']}
-                  fieldKey={[field.fieldKey, 'type']}
-                  rules={[{ required: true, message: '请选择类型' }]}
+                  name={[field.name, 'label']}
+                  fieldKey={[field.fieldKey, 'label']}
+                  rules={[{ required: true, message: '请输入label' }]}
                 >
-                  <Select style={{ width: 130 }} placeholder="类型">
-                    {Object.keys(FormComponentObj).map((item: any) => (
-                      <Option key={item} value={item}>
-                        {item}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Input placeholder="label" />
                 </Form.Item>
-              )}
+
+                <Form.Item
+                  {...field}
+                  name={[field.name, 'key']}
+                  fieldKey={[field.fieldKey, 'key']}
+                  rules={[{ required: true, message: '请输入key' }]}
+                >
+                  <Input placeholder="key" />
+                </Form.Item>
+
+                <Form.Item
+                  noStyle
+                  shouldUpdate={(prevValues, curValues) =>
+                    prevValues.type !== curValues.type
+                  }
+                >
+                  {() => (
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'type']}
+                      fieldKey={[field.fieldKey, 'type']}
+                      rules={[{ required: true, message: '请选择类型' }]}
+                    >
+                      <Select style={{ width: 130 }} placeholder="类型">
+                        {Object.keys(FormComponentObj).map((item: any) => (
+                          <Option key={item} value={item}>
+                            {item}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
+                </Form.Item>
+                <Button
+                  type="link"
+                  size="small"
+                  icon={<ArrowUpOutlined />}
+                  onClick={() => move(i, i - 1)}
+                />
+                <Button
+                  type="link"
+                  size="small"
+                  icon={<ArrowDownOutlined />}
+                  onClick={() => move(i, i + 1)}
+                />
+                <Button
+                  type="link"
+                  size="small"
+                  icon={<MinusCircleOutlined />}
+                  onClick={() => remove(field.name)}
+                />
+              </Space>
+            ))}
+            <Form.Item>
+              <Button
+                type="dashed"
+                onClick={() => add()}
+                block
+                icon={<PlusOutlined />}
+              ></Button>
             </Form.Item>
-            <Button
-              type="link"
-              size="small"
-              icon={<ArrowUpOutlined />}
-              onClick={() => move(i, i - 1)}
-            />
-            <Button
-              type="link"
-              size="small"
-              icon={<ArrowDownOutlined />}
-              onClick={() => move(i, i + 1)}
-            />
-            <Button
-              type="link"
-              size="small"
-              icon={<MinusCircleOutlined />}
-              onClick={() => remove(field.name)}
-            />
           </>
         );
       default:
         return (
           <>
-            <Form.Item
-              {...field}
-              name={[field.name, 'label']}
-              fieldKey={[field.fieldKey, 'label']}
-              rules={[{ required: true, message: '请输入label' }]}
-            >
-              <Input placeholder="label" />
-            </Form.Item>
-
-            <Form.Item
-              {...field}
-              name={[field.name, 'key']}
-              fieldKey={[field.fieldKey, 'key']}
-              rules={[{ required: true, message: '请输入key' }]}
-            >
-              <Input placeholder="key" />
-            </Form.Item>
-
-            <Form.Item
-              noStyle
-              shouldUpdate={(prevValues, curValues) =>
-                prevValues.type !== curValues.type
-              }
-            >
-              {() => (
+            {fields.map((field: any, i: number) => (
+              <Space key={field.key} align="baseline">
                 <Form.Item
                   {...field}
-                  name={[field.name, 'type']}
-                  fieldKey={[field.fieldKey, 'type']}
-                  rules={[{ required: true, message: '请选择类型' }]}
+                  name={[field.name, 'label']}
+                  fieldKey={[field.fieldKey, 'label']}
+                  rules={[{ required: true, message: '请输入label' }]}
                 >
-                  <Select style={{ width: 130 }} placeholder="类型">
-                    {Object.keys(FormComponentObj).map((item: any) => (
-                      <Option key={item} value={item}>
-                        {item}
-                      </Option>
-                    ))}
-                  </Select>
+                  <Input placeholder="label" />
                 </Form.Item>
-              )}
-            </Form.Item>
+
+                <Form.Item
+                  {...field}
+                  name={[field.name, 'key']}
+                  fieldKey={[field.fieldKey, 'key']}
+                  rules={[{ required: true, message: '请输入key' }]}
+                >
+                  <Input placeholder="key" />
+                </Form.Item>
+
+                <Form.Item
+                  noStyle
+                  shouldUpdate={(prevValues, curValues) =>
+                    prevValues.type !== curValues.type
+                  }
+                >
+                  {() => (
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'type']}
+                      fieldKey={[field.fieldKey, 'type']}
+                      rules={[{ required: true, message: '请选择类型' }]}
+                    >
+                      <Select style={{ width: 130 }} placeholder="类型">
+                        {Object.keys(FormComponentObj).map((item: any) => (
+                          <Option key={item} value={item}>
+                            {item}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
+                </Form.Item>
+              </Space>
+            ))}
           </>
         );
     }
@@ -289,22 +317,7 @@ const Setting = (props: IProps) => {
       <Form form={form} name="dynamic_form_nest_item" onFinish={onFinish}>
         <Form.List name="configs">
           {(fields, { add, remove, move }) => (
-            <>
-              {fields.map((field, i) => (
-                <Space key={field.key} align="baseline">
-                  {generateFormItem(field, remove, move, i)}
-                </Space>
-              ))}
-
-              <Form.Item>
-                <Button
-                  type="dashed"
-                  onClick={() => add()}
-                  block
-                  icon={<PlusOutlined />}
-                ></Button>
-              </Form.Item>
-            </>
+            <>{generateFormItem(fields, remove, move, add)}</>
           )}
         </Form.List>
         <Form.Item>
