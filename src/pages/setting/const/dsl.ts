@@ -56,7 +56,7 @@ const DSL = {
           key: 'categoryIds',
           children: [
             {
-              componentName: 'Select',
+              componentName: 'Cascader',
               props: {
                 placeholder: '请选择',
               },

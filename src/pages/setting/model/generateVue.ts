@@ -10,6 +10,11 @@ import { message } from 'antd';
 
 // import { deserialize, serialize } from '@/utils'
 
+/**
+ * element-ui的前缀
+ */
+const elementUI = 'el-';
+
 let renderData: any = {
   codeStr: '',
   template: '',
@@ -51,6 +56,26 @@ const initData = () => {
   };
 };
 
+/**
+ * 生成组件源码片段（默认）
+ * @param schemaDSL
+ * @param defaultProps
+ * @returns
+ */
+const getComponentXML = (
+  schemaDSL: any,
+  defaultProps: any,
+  newChildStr?: any,
+) => {
+  const { componentName, props, children } = schemaDSL;
+  if (!componentName) return '';
+  const elementUICompoent = elementUI + componentName.toLowerCase();
+  const propsStr = getPropsStr(Object.assign(defaultProps, props));
+  const eventStr = getEventStr(schemaDSL);
+  const childrenStr = newChildStr ? newChildStr : children ? children : '';
+  return `<${elementUICompoent} ${propsStr} ${eventStr}>${childrenStr}</${elementUICompoent}>`;
+};
+
 const generateTemplate = (schemaDSL: any, vModel?: any) => {
   const {
     componentName,
@@ -63,22 +88,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     methods,
     imports,
   } = schemaDSL || {};
-  const objStr = (obj: any) =>
-    Object.entries(obj).reduce((pre, [k, v]) => {
-      console.log('k, v', k, v);
-      if (['Table'].includes(componentName)) {
-        if (k === 'key') {
-          // 需要转化
-          k = 'prop';
-        }
-      }
-      if (typeof v !== 'string') {
-        return `${pre} :${k}="${JSON.stringify(v).replace(/\"/g, "'")}"`;
-      } else {
-        return `${pre} ${k}="${v}"`;
-      }
-    }, '');
-
   let xml = '';
   switch (componentName) {
     case 'Page':
@@ -118,31 +127,25 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         })
         .join('\n');
 
-      xml = `<el-form ${objStr(props)} :model="${formDataKey}">
+      xml = `<el-form ${getPropsStr(props)} :model="${formDataKey}">
         <el-row :gutter="20">
         ${formItems}
         </el-row>
       </el-form>`;
       break;
-    case 'Input':
-      const inputEventStr = getEventStr(schemaDSL);
-      xml = `<el-input ${objStr(
-        props,
-      )} v-model="${vModel}" ${inputEventStr}></el-input>`;
-      break;
     case 'Select':
-      const selectEventStr = getEventStr(schemaDSL);
-      const selectOptions = (options || []).map((item: any) => {
-        const { label, value } = item || {};
-        return `<el-option label="${label}" value="${value}"></el-option>`;
-      });
-      xml = `<el-select ${objStr(props)} v-model="${vModel}" ${selectEventStr}>
-        ${selectOptions}
-      </el-select>`;
+      const selectOptions = (options || [])
+        .map((item: any) => {
+          const { label, value } = item || {};
+          return `<el-option label="${label}" value="${value}"></el-option>`;
+        })
+        .join('\n');
+      const selectDefaultProps = vModel ? { 'v-model': vModel } : {};
+      xml = getComponentXML(schemaDSL, selectDefaultProps, selectOptions);
       break;
     case 'RangePicker':
       const rangePickerEventStr = getEventStr(schemaDSL);
-      const rangepickerDefaultProps = {
+      const rangepickerDefaultProps: any = {
         type: 'datetimerange',
         'unlink-panels': true,
         'value-format': 'timestamp',
@@ -152,48 +155,52 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         'end-placeholder': '结束日期',
         style: 'width: 100%',
       };
-      xml = `<el-date-picker ${objStr(
+      if (vModel) {
+        rangepickerDefaultProps['v-model'] = vModel;
+      }
+      xml = `<el-date-picker ${getPropsStr(
         Object.assign(props, rangepickerDefaultProps),
-      )} v-model="${vModel}" ${rangePickerEventStr}>
+      )} ${rangePickerEventStr}>
       </el-date-picker>`;
       break;
     case 'Cascader':
-      const cascaderEventStr = getEventStr(schemaDSL);
-      const cascaderDefaultProps = {
+      const cascaderDefaultProps: any = {
         options: options || [],
         props: { multiple: true },
         'collapse-tags': true,
         clearable: true,
       };
-      xml = `<el-cascader ${objStr(
-        Object.assign(props, cascaderDefaultProps),
-      )} v-model="${vModel}" ${cascaderEventStr}>
-      </el-cascader>`;
+      if (vModel) {
+        cascaderDefaultProps['v-model'] = vModel;
+      }
+      xml = getComponentXML(schemaDSL, cascaderDefaultProps);
       break;
     case 'AutoComplete':
       const autoCompleteEventStr = getEventStr(schemaDSL, {
         onSearch: ':fetch-suggestions',
       });
-      const autoCompleteDefaultProps = {
+      const autoCompleteDefaultProps: any = {
         clearable: true,
       };
-      xml = `<el-autocomplete ${objStr(
+      if (vModel) {
+        autoCompleteDefaultProps['v-model'] = vModel;
+      }
+      xml = `<el-autocomplete ${getPropsStr(
         Object.assign(props, autoCompleteDefaultProps),
       )} ${autoCompleteEventStr}>
       </el-autocomplete>`;
-      break;
-    case 'Button':
-      const buttonEventStr = getEventStr(schemaDSL);
-      xml = `<el-button ${objStr(
-        props,
-      )} ${buttonEventStr}>${children}</el-button>`;
       break;
     case 'Table':
       const listKey = dataKey || 'list';
       renderData.data[listKey] = [];
       const columns = (children || [])
         .map((item: any) => {
-          return `<el-table-column ${objStr(item)}></el-table-column>`;
+          const newProps = { ...item };
+          if (item.key) {
+            newProps['prop'] = item.key;
+            delete newProps.key;
+          }
+          return `<el-table-column ${getPropsStr(newProps)}></el-table-column>`;
         })
         .join('\n');
       xml = `<el-table :data="${listKey}" border style="width: 100%">\n${columns}\n</el-table>\n`;
@@ -203,7 +210,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         onPageChange: '@current-change',
       });
       xml = `<el-row class="pagination" type="flex" justify="end">
-        <el-pagination ${objStr(props)}
+        <el-pagination ${getPropsStr(props)}
           layout="total, prev, pager, next, jumper"
           v-bind="pagination"
           ${paginationEventStr}
@@ -212,7 +219,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       </el-row>`;
       break;
     default:
-      xml = '';
+      const defaultProps = vModel ? { 'v-model': vModel } : {};
+      xml = getComponentXML(schemaDSL, defaultProps);
+      break;
   }
   return xml + '\n';
 };
@@ -264,6 +273,16 @@ const getEventStr = (item: object, extraMap: any = {}) => {
     }
   });
   return funcStr;
+};
+
+const getPropsStr = (obj: any) => {
+  return Object.entries(obj).reduce((pre, [k, v]) => {
+    if (typeof v !== 'string') {
+      return `${pre} :${k}="${JSON.stringify(v).replace(/\"/g, "'")}"`;
+    } else {
+      return `${pre} ${k}="${v}"`;
+    }
+  }, '');
 };
 
 const transformFunc = (func: any, newFuncName = '') => {

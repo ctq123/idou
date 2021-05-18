@@ -1,6 +1,5 @@
 /**
- * 所有组件dsl片段
- * 用于生成源码
+ * 组件DSL片段
  */
 const ComponentsDSL = {
   Input: {
@@ -118,9 +117,24 @@ const ComponentsDSL = {
   },
 };
 
+// /**
+//  * element-ui的前缀
+//  */
+// const elementUI = 'el-'
+
+// /**
+//  * 组件-源码名称映射表
+//  */
+// const componentNameMap = Object.keys(ComponentsDSL).map((k: string) => {
+//   let uiName = elementUI + k.toLowerCase()
+//   if (['RangePicker'].includes(k)) {
+//     uiName = 'el-date-picker'
+//   }
+//   return { uiName };
+// });
+
 /**
- * 组件名称，dsl片段
- * 用于显示
+ * 注册的组件名称
  */
 const componentNames = {
   Input: '输入框',
@@ -134,13 +148,16 @@ const componentNames = {
   Pagination: '分页',
 };
 
+/**
+ * 注册的组件列表
+ */
 const componentList = Object.entries(componentNames).map(([k, v]) => {
   // @ts-ignore
   return { key: k, name: v, componentDSL: ComponentsDSL[k] };
 });
 
 /**
- * form表单中的组件
+ * Form表单允许使用的组件
  */
 const FormComponentObj = {
   Input: ComponentsDSL['Input'],
