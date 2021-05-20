@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Drawer, Tooltip, message } from 'antd';
+import { Button, Drawer, Tooltip, message, Modal, Form, Input } from 'antd';
 import {
   SaveOutlined,
   CopyOutlined,
@@ -21,7 +21,9 @@ interface IProps {
 
 const CodeDrawer = (props: IProps) => {
   const { handleCB, type = 'component' } = props;
+  const [modalVisible, setModalVisible] = useState(false);
   const codeRef: any = React.useRef(null);
+  const [form] = Form.useForm();
 
   const onClose = () => {
     handleCB && handleCB({ visible: false });
@@ -47,22 +49,47 @@ const CodeDrawer = (props: IProps) => {
     }
   };
   const handleDown = () => {
+    // try {
+    //   const code = codeRef.current.getEditorValue();
+    //   const val = serialize(code, { space: 2 });
+    //   const str = deserialize(val);
+
+    //   const zip = new JSZip();
+    //   const folderName = 'code/common';
+    //   let fold: any = zip.folder(folderName);
+    //   fold.file('index.vue', str);
+    //   zip.generateAsync({ type: 'blob' }).then(function (content) {
+    //     saveAs(content, 'code.zip');
+    //   });
+    // } catch (e) {
+    //   message.error('下载异常');
+    //   console.error(e);
+    // }
+    form.resetFields();
+    setModalVisible(true);
+  };
+  const handleDownloadCode = (folderName: string, cb: any) => {
     try {
       const code = codeRef.current.getEditorValue();
       const val = serialize(code, { space: 2 });
       const str = deserialize(val);
 
       const zip = new JSZip();
-      const folderName = 'code';
       let fold: any = zip.folder(folderName);
       fold.file('index.vue', str);
       zip.generateAsync({ type: 'blob' }).then(function (content) {
-        saveAs(content, 'example.zip');
+        saveAs(content, 'code.zip');
+        cb && cb();
       });
     } catch (e) {
       message.error('下载异常');
       console.error(e);
     }
+  };
+  const onFinish = async () => {
+    const values = await form.validateFields();
+    // values
+    handleDownloadCode(values.folderName, () => setModalVisible(false));
   };
   const titleNode = () => (
     <div className={styles['title-con']}>
@@ -115,6 +142,45 @@ const CodeDrawer = (props: IProps) => {
         type={type}
         ref={(ref: any) => (codeRef.current = ref)}
       />
+      <Modal
+        title="源码文件夹设置"
+        visible={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={[
+          <Button
+            key="submit"
+            type="primary"
+            htmlType="submit"
+            onClick={onFinish}
+          >
+            下载
+          </Button>,
+          <Button
+            key="cancel"
+            type="default"
+            htmlType="submit"
+            onClick={() => setModalVisible(false)}
+          >
+            取消
+          </Button>,
+        ]}
+      >
+        <Form form={form} initialValues={{ folderName: 'code' }}>
+          <Form.Item
+            label="文件夹名称"
+            name="folderName"
+            rules={[
+              {
+                required: true,
+                pattern: /[\w\\]/,
+                message: '请输入文件夹名称，子文件夹使用/分隔',
+              },
+            ]}
+          >
+            <Input placeholder="请输入文件夹名称，子文件夹使用/分隔" />
+          </Form.Item>
+        </Form>
+      </Modal>
     </Drawer>
   );
 };
