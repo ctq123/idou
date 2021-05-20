@@ -8,6 +8,8 @@ import {
 import copy from 'copy-to-clipboard';
 import CodeEditor from './index';
 import { serialize, deserialize } from '@/utils';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 import styles from './CodeDrawer.less';
 
 interface IProps {
@@ -33,18 +35,34 @@ const CodeDrawer = (props: IProps) => {
     }
   };
   const handleCopy = () => {
-    const code = codeRef.current.getEditorValue();
-    console.log('code', code);
-    const val = serialize(code, { space: 2 });
-    copy(deserialize(val));
-    message.success('复制成功');
+    try {
+      const code = codeRef.current.getEditorValue();
+      // console.log('code', code);
+      const val = serialize(code, { space: 2 });
+      copy(deserialize(val));
+      message.success('复制成功');
+    } catch (e) {
+      message.error('复制异常');
+      console.error(e);
+    }
   };
   const handleDown = () => {
-    message.warn('功能尚在开发中……');
-    // const code = codeRef.current.getEditorValue();
-    // console.log('code', code);
-    // const val = serialize(code, { space: 2 });
-    // const str = deserialize(val)
+    try {
+      const code = codeRef.current.getEditorValue();
+      const val = serialize(code, { space: 2 });
+      const str = deserialize(val);
+
+      const zip = new JSZip();
+      const folderName = 'code';
+      let fold: any = zip.folder(folderName);
+      fold.file('index.vue', str);
+      zip.generateAsync({ type: 'blob' }).then(function (content) {
+        saveAs(content, 'example.zip');
+      });
+    } catch (e) {
+      message.error('下载异常');
+      console.error(e);
+    }
   };
   const titleNode = () => (
     <div className={styles['title-con']}>

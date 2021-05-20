@@ -26,6 +26,8 @@
     "@umijs/preset-react": "1.x",
     "antd": "^4.12.3",
     "copy-to-clipboard": "^3.3.1",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.6.0",
     "lodash": "^4.17.21",
     "serialize-javascript": "^5.0.1",
     "umi": "^3.3.9",
