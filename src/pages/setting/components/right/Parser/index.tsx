@@ -215,7 +215,12 @@ const Parser = () => {
         case 'Pagination':
           const Pagination = antd['Pagination'];
           return (
-            <div className={styles['flex-end']}>
+            <div
+              className={styles['flex-end']}
+              onClick={(e: any) =>
+                handleComponentClick(e, componentDSL, parentUuid, index)
+              }
+            >
               <Pagination />
             </div>
           );

@@ -220,6 +220,12 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       xml = `<el-table :data="${listKey}" border style="width: 100%">\n${columns}\n</el-table>\n`;
       break;
     case 'Pagination':
+      const paginationDataKey = dataKey || 'pagination';
+      renderData.data[paginationDataKey] = {
+        currentPage: 1,
+        pageSize: 20,
+        total: 0,
+      };
       const paginationEventStr = getEventStr(schemaDSL, {
         onPageChange: '@current-change',
       });

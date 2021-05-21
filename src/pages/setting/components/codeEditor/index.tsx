@@ -32,7 +32,8 @@ class CodeEditor extends PureComponent<IProps> {
       Object.keys(str).forEach((k: any) => {
         if (typeof str[k] === 'string' && str[k].startsWith('function ')) {
           // let { newFuncName, funcBody } = transformFunc(str[k])
-          str[k] = JSON.parse(str[k]);
+          str[k] = prettierFormat(str[k], 'babel');
+          // console.log("str[k]", str[k])
         }
         if (Array.isArray(str[k])) {
           str[k].forEach((item: any) => this.handleFunction(item, type));
@@ -60,8 +61,10 @@ class CodeEditor extends PureComponent<IProps> {
     const { type } = this.props;
     if (type === 'component') {
       // this.handleFunction(val, 'toFunction')
-      // return `${this.CONFIG}${serialize(val, { space: 2, unsafe: true })}`
       return `${this.CONFIG}${serialize(val, { space: 2, unsafe: true })}`;
+      // let func =
+      //   "function search() {\n                this.pagination.currentPage = 1;\n                this.queryList();\n              }"
+      // return `${serialize(func, { space: 2, unsafe: true })}`;
     } else {
       return val;
     }

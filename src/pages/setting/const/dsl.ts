@@ -166,11 +166,19 @@ const DSL = {
             return <span>{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}</span>
           }`,
         },
+        {
+          key: '-',
+          label: '操作',
+          render: `function(_, row) {
+            return <span>{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}</span>
+          }`,
+        },
       ],
     },
     {
       componentName: 'Pagination',
       props: {},
+      dataKey: 'pagination',
       onPageChange: `function handleCurrentChange(val) {
         this.pagination.currentPage = val;
         this.queryList();
@@ -183,11 +191,6 @@ const DSL = {
       sm: 12,
       lg: 8,
       xl: 8,
-    },
-    pagination: {
-      currentPage: 1,
-      pageSize: 20,
-      total: 0,
     },
   },
   lifeCycle: {
