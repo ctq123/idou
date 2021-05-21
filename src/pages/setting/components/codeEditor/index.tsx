@@ -1,21 +1,73 @@
 import React, { PureComponent } from 'react';
 import { message } from 'antd';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { serialize, deserialize } from '@/utils';
+import { serialize, deserialize, prettierFormat, transformFunc } from '@/utils';
+import isObject from 'lodash/isObject';
+import isFunction from 'lodash/isFunction';
 interface IProps {
   value: any;
   type?: 'component' | 'vue';
   [key: string]: any;
 }
+// let obj = {
+//   onClick: function test() {
+//     console.log('test');
+//     return 1;
+//   }
+// }
+
+// let obj2 = serialize(obj)
+// console.log("obj2", obj2, JSON.stringify(obj2))
+// let obj3 = deserialize(obj2)
+// console.log("obj3", obj3)
+
 class CodeEditor extends PureComponent<IProps> {
   editorRef: any = null;
   CONFIG: any = this.props.type === 'component' ? `const config = ` : ``;
 
+  handleFunction = (str: any, type: 'toFunction' | 'toString') => {
+    if (!str) return str;
+    if (type === 'toFunction') {
+      // 字符串转function
+      Object.keys(str).forEach((k: any) => {
+        if (typeof str[k] === 'string' && str[k].startsWith('function ')) {
+          // let { newFuncName, funcBody } = transformFunc(str[k])
+          str[k] = JSON.parse(str[k]);
+        }
+        if (Array.isArray(str[k])) {
+          str[k].forEach((item: any) => this.handleFunction(item, type));
+        }
+        if (isObject(str[k])) {
+          this.handleFunction(str[k], type);
+        }
+      });
+    } else {
+      Object.keys(str).forEach((k: any) => {
+        if (isFunction(str[k])) {
+          str[k] = str[k].toString();
+        }
+        if (Array.isArray(str[k])) {
+          str[k].forEach((item: any) => this.handleFunction(item, type));
+        }
+        if (isObject(str[k])) {
+          this.handleFunction(str[k], type);
+        }
+      });
+    }
+  };
+
   setEditorValue = (val: any) => {
     const { type } = this.props;
-    return type === 'component'
-      ? `${this.CONFIG}${serialize(val, { space: 2, unsafe: true })}`
-      : val;
+    if (type === 'component') {
+      // this.handleFunction(val, 'toFunction')
+      // return `${this.CONFIG}${serialize(val, { space: 2, unsafe: true })}`
+      return `${this.CONFIG}${serialize(val, { space: 2, unsafe: true })}`;
+    } else {
+      return val;
+    }
+    // return type === 'component'
+    //   ? `${this.CONFIG}${serialize(val, { space: 2, unsafe: true })}`
+    //   : val;
   };
 
   getEditorValue = () => {

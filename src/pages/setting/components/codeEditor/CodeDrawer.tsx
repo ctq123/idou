@@ -49,22 +49,6 @@ const CodeDrawer = (props: IProps) => {
     }
   };
   const handleDown = () => {
-    // try {
-    //   const code = codeRef.current.getEditorValue();
-    //   const val = serialize(code, { space: 2 });
-    //   const str = deserialize(val);
-
-    //   const zip = new JSZip();
-    //   const folderName = 'code/common';
-    //   let fold: any = zip.folder(folderName);
-    //   fold.file('index.vue', str);
-    //   zip.generateAsync({ type: 'blob' }).then(function (content) {
-    //     saveAs(content, 'code.zip');
-    //   });
-    // } catch (e) {
-    //   message.error('下载异常');
-    //   console.error(e);
-    // }
     form.resetFields();
     setModalVisible(true);
   };

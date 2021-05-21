@@ -1,14 +1,15 @@
-import prettier from 'prettier/esm/standalone.mjs';
-import parserBabel from 'prettier/esm/parser-babel.mjs';
-import parserHTML from 'prettier/esm/parser-html.mjs';
-import parserCSS from 'prettier/esm/parser-postcss.mjs';
+// import prettier from 'prettier/esm/standalone.mjs';
+// import parserBabel from 'prettier/esm/parser-babel.mjs';
+// import parserHTML from 'prettier/esm/parser-html.mjs';
+// import parserCSS from 'prettier/esm/parser-postcss.mjs';
 // import parserGraphql from 'prettier/esm/parser-graphql.mjs';
 import { message } from 'antd';
 // import prettier from 'https://unpkg.com/prettier@2.3.0/esm/standalone.mjs';
 // import parserBabel from 'https://unpkg.com/prettier@2.3.0/esm/parser-babel.mjs';
 // import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
 
-// import { deserialize, serialize } from '@/utils'
+import { prettierFormat, transformFunc } from '@/utils';
+import isFunction from 'lodash/isFunction';
 
 /**
  * element-ui的前缀
@@ -270,7 +271,7 @@ const getMethods = (item: object) => {
 const getEventStr = (item: object, extraMap: any = {}) => {
   let funcStr = '';
   Object.entries(item).forEach(([k, v]) => {
-    if (typeof v === 'string' && v.includes('function')) {
+    if ((typeof v === 'string' && v.includes('function')) || isFunction(v)) {
       const { newFunc, newFuncName } = transformFunc(v);
       funcStr = funcStr ? `${funcStr} ` : funcStr;
       if (commonFunc.includes(k)) {
@@ -296,21 +297,6 @@ const getPropsStr = (obj: any) => {
       return `${pre} ${k}="${v}"`;
     }
   }, '');
-};
-
-const transformFunc = (func: any, newFuncName = '') => {
-  const funcStr = func.toString();
-  const start = funcStr.indexOf('function ') + 9;
-  const end = funcStr.indexOf('(');
-  const funcName = funcStr.slice(start, end);
-  let newFunc = funcStr.slice(start);
-  let funcBodyStart = funcStr.indexOf('{') + 1;
-  let funcBodyEnd = funcStr.lastIndexOf('}');
-  let funcBody = funcStr.slice(funcBodyStart, funcBodyEnd);
-  if (newFuncName) {
-    newFunc = newFunc.replace(funcName, newFuncName);
-  }
-  return { newFunc, newFuncName: newFuncName || funcName, funcBody };
 };
 
 const generateVue = () => {
@@ -353,12 +339,13 @@ const generateVue = () => {
     `;
   // return serialize(vueCode, { space: 2, unsafe: true })
   // return vueCode;
-  return prettier.format(vueCode, {
-    parser: 'vue',
-    plugins: [parserHTML, parserBabel, parserCSS],
-    printWidth: 80,
-    singleQuote: true,
-  });
+  // return prettier.format(vueCode, {
+  //   parser: 'vue',
+  //   plugins: [parserHTML, parserBabel, parserCSS],
+  //   printWidth: 80,
+  //   singleQuote: true,
+  // });
+  return prettierFormat(vueCode, 'vue');
 };
 
 const getSourceCode = (DSL: any) => {
