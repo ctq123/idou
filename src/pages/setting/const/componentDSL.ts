@@ -21,9 +21,7 @@ const ComponentsDSL = {
   },
   RangePicker: {
     componentName: 'RangePicker',
-    props: {
-      placeholder: ['开始日期', '结束日期'],
-    },
+    props: {},
   },
   Cascader: {
     componentName: 'Cascader',

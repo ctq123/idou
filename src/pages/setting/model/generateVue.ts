@@ -205,7 +205,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             delete newProps.render;
             const { funcBody } = transformFunc(item.render);
             return `<el-table-column ${getPropsStr(newProps)}>
-            <template slot-scope="{{ row }}">${funcBody.replace(
+            <template slot-scope="{ row }">${funcBody.replace(
               'return',
               '',
             )}</template>

@@ -5,7 +5,7 @@ const DSL = {
     {
       componentName: 'Form',
       props: {
-        'label-width': 80,
+        'label-width': '80px',
       },
       dataKey: 'form',
       children: [
@@ -45,9 +45,7 @@ const DSL = {
           children: [
             {
               componentName: 'RangePicker',
-              props: {
-                placeholder: ['开始日期', '结束日期'],
-              },
+              props: {},
             },
           ],
         },

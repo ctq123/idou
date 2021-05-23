@@ -169,8 +169,11 @@ const Parser = () => {
                 lg: 8,
                 xl: 8,
               };
-              colProps.onClick = (e: any) =>
-                handleComponentClick(e, item, uuid, i);
+              if (key) {
+                colProps.onClick = (e: any) =>
+                  handleComponentClick(e, item, uuid, i);
+              }
+
               return (
                 <Col key={i} {...colProps}>
                   <Form.Item {...itemProps}>
