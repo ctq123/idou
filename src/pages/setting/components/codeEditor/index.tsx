@@ -25,37 +25,37 @@ class CodeEditor extends PureComponent<IProps> {
   editorRef: any = null;
   CONFIG: any = this.props.type === 'component' ? `const config = ` : ``;
 
-  handleFunction = (str: any, type: 'toFunction' | 'toString') => {
-    if (!str) return str;
-    if (type === 'toFunction') {
-      // 字符串转function
-      Object.keys(str).forEach((k: any) => {
-        if (typeof str[k] === 'string' && str[k].startsWith('function ')) {
-          // let { newFuncName, funcBody } = transformFunc(str[k])
-          str[k] = prettierFormat(str[k], 'babel');
-          // console.log("str[k]", str[k])
-        }
-        if (Array.isArray(str[k])) {
-          str[k].forEach((item: any) => this.handleFunction(item, type));
-        }
-        if (isObject(str[k])) {
-          this.handleFunction(str[k], type);
-        }
-      });
-    } else {
-      Object.keys(str).forEach((k: any) => {
-        if (isFunction(str[k])) {
-          str[k] = str[k].toString();
-        }
-        if (Array.isArray(str[k])) {
-          str[k].forEach((item: any) => this.handleFunction(item, type));
-        }
-        if (isObject(str[k])) {
-          this.handleFunction(str[k], type);
-        }
-      });
-    }
-  };
+  // handleFunction = (str: any, type: 'toFunction' | 'toString') => {
+  //   if (!str) return str;
+  //   if (type === 'toFunction') {
+  //     // 字符串转function
+  //     Object.keys(str).forEach((k: any) => {
+  //       if (typeof str[k] === 'string' && str[k].startsWith('function ')) {
+  //         // let { newFuncName, funcBody } = transformFunc(str[k])
+  //         str[k] = prettierFormat(str[k], 'babel');
+  //         // console.log("str[k]", str[k])
+  //       }
+  //       if (Array.isArray(str[k])) {
+  //         str[k].forEach((item: any) => this.handleFunction(item, type));
+  //       }
+  //       if (isObject(str[k])) {
+  //         this.handleFunction(str[k], type);
+  //       }
+  //     });
+  //   } else {
+  //     Object.keys(str).forEach((k: any) => {
+  //       if (isFunction(str[k])) {
+  //         str[k] = str[k].toString();
+  //       }
+  //       if (Array.isArray(str[k])) {
+  //         str[k].forEach((item: any) => this.handleFunction(item, type));
+  //       }
+  //       if (isObject(str[k])) {
+  //         this.handleFunction(str[k], type);
+  //       }
+  //     });
+  //   }
+  // };
 
   setEditorValue = (val: any) => {
     const { type } = this.props;
