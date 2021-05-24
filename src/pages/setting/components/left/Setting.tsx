@@ -36,6 +36,10 @@ interface IProps {
 
 const { Option } = Select;
 
+const functionTpl = `function render(_, row) {
+
+}`;
+
 const Setting = (props: IProps) => {
   console.log('props', props);
   const { componentName, children, uuid } = props.component || {};
@@ -92,9 +96,7 @@ const Setting = (props: IProps) => {
         message.error('请先提交');
         return;
       }
-      const value = target.render
-        ? target.render
-        : `function render(_, row) {\n}`;
+      const value = target.render ? target.render : functionTpl;
       setCodeValue(value);
       setCodeKey(newItem.key);
     }

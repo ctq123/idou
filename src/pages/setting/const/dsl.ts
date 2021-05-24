@@ -12,12 +12,12 @@ const DSL = {
         {
           label: '姓名',
           key: 'trueName',
-          initValue: 'Jack',
           children: [
             {
               componentName: 'Input',
               props: {
                 placeholder: '请输入',
+                clearable: true,
               },
             },
           ],
@@ -30,6 +30,7 @@ const DSL = {
               componentName: 'Select',
               props: {
                 placeholder: '请选择',
+                clearable: true,
               },
               options: [
                 { value: '0', label: '审批中' },
@@ -87,6 +88,7 @@ const DSL = {
               componentName: 'AutoComplete',
               props: {
                 placeholder: '请输入',
+                clearable: true,
               },
               options: [],
               onSearch: `function handleSearchText(searchText) {
