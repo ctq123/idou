@@ -168,7 +168,20 @@ const DSL = {
           key: '-',
           label: '操作',
           render: `function(_, row) {
-            return <span>{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}</span>
+            return <el-button
+            type="text"
+            size="small"
+            @click="handleView(row)"
+          >
+            详情
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click="handleEdit(row)"
+          >
+            编辑
+          </el-button>
           }`,
         },
       ],
