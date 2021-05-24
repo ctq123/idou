@@ -149,7 +149,7 @@ const DSL = {
         {
           key: 'amount',
           label: '订单金额',
-          render: `function(_, row) {
+          render: `function render(_, row) {
             return {{ Number(row.amount) / 100 }}
           }`,
         },
@@ -160,14 +160,14 @@ const DSL = {
         {
           key: 'createTime',
           label: '创建时间',
-          render: `function(_, row) {
+          render: `function render(_, row) {
             return <span>{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}</span>
           }`,
         },
         {
           key: '-',
           label: '操作',
-          render: `function(_, row) {
+          render: `function render(_, row) {
             return <el-button
             type="text"
             size="small"

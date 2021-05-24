@@ -15,7 +15,7 @@ import styles from './CodeDrawer.less';
 interface IProps {
   value: any;
   visible: boolean;
-  type?: 'component' | 'vue';
+  type?: 'component' | 'vue' | 'function';
   handleCB?: any;
 }
 
@@ -78,19 +78,9 @@ const CodeDrawer = (props: IProps) => {
   const titleNode = () => (
     <div className={styles['title-con']}>
       <div className={styles['title']}>
-        {type === 'component' ? '代码编辑' : 'vue源码'}
+        {type === 'vue' ? 'vue源码' : '代码编辑'}
       </div>
-      {type === 'component' ? (
-        <div>
-          <Tooltip title="保存">
-            <Button
-              type="link"
-              icon={<SaveOutlined />}
-              onClick={() => handleSave()}
-            ></Button>
-          </Tooltip>
-        </div>
-      ) : (
+      {type === 'vue' ? (
         <div>
           <Tooltip title="复制">
             <Button
@@ -104,6 +94,16 @@ const CodeDrawer = (props: IProps) => {
               type="link"
               icon={<DownloadOutlined />}
               onClick={() => handleDown()}
+            ></Button>
+          </Tooltip>
+        </div>
+      ) : (
+        <div>
+          <Tooltip title="保存">
+            <Button
+              type="link"
+              icon={<SaveOutlined />}
+              onClick={() => handleSave()}
             ></Button>
           </Tooltip>
         </div>
