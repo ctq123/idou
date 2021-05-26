@@ -163,7 +163,7 @@ const DSL = {
           key: 'createTime',
           label: '创建时间',
           render: `function render(_, row) {
-            return <span>{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}</span>
+            return <span>\n{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}\n</span>
           }`,
         },
         {

@@ -8,6 +8,7 @@ import { message } from 'antd';
 // import parserBabel from 'https://unpkg.com/prettier@2.3.0/esm/parser-babel.mjs';
 // import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
 
+import { VueXML, styleXML } from './componentXML';
 import { prettierFormat, transformFunc } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
@@ -78,28 +79,14 @@ const getComponentXML = (
 };
 
 const generateTemplate = (schemaDSL: any, vModel?: any) => {
-  const {
-    componentName,
-    props,
-    children,
-    options,
-    dataKey,
-    dataSource,
-    lifeCycle,
-    methods,
-    imports,
-  } = schemaDSL || {};
+  const { componentName, props, children, options, dataKey } = schemaDSL || {};
   let xml = '';
   switch (componentName) {
     case 'Page':
-      renderData.data = dataSource || {};
-      getLifeCycle(lifeCycle);
-      getMethods(methods);
-      getImports(imports);
       const childStr = (children || [])
         .map((item: any) => generateTemplate(item))
         .join('\n');
-      xml = `<div class='main-container'>\n${childStr}\n</div>`;
+      xml = VueXML['Page'](childStr);
       break;
     case 'Form':
       const formDataKey = dataKey || 'form';
@@ -108,45 +95,49 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const formItems = (children || [])
         .map((item: any) => {
           const { key, label, initValue } = item || {};
-          const itemPropStr = key
-            ? `label="${label}" prop="${key}"`
-            : `label="${label}"`;
           const vmodel = key && formDataKey ? `${formDataKey}.${key}` : '';
-          if (key && formDataKey) {
-            // @ts-ignore
-            renderData.data[formDataKey][key] =
-              initValue !== undefined ? initValue : '';
+          const itemProps: any = {
+            label,
+          };
+          if (key) {
+            itemProps['prop'] = key;
+            if (formDataKey) {
+              renderData.data[formDataKey][key] =
+                initValue !== undefined ? initValue : '';
+            }
           }
           const itemChildren = (item.children || [])
             .map((child: any) => generateTemplate(child, vmodel))
             .join('');
-          return `<el-col v-bind="colProps">
-          <el-form-item ${itemPropStr}>
-            ${itemChildren}
-          </el-form-item>
-        </el-col>`;
+          return VueXML['FormItem'](getPropsStr(itemProps), itemChildren);
         })
         .join('\n');
+      const formProps = {
+        ...props,
+        ':model': formDataKey,
+      };
 
-      xml = `<el-form ${getPropsStr(props)} :model="${formDataKey}">
-        <el-row :gutter="20">
-        ${formItems}
-        </el-row>
-      </el-form>`;
+      xml = VueXML['Form'](getPropsStr(formProps), formItems);
       break;
     case 'Select':
       const selectOptions = (options || [])
         .map((item: any) => {
-          const { label, value } = item || {};
-          return `<el-option label="${label}" value="${value}"></el-option>`;
+          return VueXML['Default']('el-option', getPropsStr(item), '');
         })
         .join('\n');
-      const selectDefaultProps = vModel ? { 'v-model': vModel } : {};
-      xml = getComponentXML(schemaDSL, selectDefaultProps, selectOptions);
+      const selectProps = {
+        ...props,
+      };
+      if (vModel) {
+        selectProps['v-model'] = vModel;
+      }
+      const selectAttr = `${getPropsStr(selectProps)} ${getEventStr(
+        schemaDSL,
+      )}`;
+      xml = VueXML['Default']('el-select', selectAttr, `\n${selectOptions}\n`);
       break;
     case 'RangePicker':
-      const rangePickerEventStr = getEventStr(schemaDSL);
-      const rangepickerDefaultProps: any = {
+      const rangepickerProps: any = {
         type: 'datetimerange',
         'unlink-panels': true,
         'value-format': 'timestamp',
@@ -155,69 +146,78 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         'start-placeholder': '开始日期',
         'end-placeholder': '结束日期',
         style: 'width: 100%',
+        ...props,
       };
       if (vModel) {
-        rangepickerDefaultProps['v-model'] = vModel;
+        rangepickerProps['v-model'] = vModel;
       }
-      xml = `<el-date-picker ${getPropsStr(
-        Object.assign(props, rangepickerDefaultProps),
-      )} ${rangePickerEventStr}>
-      </el-date-picker>`;
+      const rangePickerAttr = `${getPropsStr(rangepickerProps)} ${getEventStr(
+        schemaDSL,
+      )}`;
+      xml = VueXML['Default']('el-date-picker', rangePickerAttr, '');
       break;
     case 'Cascader':
-      const cascaderDefaultProps: any = {
+      const cascaderProps: any = {
         options: options || [],
         props: { multiple: true },
         'collapse-tags': true,
         clearable: true,
+        ...props,
       };
       if (vModel) {
-        cascaderDefaultProps['v-model'] = vModel;
+        cascaderProps['v-model'] = vModel;
       }
-      xml = getComponentXML(schemaDSL, cascaderDefaultProps);
+      const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
+        schemaDSL,
+      )}`;
+      xml = VueXML['Default']('el-cascader', cascaderAttr, '');
       break;
     case 'AutoComplete':
       const autoCompleteEventStr = getEventStr(schemaDSL, {
         onSearch: ':fetch-suggestions',
       });
-      const autoCompleteDefaultProps: any = {
+      const autoCompleteProps: any = {
         clearable: true,
+        ...props,
       };
       if (vModel) {
-        autoCompleteDefaultProps['v-model'] = vModel;
+        autoCompleteProps['v-model'] = vModel;
       }
-      xml = `<el-autocomplete ${getPropsStr(
-        Object.assign(props, autoCompleteDefaultProps),
-      )} ${autoCompleteEventStr}>
-      </el-autocomplete>`;
+      const autoCompleteAttr = `${getPropsStr(
+        autoCompleteProps,
+      )} ${autoCompleteEventStr}`;
+      xml = VueXML['Default']('el-autocomplete', autoCompleteAttr, '');
       break;
     case 'Table':
       const listKey = dataKey || 'list';
       renderData.data[listKey] = [];
+
       const columns = (children || [])
         .map((item: any) => {
           const newProps = { ...item };
+          let childStr = `{{ row.${item.key} }}`;
           if (item.key) {
-            newProps['prop'] = item.key;
             delete newProps.key;
           }
           if (item.render) {
             delete newProps.render;
             const { funcBody } = transformFunc(item.render);
-            return `<el-table-column ${getPropsStr(newProps)}>
-            <template slot-scope="{ row }">${funcBody.replace(
-              'return',
-              '',
-            )}</template>
-            </el-table-column>`;
-          } else {
-            return `<el-table-column ${getPropsStr(
-              newProps,
-            )}></el-table-column>`;
+            childStr = funcBody.replace('return', '');
           }
+          return VueXML['TableColumn'](getPropsStr(newProps), childStr);
         })
         .join('\n');
-      xml = `<el-table :data="${listKey}" border style="width: 100%">\n${columns}\n</el-table>\n`;
+
+      const tableProps = {
+        border: true,
+        ...props,
+        ':data': listKey,
+      };
+      xml = VueXML['Default'](
+        'el-table',
+        getPropsStr(tableProps),
+        `\n${columns}\n`,
+      );
       break;
     case 'Pagination':
       const paginationDataKey = dataKey || 'pagination';
@@ -229,49 +229,77 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const paginationEventStr = getEventStr(schemaDSL, {
         onPageChange: '@current-change',
       });
-      xml = `<el-row class="pagination" type="flex" justify="end">
-        <el-pagination ${getPropsStr(props)}
-          layout="total, prev, pager, next, jumper"
-          v-bind="pagination"
-          ${paginationEventStr}
-        >
-        </el-pagination>
-      </el-row>`;
+      const paginationPorps = {
+        class: 'mt24 tar',
+        layout: 'total, prev, pager, next, jumper',
+        ...props,
+        'v-bind': paginationDataKey,
+      };
+      const paginationAttr = `${getPropsStr(
+        paginationPorps,
+      )} ${paginationEventStr}`;
+      xml = VueXML['Default']('el-pagination', paginationAttr, '');
       break;
     default:
-      const defaultProps = vModel ? { 'v-model': vModel } : {};
-      xml = getComponentXML(schemaDSL, defaultProps);
+      const defaultProps = {
+        ...props,
+      };
+      if (vModel) {
+        defaultProps['v-model'] = vModel;
+      }
+      const defaultAttr = `${getPropsStr(defaultProps)} ${getEventStr(
+        schemaDSL,
+      )}`;
+      const defaultChildStr = Array.isArray(children)
+        ? children.map((t) => t).join('\n')
+        : children || '';
+      xml = VueXML['Default'](
+        `el-${componentName.toLowerCase()}`,
+        defaultAttr,
+        defaultChildStr,
+      );
       break;
   }
   return xml + '\n';
 };
 
 const getLifeCycle = (item: object) => {
+  const lifeList: any = [];
   Object.entries(item).forEach(([k, v]) => {
     // @ts-ignore
     const name = lifeCycleMap[k];
     if (name) {
       const { newFunc } = transformFunc(v, name);
-      // @ts-ignore
-      renderData.lifecycles.push(newFunc);
+      lifeList.push(newFunc);
     }
   });
+  return lifeList;
 };
 
 const getImports = (item: object) => {
+  const ilist: any = [];
   Object.entries(item).forEach(([k, v]) => {
     const importStr = `import ${k} from "${v}"`;
-    // @ts-ignore
-    renderData.imports.push(importStr);
+    ilist.push(importStr);
   });
+  return ilist;
 };
 
 const getMethods = (item: object) => {
+  const mlist: any = [];
   Object.entries(item).forEach(([k, v]) => {
     const { newFunc } = transformFunc(v);
-    // @ts-ignore
-    renderData.methods.push(newFunc);
+    mlist.push(newFunc);
   });
+  return mlist;
+};
+
+const getStyles = (type: string) => {
+  const slist: any = [];
+  // @ts-ignore
+  const css = styleXML[type]();
+  slist.push(css);
+  return slist;
 };
 
 const getEventStr = (item: object, extraMap: any = {}) => {
@@ -327,21 +355,8 @@ const generateVue = () => {
       </script>
 
       <style lang="scss" scoped>
-        .main-container {
-          width: 100%;
-          height: 100%;
-          background: #ffffff;
-          box-sizing: border-box;
-          font-family: PingFangSC-Regular;
-          padding: 24px;
-          .width-100 {
-            width: 100%;
-          }
-          .pagination {
-            margin-top: 24px;
-          }
-        }
-        </style>
+        ${renderData.styles.join('\n')}
+      </style>
     `;
   // return serialize(vueCode, { space: 2, unsafe: true })
   // return vueCode;
@@ -357,6 +372,11 @@ const generateVue = () => {
 const getSourceCode = (DSL: any) => {
   try {
     initData();
+    renderData.data = DSL.dataSource || {};
+    renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
+    renderData.methods = getMethods(DSL.methods);
+    renderData.imports = getImports(DSL.imports);
+    renderData.styles = getStyles(DSL.componentName);
     renderData.template = generateTemplate(DSL);
     renderData.codeStr = generateVue();
     return renderData.codeStr;
