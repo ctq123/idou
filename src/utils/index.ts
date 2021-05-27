@@ -58,7 +58,7 @@ export const transformFunc = (func: any, newFuncName = '') => {
   const start = funcStr.indexOf('function ') + 9;
   const end = funcStr.indexOf('(');
   const funcName = funcStr.slice(start, end);
-  let newFunc = funcStr.slice(start);
+  let newFunc = funcStr.replace('function ', '');
   let funcBodyStart = funcStr.indexOf('{') + 1;
   let funcBodyEnd = funcStr.lastIndexOf('}');
   let funcBody = funcStr.slice(funcBodyStart, funcBodyEnd);

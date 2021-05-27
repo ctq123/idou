@@ -265,26 +265,22 @@ const DSL = {
     }`,
   },
   methods: {
-    queryList: `function queryList() {
+    queryList: `async function queryList() {
       const params = Object.assign({}, this.form, {
         pageSize: this.pagination.pageSize,
         page: this.pagination.currentPage,
       })
       deleteEmptyParam(params)
-      UmiRequest.request({
-        url: '/api/v1/h5/oversea/backend/getLimitOrder',
-        params,
-      }).then(res => {
-        if (res.code === 200) {
-          this.list = res.data.rows
-          this.pagination.total = Number(res.data.total)
-        }
-      })
+      const res = await API.queryList(params, this)
+      if (res.code === 200 && res.data) {
+        this.list = res.data.list
+        this.pagination.total = res.data.total
+      }
     }`,
   },
   imports: {
     '{ deleteEmptyParam }': '@/utils',
-    UmiRequest: '@du/umi-request',
+    '* as API': './api',
   },
 };
 
