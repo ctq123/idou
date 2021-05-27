@@ -9,7 +9,7 @@ import { message } from 'antd';
 // import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
 
 import { VueXML, styleXML } from './componentXML';
-import { prettierFormat, transformFunc } from '@/utils';
+import { prettierFormat, transformFunc, replaceObjKey } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
 /**
@@ -58,26 +58,6 @@ const initData = () => {
   };
 };
 
-/**
- * 生成组件源码片段（默认）
- * @param schemaDSL
- * @param defaultProps
- * @returns
- */
-const getComponentXML = (
-  schemaDSL: any,
-  defaultProps: any,
-  newChildStr?: any,
-) => {
-  const { componentName, props, children } = schemaDSL;
-  if (!componentName) return '';
-  const elementUICompoent = elementUI + componentName.toLowerCase();
-  const propsStr = getPropsStr(Object.assign(defaultProps, props));
-  const eventStr = getEventStr(schemaDSL);
-  const childrenStr = newChildStr ? newChildStr : children ? children : '';
-  return `<${elementUICompoent} ${propsStr} ${eventStr}>${childrenStr}</${elementUICompoent}>`;
-};
-
 const generateTemplate = (schemaDSL: any, vModel?: any) => {
   const { componentName, props, children, options, dataKey } = schemaDSL || {};
   let xml = '';
@@ -88,36 +68,70 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         .join('\n');
       xml = VueXML['Page'](childStr);
       break;
+    case 'DIV':
+      const divProps = {
+        ...props,
+      };
+      replaceObjKey(divProps, 'className', 'class');
+      const divAttr = `${getPropsStr(divProps)} ${getEventStr(schemaDSL)}`;
+      const divChildStr = Array.isArray(children)
+        ? children.map((item: any) => generateTemplate(item)).join('')
+        : children || '';
+      xml = VueXML['Default']('div', divAttr, divChildStr);
+      break;
     case 'Form':
       const formDataKey = dataKey || 'form';
       renderData.data[formDataKey] = {};
 
-      const formItems = (children || [])
-        .map((item: any) => {
-          const { key, label, initValue } = item || {};
-          const vmodel = key && formDataKey ? `${formDataKey}.${key}` : '';
-          const itemProps: any = {
-            label,
-          };
-          if (key) {
-            itemProps['prop'] = key;
-            if (formDataKey) {
-              renderData.data[formDataKey][key] =
-                initValue !== undefined ? initValue : '';
-            }
-          }
+      const childs = children || [];
+      const buttonItems = (list: any) =>
+        list.map((item: any) => {
+          if (!item) return '';
           const itemChildren = (item.children || [])
-            .map((child: any) => generateTemplate(child, vmodel))
+            .map((child: any) => generateTemplate(child))
             .join('');
-          return VueXML['FormItem'](getPropsStr(itemProps), itemChildren);
-        })
-        .join('\n');
+          return VueXML['Default']('template', `v-slot:doBox`, itemChildren);
+        });
+
+      const formItems = (list: any[]) =>
+        list
+          .map((item: any) => {
+            const { key, label, initValue } = item || {};
+            const vmodel = key && formDataKey ? `${formDataKey}.${key}` : '';
+            const itemProps: any = {
+              label,
+            };
+            if (key) {
+              itemProps['prop'] = key;
+              if (formDataKey) {
+                renderData.data[formDataKey][key] =
+                  initValue !== undefined ? initValue : '';
+              }
+            }
+            const itemChildren = (item.children || [])
+              .map((child: any) => generateTemplate(child, vmodel))
+              .join('');
+            return VueXML['FormItem'](getPropsStr(itemProps), itemChildren);
+          })
+          .join('\n');
+
       const formProps = {
         ...props,
         ':model': formDataKey,
       };
+      const buttonItemsContainer = !childs[childs.length - 1].key
+        ? buttonItems(childs.splice(-1))
+        : '';
+      const formItemsContainer = VueXML['Default'](
+        'template',
+        `v-slot:content`,
+        formItems(childs),
+      );
 
-      xml = VueXML['Form'](getPropsStr(formProps), formItems);
+      xml = VueXML['Form'](
+        getPropsStr(formProps),
+        `${formItemsContainer}\n${buttonItemsContainer}`,
+      );
       break;
     case 'Select':
       const selectOptions = (options || [])

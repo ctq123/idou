@@ -136,6 +136,16 @@ const Parser = () => {
       });
     }
   };
+
+  const getClassNameStr = (props: any) => {
+    const { className } = props || {};
+    const classStr = (className || '')
+      .split(' ')
+      .filter(Boolean)
+      .reduce((pre, c) => (pre ? `${pre} ${styles[c]}` : styles[c]), '');
+    return classStr;
+  };
+
   const generateComponent = (
     componentDSL: IComponent,
     parentUuid: any,
@@ -145,10 +155,17 @@ const Parser = () => {
     const recursionParser = () => {
       switch (componentName) {
         case 'Page':
-          const childNodes = (children || [])
-            .filter(Boolean)
-            .map((item: any, i: number) => generateComponent(item, uuid, i));
-          return <div className={`${styles['page']}`}>{childNodes}</div>;
+        case 'DIV':
+          const childNodes = Array.isArray(children)
+            ? children
+                .filter(Boolean)
+                .map((item: any, i: number) => generateComponent(item, uuid, i))
+            : children || '';
+          return (
+            <div {...props} className={getClassNameStr(props)}>
+              {childNodes}
+            </div>
+          );
         case 'Form':
           const Form = antd['Form'];
           const Row = antd['Row'];
@@ -186,8 +203,12 @@ const Parser = () => {
                 </Col>
               );
             });
+          const classStr = getClassNameStr({
+            className: 'bc_fff bshadow pl24 pb6 pr24 pt24',
+          });
           return (
             <div
+              className={classStr}
               onClick={(e: any) =>
                 handleComponentClick(e, componentDSL, parentUuid, index)
               }

@@ -69,6 +69,21 @@ export const transformFunc = (func: any, newFuncName = '') => {
 };
 
 /**
+ * 替换对象属性
+ * @param obj 对象
+ * @param oldKey 老属性
+ * @param newKey 新属性
+ */
+export const replaceObjKey = (obj: any, oldKey: any, newKey: any) => {
+  Object.keys(obj).forEach((k) => {
+    if (k === oldKey) {
+      obj[newKey] = obj[k];
+      delete obj[k];
+    }
+  });
+};
+
+/**
  * 对象转换成字符串，function,date,reg不出现丢失
  */
 export { serialize };

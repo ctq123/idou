@@ -1,6 +1,9 @@
 const DSL = {
   componentName: 'Page',
-  props: {},
+  type: 'list',
+  props: {
+    className: 'page-container',
+  },
   children: [
     {
       componentName: 'Form',
@@ -107,22 +110,23 @@ const DSL = {
             {
               componentName: 'Button',
               props: {
-                type: 'primary',
-                htmlType: 'submit',
+                type: 'default',
               },
-              children: '搜索',
-              onClick: `function search() {
+              children: '重置',
+              onClick: `function handleReset() {
                 this.pagination.currentPage = 1;
+                this.form = {};
                 this.queryList();
               }`,
             },
             {
               componentName: 'Button',
-              props: {},
-              children: '重置',
-              onClick: `function reset() {
+              props: {
+                type: 'primary',
+              },
+              children: '查询',
+              onClick: `function handleSearch() {
                 this.pagination.currentPage = 1;
-                this.form = {};
                 this.queryList();
               }`,
             },
@@ -131,71 +135,120 @@ const DSL = {
       ],
     },
     {
-      componentName: 'Table',
-      props: {},
-      dataKey: 'list',
+      componentName: 'DIV',
+      props: {
+        className: 'pl24 pr24 pb24 mt24 bc_fff bshadow',
+      },
       children: [
         {
-          key: 'id',
-          label: '序号',
-          minWidth: 100,
+          componentName: 'DIV',
+          props: {
+            className: 'flex-between',
+          },
+          children: [
+            {
+              componentName: 'DIV',
+              props: {
+                className: 'title',
+              },
+              children: '商品管理列表',
+            },
+            {
+              componentName: 'DIV',
+              props: {
+                className: 'flex-center',
+              },
+              children: [
+                {
+                  componentName: 'Button',
+                  props: {},
+                  children: '导出结果',
+                  onClick: 'function handleExport() {}',
+                },
+                {
+                  componentName: 'Button',
+                  props: {},
+                  children: '批量导入',
+                  onClick: 'function handleUpload() {}',
+                },
+                {
+                  componentName: 'Button',
+                  props: {},
+                  children: '下载模版',
+                  onClick: 'function downloadTemplate() {}',
+                },
+              ],
+            },
+          ],
         },
         {
-          key: 'orderNo',
-          label: '订单号',
+          componentName: 'Table',
+          props: {},
+          dataKey: 'list',
+          children: [
+            {
+              key: 'id',
+              label: '序号',
+              minWidth: 100,
+            },
+            {
+              key: 'orderNo',
+              label: '订单号',
+            },
+            {
+              key: 'trueName',
+              label: '姓名',
+            },
+            {
+              key: 'amount',
+              label: '订单金额',
+              render: `function render(_, row) {
+                return {{ Number(row.amount) / 100 }}
+              }`,
+            },
+            {
+              key: 'status',
+              label: '校验状态',
+            },
+            {
+              key: 'createTime',
+              label: '创建时间',
+              render: `function render(_, row) {
+                return <span>\n{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}\n</span>
+              }`,
+            },
+            {
+              key: '-',
+              label: '操作',
+              render: `function render(_, row) {
+                return <el-button
+                type="text"
+                size="small"
+                @click="handleView(row)"
+              >
+                详情
+              </el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="handleEdit(row)"
+              >
+                编辑
+              </el-button>
+              }`,
+            },
+          ],
         },
         {
-          key: 'trueName',
-          label: '姓名',
-        },
-        {
-          key: 'amount',
-          label: '订单金额',
-          render: `function render(_, row) {
-            return {{ Number(row.amount) / 100 }}
-          }`,
-        },
-        {
-          key: 'status',
-          label: '校验状态',
-        },
-        {
-          key: 'createTime',
-          label: '创建时间',
-          render: `function render(_, row) {
-            return <span>\n{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}\n</span>
-          }`,
-        },
-        {
-          key: '-',
-          label: '操作',
-          render: `function render(_, row) {
-            return <el-button
-            type="text"
-            size="small"
-            @click="handleView(row)"
-          >
-            详情
-          </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click="handleEdit(row)"
-          >
-            编辑
-          </el-button>
+          componentName: 'Pagination',
+          props: {},
+          dataKey: 'pagination',
+          onPageChange: `function handleCurrentChange(val) {
+            this.pagination.currentPage = val;
+            this.queryList();
           }`,
         },
       ],
-    },
-    {
-      componentName: 'Pagination',
-      props: {},
-      dataKey: 'pagination',
-      onPageChange: `function handleCurrentChange(val) {
-        this.pagination.currentPage = val;
-        this.queryList();
-      }`,
     },
   ],
   dataSource: {
