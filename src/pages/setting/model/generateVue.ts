@@ -17,13 +17,15 @@ import isFunction from 'lodash/isFunction';
 const elementUI = 'el-';
 
 let renderData: any = {
-  codeStr: '',
+  vueCode: '',
   template: '',
   imports: [],
   data: {},
   methods: [],
   lifecycles: [],
   styles: [],
+  apiImports: [],
+  apis: [],
 };
 
 const lifeCycleMap = {
@@ -47,13 +49,15 @@ const commonFunc = [
 
 const initData = () => {
   renderData = {
-    codeStr: '',
+    vueCode: '',
     template: '',
     imports: [],
     data: {},
     methods: [],
     lifecycles: [],
     styles: [],
+    apiImports: [],
+    apis: [],
   };
 };
 
@@ -274,6 +278,22 @@ const getMethods = (item: object) => {
   });
 };
 
+const getApis = (item: object) => {
+  let apiList: any = [];
+  let apiImportList: any = [];
+  Object.entries(item).forEach(([k, v]) => {
+    if (k === 'imports') {
+      Object.entries(v).forEach(([kk, vv]) => {
+        const importStr = `import ${kk} from "${vv}"`;
+        apiImportList.push(importStr);
+      });
+    } else {
+      apiList.push(`export ${v}`);
+    }
+  });
+  return { apiList, apiImportList };
+};
+
 const getEventStr = (item: object, extraMap: any = {}) => {
   let funcStr = '';
   Object.entries(item).forEach(([k, v]) => {
@@ -354,12 +374,25 @@ const generateVue = () => {
   return prettierFormat(vueCode, 'vue');
 };
 
+const generateApi = () => {
+  const apiCode = `
+    ${renderData.apiImports.join(';\n')}
+
+    ${renderData.apis.join('\n')}
+  `;
+  return prettierFormat(apiCode, 'babel');
+};
+
 const getSourceCode = (DSL: any) => {
   try {
     initData();
+    const { apiList, apiImportList } = getApis(DSL.apis);
+    renderData.apiImports = apiImportList;
+    renderData.apis = apiList;
     renderData.template = generateTemplate(DSL);
-    renderData.codeStr = generateVue();
-    return renderData.codeStr;
+    renderData.vueCode = generateVue();
+    renderData.apiCode = generateApi();
+    return renderData;
   } catch (e) {
     console.error(e);
     message.error('生成源码异常');

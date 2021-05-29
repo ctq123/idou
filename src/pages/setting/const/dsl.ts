@@ -216,7 +216,19 @@ const DSL = {
   },
   imports: {
     '{ deleteEmptyParam }': '@/utils',
-    UmiRequest: '@du/umi-request',
+    '* as API': './api',
+  },
+  apis: {
+    imports: {
+      UmiRequest: '@du/umi-request',
+    },
+    getList: `function getList(params) {
+      return UmiRequest.request({
+        url: '/vue-admin-template/table/list',
+        method: 'get',
+        params
+      })
+    }`,
   },
 };
 
