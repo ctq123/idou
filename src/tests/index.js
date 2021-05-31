@@ -1,15 +1,13 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-  const browser = await puppeteer.launch();
-
-  // 下文中会多次用到 page 对象，可以先留意下
+  const browser = await puppeteer.launch({ headless: false });
   const page = await browser.newPage();
-  // await page.goto('https://www.google.com');
-  await page.goto('https://www.baidu.com', {
-    waitUntil: 'networkidle0',
-    timeout: 0,
+  // console.log("打开页面", page)
+  await page.goto('https://www.google.com');
+  await page.screenshot({
+    path: `/Users/chengtianqing/Desktop/${Date.now()}.png`,
   });
-  // other actions...
+
   await browser.close();
 })();
