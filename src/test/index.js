@@ -9,6 +9,7 @@ let apiData = {};
   apiData = {};
   const browser = await puppeteer.launch({
     headless: false, //有浏览器界面启动
+    args: [`--window-size=1366,768`],
   });
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
