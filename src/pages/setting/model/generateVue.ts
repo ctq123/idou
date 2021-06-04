@@ -81,7 +81,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const divChildStr = Array.isArray(children)
         ? children.map((item: any) => generateTemplate(item)).join('')
         : children || '';
-      xml = VueXML['Default']('div', divAttr, divChildStr);
+      xml = VueXML.CreateDom('div', divAttr, divChildStr);
       break;
     case 'Form':
       const formDataKey = dataKey || 'form';
@@ -94,7 +94,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           const itemChildren = (item.children || [])
             .map((child: any) => generateTemplate(child))
             .join('');
-          return VueXML['Default']('template', `v-slot:doBox`, itemChildren);
+          return VueXML.CreateDom('template', `v-slot:doBox`, itemChildren);
         });
 
       const formItems = (list: any[]) =>
@@ -126,7 +126,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const buttonItemsContainer = !childs[childs.length - 1].key
         ? buttonItems(childs.splice(-1))
         : '';
-      const formItemsContainer = VueXML['Default'](
+      const formItemsContainer = VueXML.CreateDom(
         'template',
         `v-slot:content`,
         formItems(childs),
@@ -140,7 +140,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     case 'Select':
       const selectOptions = (options || [])
         .map((item: any) => {
-          return VueXML['Default']('el-option', getPropsStr(item), '');
+          return VueXML.CreateDom('el-option', getPropsStr(item), '');
         })
         .join('\n');
       const selectProps = {
@@ -152,7 +152,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const selectAttr = `${getPropsStr(selectProps)} ${getEventStr(
         schemaDSL,
       )}`;
-      xml = VueXML['Default']('el-select', selectAttr, `\n${selectOptions}\n`);
+      xml = VueXML.CreateDom('el-select', selectAttr, `\n${selectOptions}\n`);
       break;
     case 'RangePicker':
       const rangepickerProps: any = {
@@ -172,7 +172,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const rangePickerAttr = `${getPropsStr(rangepickerProps)} ${getEventStr(
         schemaDSL,
       )}`;
-      xml = VueXML['Default']('el-date-picker', rangePickerAttr, '');
+      xml = VueXML.CreateDom('el-date-picker', rangePickerAttr, '');
       break;
     case 'Cascader':
       const cascaderProps: any = {
@@ -188,7 +188,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
         schemaDSL,
       )}`;
-      xml = VueXML['Default']('el-cascader', cascaderAttr, '');
+      xml = VueXML.CreateDom('el-cascader', cascaderAttr, '');
       break;
     case 'AutoComplete':
       const autoCompleteEventStr = getEventStr(schemaDSL, {
@@ -204,7 +204,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const autoCompleteAttr = `${getPropsStr(
         autoCompleteProps,
       )} ${autoCompleteEventStr}`;
-      xml = VueXML['Default']('el-autocomplete', autoCompleteAttr, '');
+      xml = VueXML.CreateDom('el-autocomplete', autoCompleteAttr, '');
       break;
     case 'Table':
       const listKey = dataKey || 'list';
@@ -231,7 +231,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         ...props,
         ':data': listKey,
       };
-      xml = VueXML['Default'](
+      xml = VueXML.CreateDom(
         'el-table',
         getPropsStr(tableProps),
         `\n${columns}\n`,
@@ -256,7 +256,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const paginationAttr = `${getPropsStr(
         paginationPorps,
       )} ${paginationEventStr}`;
-      xml = VueXML['Default']('el-pagination', paginationAttr, '');
+      xml = VueXML.CreateDom('el-pagination', paginationAttr, '');
       break;
     default:
       const defaultProps = {
@@ -271,7 +271,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const defaultChildStr = Array.isArray(children)
         ? children.map((t) => t).join('\n')
         : children || '';
-      xml = VueXML['Default'](
+      xml = VueXML.CreateDom(
         `el-${componentName.toLowerCase()}`,
         defaultAttr,
         defaultChildStr,
@@ -392,14 +392,6 @@ const generateVue = () => {
         ${renderData.styles.join('\n')}
       </style>
     `;
-  // return serialize(vueCode, { space: 2, unsafe: true })
-  // return vueCode;
-  // return prettier.format(vueCode, {
-  //   parser: 'vue',
-  //   plugins: [parserHTML, parserBabel, parserCSS],
-  //   printWidth: 80,
-  //   singleQuote: true,
-  // });
   return prettierFormat(vueCode, 'vue');
 };
 

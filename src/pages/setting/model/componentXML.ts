@@ -37,7 +37,7 @@ export const VueXML = {
       </template>
     </el-table-column>`;
   },
-  Default: (name: any, attrStr: any, childStr: any) => {
+  CreateDom: (name: any, attrStr: any, childStr: any) => {
     return `<${name} ${attrStr}>
     ${childStr}
     </${name}>`;
