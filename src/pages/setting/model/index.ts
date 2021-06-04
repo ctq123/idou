@@ -118,6 +118,7 @@ const initState = {
   dsl: initDSL(DSL),
   selectedComponent: null,
   vueCode: null,
+  apiCode: null,
   showVueCode: false,
 };
 
@@ -168,8 +169,8 @@ const reducer = (state: any, action: any) => {
       return { ...state, selectedComponent: data };
     case 'generate/vue':
       const newDSL = cloneDeep(state.dsl);
-      const vueCode = getSourceCode(newDSL);
-      return { ...state, vueCode, showVueCode: !state.showVueCode };
+      const { vueCode, apiCode } = getSourceCode(newDSL);
+      return { ...state, vueCode, apiCode, showVueCode: !state.showVueCode };
     default:
       return state;
   }

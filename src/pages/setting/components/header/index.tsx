@@ -2,18 +2,22 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Button, message, Tooltip } from 'antd';
 import { MobileOutlined, LaptopOutlined, EyeOutlined } from '@ant-design/icons';
 import { Context } from '@/pages/setting/model';
-import CodeDrawer from '../codeEditor/CodeDrawer';
+import SourceCodeDrawer from '../codeEditor/SourceCodeDrawer';
 import { deserialize } from '@/utils';
 import styles from './index.less';
 
 const Header = () => {
   const appContext: any = useContext(Context);
   const [visible, setVisible] = useState(false);
-  const [sourceCode, setSourceCode] = useState(null);
+  const [codeList, setCodeList] = useState([]);
   useEffect(() => {
-    const { vueCode } = appContext.state;
+    const { vueCode, apiCode } = appContext.state;
+    const list: any = [
+      { fileName: 'index.vue', fileCode: vueCode },
+      { fileName: 'api/index.js', fileCode: apiCode },
+    ];
     if (vueCode) {
-      setSourceCode(vueCode);
+      setCodeList(list);
       setVisible(true);
     }
   }, [appContext.state.showVueCode]);
@@ -66,8 +70,8 @@ const Header = () => {
         <Button type="primary" onClick={() => handleGenerate()}>
           生成源码
         </Button>
-        <CodeDrawer
-          value={sourceCode}
+        <SourceCodeDrawer
+          valueList={codeList}
           visible={visible}
           type="vue"
           handleCB={(val: any) => handleCodeCB(val)}

@@ -5,6 +5,7 @@ export const tabs = [
   { code: 'template', label: '模版' },
   { code: 'component', label: '组件' },
   { code: 'setting', label: '设置' },
+  { code: 'request', label: '请求' },
 ];
 
 /**
