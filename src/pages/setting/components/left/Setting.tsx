@@ -295,9 +295,9 @@ const Setting = (props: IProps) => {
                         rules={[{ required: true, message: '请选择类型' }]}
                       >
                         <Select style={{ width: 130 }} placeholder="类型">
-                          {Object.keys(FormComponentObj).map((item: any) => (
-                            <Option key={item} value={item}>
-                              {item}
+                          {Object.entries(FormComponentObj).map(([k, v]) => (
+                            <Option key={k} value={k}>
+                              {v}
                             </Option>
                           ))}
                         </Select>
@@ -362,9 +362,9 @@ const Setting = (props: IProps) => {
                       rules={[{ required: true, message: '请选择类型' }]}
                     >
                       <Select style={{ width: 130 }} placeholder="类型">
-                        {Object.keys(FormComponentObj).map((item: any) => (
-                          <Option key={item} value={item}>
-                            {item}
+                        {Object.entries(FormComponentObj).map(([k, v]) => (
+                          <Option key={k} value={k}>
+                            {v}
                           </Option>
                         ))}
                       </Select>

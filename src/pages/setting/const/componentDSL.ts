@@ -81,7 +81,6 @@ const ComponentsDSL = {
       {
         label: '姓名',
         key: 'trueName',
-        initValue: 'Jack',
         children: [
           {
             componentName: 'Input',
@@ -158,11 +157,11 @@ const componentList = Object.entries(componentNames).map(([k, v]) => {
  * Form表单允许使用的组件
  */
 const FormComponentObj = {
-  Input: ComponentsDSL['Input'],
-  Select: ComponentsDSL['Select'],
-  RangePicker: ComponentsDSL['RangePicker'],
-  Cascader: ComponentsDSL['Cascader'],
-  AutoComplete: ComponentsDSL['AutoComplete'],
+  Input: componentNames['Input'],
+  Select: componentNames['Select'],
+  RangePicker: componentNames['RangePicker'],
+  Cascader: componentNames['Cascader'],
+  AutoComplete: componentNames['AutoComplete'],
 };
 
 export { componentList, ComponentsDSL, FormComponentObj };
