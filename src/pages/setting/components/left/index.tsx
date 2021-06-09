@@ -3,7 +3,9 @@ import { Button, Tabs, Drawer } from 'antd';
 import { templates, tabs } from '../../const';
 import { Context } from '@/pages/setting/model';
 import { componentList } from '../../const/componentDSL';
+import CodeDrawer from '../codeEditor/CodeDrawer';
 import Setting from './Setting';
+import { prettierFormat } from '@/utils';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
@@ -11,6 +13,7 @@ const { TabPane } = Tabs;
 const Left = () => {
   const [tab, setTab] = useState('template');
   const [selectedComponent, setSelectedComponent]: any = useState(null);
+  const [showCode, setShowCode]: any = useState(false);
   const appContext: any = useContext(Context);
   useEffect(() => {
     setSelectedComponent(appContext.state.selectedComponent);
@@ -37,6 +40,10 @@ const Left = () => {
         },
       });
     }
+  };
+
+  const handleApisCodeCB = (codeStr: any) => {
+    console.log('codeStr', codeStr);
   };
 
   const generateTabPane = () => {
@@ -78,6 +85,34 @@ const Left = () => {
             component={component}
             handleCB={(com: any) => handleSettingCB(com)}
           />
+        );
+      case 'request':
+        const { apis = {} } = appContext.state.dsl;
+        let codeStr = Object.keys(apis).reduce((pre, cur): any => {
+          let str = '';
+          if (cur === 'imports') {
+            str = Object.entries(apis.imports)
+              .map(([k, v]) => `import ${k} from "${v}";`)
+              .join('\n');
+          } else {
+            str = `export ${apis[cur]}`;
+          }
+          return pre + str + '\n';
+        }, '');
+        codeStr = prettierFormat(codeStr, 'babel');
+        console.log(codeStr);
+        return (
+          <>
+            <Button type="primary" onClick={() => setShowCode(true)}>
+              编辑
+            </Button>
+            <CodeDrawer
+              value={codeStr}
+              visible={showCode}
+              type={'function'}
+              handleCB={(val: any) => handleApisCodeCB(val)}
+            />
+          </>
         );
       default:
         return '';

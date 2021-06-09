@@ -1,29 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Drawer, Tooltip, message, Modal, Form, Input } from 'antd';
-import {
-  SaveOutlined,
-  CopyOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
+import { Button, Drawer, Tooltip } from 'antd';
+import { SaveOutlined } from '@ant-design/icons';
 import copy from 'copy-to-clipboard';
 import CodeEditor from './index';
-import { serialize, deserialize } from '@/utils';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import styles from './CodeDrawer.less';
 
 interface IProps {
   value: any;
   visible: boolean;
-  type?: 'component' | 'vue' | 'function';
+  type?: 'component' | 'function' | 'vue';
   handleCB?: any;
 }
 
 const CodeDrawer = (props: IProps) => {
   const { handleCB, type = 'component' } = props;
-  const [modalVisible, setModalVisible] = useState(false);
   const codeRef: any = React.useRef(null);
-  const [form] = Form.useForm();
 
   const onClose = () => {
     handleCB && handleCB({ visible: false });
@@ -36,78 +27,18 @@ const CodeDrawer = (props: IProps) => {
       handleCB && handleCB({ visible: false, code });
     }
   };
-  const handleCopy = () => {
-    try {
-      const code = codeRef.current.getEditorValue();
-      // console.log('code', code);
-      const val = serialize(code, { space: 2 });
-      copy(deserialize(val));
-      message.success('复制成功');
-    } catch (e) {
-      message.error('复制异常');
-      console.error(e);
-    }
-  };
-  const handleDown = () => {
-    form.resetFields();
-    setModalVisible(true);
-  };
-  const handleDownloadCode = (folderName: string, cb: any) => {
-    try {
-      const code = codeRef.current.getEditorValue();
-      const val = serialize(code, { space: 2 });
-      const str = deserialize(val);
-
-      const zip = new JSZip();
-      let fold: any = zip.folder(folderName);
-      fold.file('index.vue', str);
-      zip.generateAsync({ type: 'blob' }).then(function (content) {
-        saveAs(content, 'code.zip');
-        cb && cb();
-      });
-    } catch (e) {
-      message.error('下载异常');
-      console.error(e);
-    }
-  };
-  const onFinish = async () => {
-    const values = await form.validateFields();
-    // values
-    handleDownloadCode(values.folderName, () => setModalVisible(false));
-  };
   const titleNode = () => (
     <div className={styles['title-con']}>
-      <div className={styles['title']}>
-        {type === 'vue' ? 'vue源码' : '代码编辑'}
+      <div className={styles['title']}>{'代码编辑'}</div>
+      <div>
+        <Tooltip title="保存">
+          <Button
+            type="link"
+            icon={<SaveOutlined />}
+            onClick={() => handleSave()}
+          ></Button>
+        </Tooltip>
       </div>
-      {type === 'vue' ? (
-        <div>
-          <Tooltip title="复制">
-            <Button
-              type="link"
-              icon={<CopyOutlined />}
-              onClick={() => handleCopy()}
-            ></Button>
-          </Tooltip>
-          <Tooltip title="下载">
-            <Button
-              type="link"
-              icon={<DownloadOutlined />}
-              onClick={() => handleDown()}
-            ></Button>
-          </Tooltip>
-        </div>
-      ) : (
-        <div>
-          <Tooltip title="保存">
-            <Button
-              type="link"
-              icon={<SaveOutlined />}
-              onClick={() => handleSave()}
-            ></Button>
-          </Tooltip>
-        </div>
-      )}
     </div>
   );
   return (
@@ -126,45 +57,6 @@ const CodeDrawer = (props: IProps) => {
         type={type}
         ref={(ref: any) => (codeRef.current = ref)}
       />
-      <Modal
-        title="源码文件夹设置"
-        visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button
-            key="submit"
-            type="primary"
-            htmlType="submit"
-            onClick={onFinish}
-          >
-            下载
-          </Button>,
-          <Button
-            key="cancel"
-            type="default"
-            htmlType="submit"
-            onClick={() => setModalVisible(false)}
-          >
-            取消
-          </Button>,
-        ]}
-      >
-        <Form form={form} initialValues={{ folderName: 'code' }}>
-          <Form.Item
-            label="文件夹名称"
-            name="folderName"
-            rules={[
-              {
-                required: true,
-                pattern: /[\w\\]/,
-                message: '请输入文件夹名称，子文件夹使用/分隔',
-              },
-            ]}
-          >
-            <Input placeholder="请输入文件夹名称，子文件夹使用/分隔" />
-          </Form.Item>
-        </Form>
-      </Modal>
     </Drawer>
   );
 };
