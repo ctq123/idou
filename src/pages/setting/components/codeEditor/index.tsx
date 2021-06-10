@@ -4,7 +4,7 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { serialize, deserialize, prettierFormat, transformFunc } from '@/utils';
 interface IProps {
   value: any;
-  type?: 'component' | 'vue' | 'function';
+  type?: 'component' | 'vue' | 'function' | 'html';
   [key: string]: any;
 }
 class CodeEditor extends PureComponent<IProps> {
@@ -18,8 +18,10 @@ class CodeEditor extends PureComponent<IProps> {
       case 'component':
         this.CONFIG = `const config = `;
         return `${this.CONFIG}${serialize(val, { space: 2, unsafe: true })}`;
-      case 'function':
+      case 'html':
         return prettierFormat(val, 'html');
+      case 'function':
+        return prettierFormat(val, 'babel');
       case 'vue':
       default:
         return val;

@@ -88,7 +88,7 @@ const Setting = (props: IProps) => {
   const handleShowCode = (type: string, index: number = 0) => {
     if (type === 'component') {
       setCodeValue(props.component);
-    } else if (type === 'function') {
+    } else if (type === 'html') {
       const configs = form.getFieldValue('configs');
       const newItem = configs[index];
       const target = children.find((item: any) => item.key === newItem.key);
@@ -242,7 +242,7 @@ const Setting = (props: IProps) => {
                   <Button
                     type="link"
                     icon={<HighlightOutlined />}
-                    onClick={() => handleShowCode('function', i)}
+                    onClick={() => handleShowCode('html', i)}
                   ></Button>
                 </Tooltip>
               </Space>

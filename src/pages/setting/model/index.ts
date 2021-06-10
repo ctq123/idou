@@ -124,7 +124,7 @@ const initState = {
 
 const reducer = (state: any, action: any) => {
   const { type, data } = action;
-  const { component, from, to } = data || {};
+  const { component, from, to, apis } = data || {};
   console.log('data', data);
   switch (type) {
     case 'component/add':
@@ -171,6 +171,10 @@ const reducer = (state: any, action: any) => {
       const newDSL = cloneDeep(state.dsl);
       const { vueCode, apiCode } = getSourceCode(newDSL);
       return { ...state, vueCode, apiCode, showVueCode: !state.showVueCode };
+    case 'dsl/apis/update':
+      const newDSL2 = cloneDeep(state.dsl);
+      newDSL2.apis = apis;
+      return { ...state, dsl: newDSL2 };
     default:
       return state;
   }

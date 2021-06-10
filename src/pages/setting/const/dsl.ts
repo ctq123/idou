@@ -286,10 +286,10 @@ const DSL = {
     imports: {
       UmiRequest: '@du/umi-request',
     },
-    getList: `function getList(params) {
+    queryList: `function queryList(params) {
       return UmiRequest.request({
         url: '/vue-admin-template/table/list',
-        method: 'get',
+        method: 'POST',
         params
       })
     }`,

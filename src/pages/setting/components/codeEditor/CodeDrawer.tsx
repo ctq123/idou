@@ -8,7 +8,7 @@ import styles from './CodeDrawer.less';
 interface IProps {
   value: any;
   visible: boolean;
-  type?: 'component' | 'function' | 'vue';
+  type?: 'component' | 'function' | 'html';
   handleCB?: any;
 }
 
