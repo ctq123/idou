@@ -145,7 +145,12 @@ const Request = (props: any) => {
           name="method"
           rules={[{ required: true, message: '请选择方法类型' }]}
         >
-          <Select style={{ width: '100%' }} placeholder="方法类型">
+          <Select
+            id="select-method"
+            style={{ width: '100%' }}
+            allowClear
+            placeholder="方法类型"
+          >
             {methods.map((k) => (
               <Option key={k} value={k}>
                 {k}
@@ -158,7 +163,7 @@ const Request = (props: any) => {
           name="url"
           rules={[{ required: true, message: '请输入url' }]}
         >
-          <Input placeholder="请输入url" />
+          <Input placeholder="请输入url" allowClear />
         </Form.Item>
 
         <Form.Item>
