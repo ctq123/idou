@@ -1,9 +1,11 @@
 // @ts-nocheck
 import React, { Fragment, useContext, useState } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 import SelectBox from '../SelectBox';
 import { Context } from '@/pages/setting/model';
 import { getUid } from '@/utils';
+import { getMockDataList } from '@/utils/mock';
 import styles from './index.less';
 import 'antd/dist/antd.css';
 
@@ -34,6 +36,29 @@ const Parser = () => {
   const appContext: any = useContext(Context);
   const [selectStyle, setSelectStyle] = useState({});
   const [activeComponent, setActiveComponent] = useState<any>({});
+  const [mockList, setMockList] = useState([]);
+  const [cols, setCols] = useState(cols);
+
+  // 模拟数据
+  const getMockData = (columns) => {
+    let data = {};
+    if (!columns || !columns.length) {
+      setMockList([]);
+      setCols(data);
+      return;
+    }
+    columns.forEach((item) => {
+      if (item.dataIndex !== '-') {
+        data[item.dataIndex] = item.title;
+      }
+    });
+    console.log('cols,data', cols, data);
+    if (isEqual(cols, data)) return;
+    setCols(data);
+    getMockDataList(data)
+      .then((res) => setMockList(res))
+      .catch((e) => setMockList([]));
+  };
 
   console.log('Parser, state', appContext.state);
   const handleComponentClick = (
@@ -221,18 +246,20 @@ const Parser = () => {
           const Table = antd['Table'];
           const columns = (children || []).filter(Boolean).map((item: any) => {
             return {
-              ...item,
               title: item.label,
               dataIndex: item.key,
             };
           });
+          // 模拟mock数据
+          getMockData(columns);
+          console.log('mockList', mockList);
           return (
             <div
               onClick={(e: any) =>
                 handleComponentClick(e, componentDSL, parentUuid, index)
               }
             >
-              <Table columns={columns} dataSource={[]}></Table>
+              <Table columns={columns} dataSource={mockList}></Table>
             </div>
           );
         case 'Pagination':
