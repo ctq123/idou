@@ -3,7 +3,7 @@
  * @param page
  * @param val
  */
-export const select = async (page: any, val: any) => {
+async function select(page, val) {
   let ele = null;
   await page.waitForSelector(
     '#rc-tabs-0-panel-request .ant-select-selection-search',
@@ -23,16 +23,20 @@ export const select = async (page: any, val: any) => {
   // 查找对应的内容
   let texts = await page.$$eval(
     '.rc-virtual-list-holder-inner .ant-select-item-option-content',
-    (node: any) => node.map((n: any) => n.innerText),
+    (node) => node.map((n) => n.innerText),
   );
-  let index = texts.findIndex((k: any) => k === val);
+  let index = texts.findIndex((k) => k === val);
   console.log('index', index);
 
-  // 等待300ms
-  await page.waitForTimeout(300);
+  // 等待1s
+  await page.waitForTimeout(1000);
 
   let eles = await page.$$(
     '.rc-virtual-list-holder-inner .ant-select-item-option-content',
   );
   eles[index].click();
+}
+
+module.exports = {
+  select,
 };

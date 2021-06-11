@@ -1,11 +1,10 @@
-import { select } from './common';
-
 const puppeteer = require('puppeteer');
 const get = require('lodash/get');
+const common = require('./common.js');
 const openUrl =
   'https://mock.shizhuang-inc.com/project/574/interface/api/134167';
-let apiData: any = {};
-let browser: any = null;
+let apiData = {};
+let browser = null;
 
 const getBrowser = async () => {
   if (!browser) {
@@ -18,25 +17,39 @@ const getBrowser = async () => {
 };
 
 const handleEditorPage = async () => {
-  getBrowser();
+  await getBrowser();
   let ele = null;
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
   await page.goto('http://localhost:8000/setting');
+  // 打开请求tab
   await page.waitForSelector('#rc-tabs-0-tab-request');
   ele = await page.$('#rc-tabs-0-tab-request');
   ele.click();
-  // console.log("tab", tab)
 
+  // 选择框
   await page.waitForTimeout(1 * 1000);
-  select(page, 'PUT');
+  await common.select(page, 'PUT');
 
+  // 输入框
+  await page.waitForSelector('#url');
+  ele = await page.$('#rc-tabs-0-panel-request .ant-input-suffix');
+  ele && ele.click();
+
+  await page.waitForSelector('#url');
   ele = await page.$('#url');
+  ele.click();
   await page.waitForTimeout(1 * 1000);
-  // // console.log("ele", ele)
-  await ele.type('/api/v1/123', { delay: 20 });
+  await ele.type('/api/v1/123', { delay: 10 });
 
-  // await page.$('button[type="submit"]').click();
+  // 点击提交
+  await page.waitForSelector(
+    '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
+  );
+  ele = await page.$(
+    '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
+  );
+  ele.click();
 };
 
 /**
@@ -44,14 +57,14 @@ const handleEditorPage = async () => {
  */
 const handleApiData = async () => {
   apiData = {};
-  getBrowser();
+  await getBrowser();
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
   await page.goto(
     'https://sso.shizhuang-inc.com/?returnUrl=https://mock.shizhuang-inc.com/#/login',
   );
   let text = await page.evaluate(
-    () => document.querySelector('button>span>span')?.innerHTML,
+    () => document.querySelector('button>span>span').innerHTML,
   );
   // console.log("text", text)
   if (text && text.includes('飞书扫码登录')) {
@@ -65,9 +78,10 @@ const handleApiData = async () => {
     await page.waitForSelector('.user-toolbar');
 
     // 监听对应的接口
-    const [, id]: any = openUrl.match(/\d+/g);
+    const [, id] = openUrl.match(/\d+/g);
     const requestUrl = `https://mock.shizhuang-inc.com/api/interface/get?id=${id}`;
-    await page.on('response', async (resp: any) => {
+    await page.on('response', async (resp) => {
+      // 提取对应的数据
       console.log('url=', resp.url());
       if (resp.url() == requestUrl) {
         console.log('XHR resp received');
