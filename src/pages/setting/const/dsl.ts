@@ -1,5 +1,5 @@
 const DSL = {
-  componentName: 'Page',
+  componentName: 'DIV',
   type: 'list',
   props: {
     className: 'page-container',
@@ -288,9 +288,9 @@ const DSL = {
     },
     queryList: `function queryList(params) {
       return UmiRequest.request({
-        url: '/vue-admin-template/table/list',
         method: 'POST',
-        params
+        url: '/api/v1/h5/oversea/backend/product/productList',
+        data: params
       })
     }`,
   },

@@ -154,7 +154,6 @@ const Parser = () => {
     const { componentName, children, props, uuid, options = [] } = componentDSL;
     const recursionParser = () => {
       switch (componentName) {
-        case 'Page':
         case 'DIV':
           const childNodes = Array.isArray(children)
             ? children

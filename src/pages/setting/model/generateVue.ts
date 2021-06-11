@@ -66,12 +66,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
   const { componentName, props, children, options, dataKey } = schemaDSL || {};
   let xml = '';
   switch (componentName) {
-    case 'Page':
-      const childStr = (children || [])
-        .map((item: any) => generateTemplate(item))
-        .join('\n');
-      xml = VueXML['Page'](childStr);
-      break;
     case 'DIV':
       const divProps = {
         ...props,
@@ -412,7 +406,7 @@ const getSourceCode = (DSL: any) => {
     renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
     renderData.methods = getMethods(DSL.methods);
     renderData.imports = getImports(DSL.imports);
-    renderData.styles = getStyles(DSL.componentName);
+    renderData.styles = getStyles(DSL.type);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;
     renderData.template = generateTemplate(DSL);

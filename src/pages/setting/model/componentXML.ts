@@ -2,12 +2,6 @@
  * vue-组件源码片段
  */
 export const VueXML = {
-  Page: (childStr: any) => {
-    return `
-    <div class='page-container'>
-    ${childStr}
-    </div>`;
-  },
   Form: (attrStr: any, childStr: any) => {
     return `
     <!--搜索区域-->
@@ -48,7 +42,7 @@ export const VueXML = {
  * 样式-组件源码片段
  */
 export const styleXML = {
-  Page: () => {
+  list: () => {
     return `
     .page-container {
       box-sizing: border-box;
@@ -110,7 +104,14 @@ export const styleXML = {
     }
     `;
   },
-  Modal: () => {
+  modal: () => {
+    return `
+      .modal {
+        padding: 0px;
+      }
+    `;
+  },
+  detail: () => {
     return `
       .modal {
         padding: 0px;
