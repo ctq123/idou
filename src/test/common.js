@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
- * @Date: 2021-06-11 01:50:35
- * @LastEditTime: 2021-06-12 16:38:36
+ * @Date: 2021-06-12 01:50:35
+ * @LastEditTime: 2021-06-12 16:40:55
  * @LastEditors: chengtianqing
  */
 /**
@@ -51,7 +51,7 @@ async function clickButton(page, classStr, btnText) {
   console.log('texts', texts);
 
   const index = texts.findIndex((k) => k === btnText);
-  console.log('index', index);
+  // console.log('index', index);
 
   // 等待1s
   await page.waitForTimeout(1000);

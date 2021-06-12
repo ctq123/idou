@@ -1,15 +1,15 @@
 /*
  * @Author: chengtianqing
- * @Date: 2021-06-Sa 04:05:31
- * @Last Modified by: chengtianqing
- * @Last Modified time: 2021-06-Sa 04:05:31
+ * @Date: 2021-06-12 00:58:07
+ * @LastEditTime: 2021-06-12 17:01:23
+ * @LastEditors: chengtianqing
  */
 
 const puppeteer = require('puppeteer');
 const get = require('lodash/get');
 const common = require('./common.js');
-const openUrl =
-  'https://mock.shizhuang-inc.com/project/574/interface/api/134167';
+const domain = 'xxx.com';
+const openUrl = `https://mock.${domain}/project/574/interface/api/134167`;
 let apiData = {};
 let browser = null;
 
@@ -62,7 +62,7 @@ const handleEditorPage = async () => {
     await common.clickButton(page, '#rc-tabs-0-panel-request', '提交');
   };
 
-  await apiChange();
+  // await apiChange();
 
   // 点击搜索组件
   await page.waitForSelector("div[class^='page-container']");
@@ -85,7 +85,7 @@ const handleApiData = async () => {
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
   await page.goto(
-    'https://sso.shizhuang-inc.com/?returnUrl=https://mock.shizhuang-inc.com/#/login',
+    `https://sso.${domain}/?returnUrl=https://mock.${domain}/#/login`,
   );
   let text = await page.evaluate(
     () => document.querySelector('button>span>span').innerHTML,
@@ -98,12 +98,11 @@ const handleApiData = async () => {
 
     await Promise.all([ele.click(), page.waitForNavigation()]);
 
-    // await page.waitForResponse('https://mock.shizhuang-inc.com/api/v1/h5/luna/user/getLoginUser');
     await page.waitForSelector('.user-toolbar');
 
     // 监听对应的接口
     const [, id] = openUrl.match(/\d+/g);
-    const requestUrl = `https://mock.shizhuang-inc.com/api/interface/get?id=${id}`;
+    const requestUrl = `https://mock.${domain}/api/interface/get?id=${id}`;
     await page.on('response', async (resp) => {
       // 提取对应的数据
       console.log('url=', resp.url());
