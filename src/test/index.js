@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-Sa 04:05:31
- * @Last Modified by:   chengtianqing
+ * @Last Modified by: chengtianqing
  * @Last Modified time: 2021-06-Sa 04:05:31
  */
 
@@ -51,21 +51,29 @@ const handleEditorPage = async () => {
     await page.waitForTimeout(1 * 1000);
     await ele.type('/api/v1/123', { delay: 10 });
 
-    // 点击提交
-    await page.waitForSelector(
-      '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
-    );
-    ele = await page.$(
-      '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
-    );
-    ele.click();
+    // // 点击提交
+    // await page.waitForSelector(
+    //   '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
+    // );
+    // ele = await page.$(
+    //   '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
+    // );
+    // ele.click();
+    await common.clickButton(page, '#rc-tabs-0-panel-request', '提交');
   };
+
+  await apiChange();
 
   // 点击搜索组件
   await page.waitForSelector("div[class^='page-container']");
-  ele = await page.$("div[class^='page-container']");
-  console.log('ele', ele);
-  ele.click();
+  // ele = await page.$("div[class^='page-container']");
+  // console.log('ele', ele);
+  // ele.click();
+  await common.clickButton(
+    page,
+    "div[class^='page-container'] form .ant-form-item",
+    '重置',
+  );
 };
 
 /**
