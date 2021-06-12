@@ -1,13 +1,15 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 00:58:07
- * @LastEditTime: 2021-06-12 17:01:23
+ * @LastEditTime: 2021-06-13 03:56:43
  * @LastEditors: chengtianqing
  */
 
 const puppeteer = require('puppeteer');
 const get = require('lodash/get');
+const cloneDeep = require('lodash/cloneDeep');
 const common = require('./common.js');
+const transform = require('./transform.js');
 const domain = 'xxx.com';
 const openUrl = `https://mock.${domain}/project/574/interface/api/134167`;
 let apiData = {};
@@ -30,6 +32,7 @@ const handleEditorPage = async () => {
   await page.setViewport({ width: 1366, height: 768 });
   await page.goto('http://localhost:8000/setting');
 
+  // 处理请求tab
   const apiChange = async () => {
     // 打开请求tab
     await page.waitForSelector('#rc-tabs-0-tab-request');
@@ -37,20 +40,29 @@ const handleEditorPage = async () => {
     ele.click();
 
     // 选择框
-    await page.waitForTimeout(1 * 1000);
-    await common.select(page, 'PUT');
+    await common.setSelect(
+      page,
+      '#rc-tabs-0-panel-request',
+      apiData.method || 'POST',
+    );
 
-    // 输入框
-    await page.waitForSelector('#url');
-    ele = await page.$('#rc-tabs-0-panel-request .ant-input-suffix');
-    ele && ele.click();
+    // // 输入框
+    // await page.waitForSelector('#url');
+    // ele = await page.$('#rc-tabs-0-panel-request .ant-input-suffix');
+    // ele && ele.click();
 
-    await page.waitForSelector('#url');
-    ele = await page.$('#url');
-    ele.click();
-    await page.waitForTimeout(1 * 1000);
-    await ele.type('/api/v1/123', { delay: 10 });
+    // await page.waitForSelector('#url');
+    // ele = await page.$('#url');
+    // ele.click();
+    // await page.waitForTimeout(1 * 1000);
+    // await ele.type('/api/v1/123', { delay: 10 });
+    await common.setInput(
+      page,
+      '#rc-tabs-0-panel-request .ant-form-item-control-input',
+      `/api/v1/h5/oversea${apiData.url || ''}`,
+    );
 
+    await page.waitForTimeout(500);
     // // 点击提交
     // await page.waitForSelector(
     //   '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
@@ -62,18 +74,104 @@ const handleEditorPage = async () => {
     await common.clickButton(page, '#rc-tabs-0-panel-request', '提交');
   };
 
-  // await apiChange();
+  // 处理搜索框的设置tab
+  const searchChange = async () => {
+    // 点击搜索组件
+    await page.waitForSelector("div[class^='page-container'] form");
+    await common.clickButton(page, "div[class^='page-container'] form", '重置');
+    await page.waitForSelector('#rc-tabs-0-panel-setting');
 
-  // 点击搜索组件
-  await page.waitForSelector("div[class^='page-container']");
-  // ele = await page.$("div[class^='page-container']");
-  // console.log('ele', ele);
-  // ele.click();
-  await common.clickButton(
-    page,
-    "div[class^='page-container'] form .ant-form-item",
-    '重置',
-  );
+    const form = get(apiData, 'search.form');
+    console.log('form', form);
+    let i = 0;
+    for (let k in form) {
+      if (i > 4) {
+        await common.clickDom(
+          page,
+          '#rc-tabs-0-panel-setting form .ant-form-item .ant-btn-block .anticon-plus',
+        );
+        await page.waitForTimeout(1 * 1000);
+      }
+      await common.setInput(
+        page,
+        `#rc-tabs-0-panel-setting form div:nth-child(${
+          i + 1
+        }) .ant-space-item:nth-child(1)`,
+        form[k].description,
+      );
+      await common.setInput(
+        page,
+        `#rc-tabs-0-panel-setting form div:nth-child(${
+          i + 1
+        }) .ant-space-item:nth-child(2)`,
+        k,
+      );
+      await common.setSelect(
+        page,
+        `#rc-tabs-0-panel-setting form div:nth-child(${
+          i + 1
+        }) .ant-space-item:nth-child(3)`,
+        form[k].componentType,
+        i,
+      );
+      i++;
+    }
+
+    // 提交
+    await common.clickButton(
+      page,
+      '#rc-tabs-0-panel-setting form .ant-form-item',
+      '提交',
+    );
+  };
+
+  // 处理表格列配置
+  const tableChange = async () => {
+    // 点击列表组件
+    await page.waitForTimeout(1 * 1000);
+    await page.waitForSelector("div[class^='page-container'] table");
+    await common.clickDom(page, "div[class^='page-container'] table");
+    await page.waitForSelector('#rc-tabs-0-panel-setting');
+
+    const columns = get(apiData, 'columns');
+    // console.log("form", form)
+    let i = 0;
+    for (let k in columns) {
+      // if (i > 4) {
+      //   await common.clickDom(
+      //     page,
+      //     "#rc-tabs-0-panel-setting form .ant-form-item .ant-btn-block .anticon-plus",
+      //   );
+      //   await page.waitForTimeout(1 * 1000);
+      // }
+      await common.setInput(
+        page,
+        `#rc-tabs-0-panel-setting form div:nth-child(${
+          i + 1
+        }) .ant-space-item:nth-child(1)`,
+        columns[k].description,
+      );
+      await common.setInput(
+        page,
+        `#rc-tabs-0-panel-setting form div:nth-child(${
+          i + 1
+        }) .ant-space-item:nth-child(2)`,
+        k,
+      );
+      i++;
+    }
+
+    // 提交
+    await common.clickButton(
+      page,
+      '#rc-tabs-0-panel-setting form .ant-form-item',
+      '提交',
+    );
+  };
+
+  // await apiChange();
+  await searchChange();
+  // await tableChange();
 };
 
 /**
@@ -150,4 +248,6 @@ const handleApiData = async () => {
 };
 
 // handleApiData();
+apiData = cloneDeep(transform.mockApiData);
+apiData = transform.transData(apiData);
 handleEditorPage();

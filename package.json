@@ -5,7 +5,7 @@
     "build": "umi build",
     "postinstall": "umi generate tmp",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
-    "auto-test": "node ./src/test/index.js",
+    "auto": "node ./src/auto/index.js",
     "test": "umi-test",
     "test:coverage": "umi-test --coverage"
   },

@@ -169,6 +169,7 @@ const Setting = (props: IProps) => {
       }
       component['uuid'] = getUid(); // 更新uuid，让监听uuid变化的组件都能同步更新
       props.handleCB && props.handleCB(component);
+      message.success('更新成功！');
     }
   };
 
@@ -209,7 +210,7 @@ const Setting = (props: IProps) => {
                   fieldKey={[field.fieldKey, 'label']}
                   rules={[{ required: true, message: '请输入label' }]}
                 >
-                  <Input placeholder="label" />
+                  <Input placeholder="label" allowClear />
                 </Form.Item>
 
                 <Form.Item
@@ -218,7 +219,7 @@ const Setting = (props: IProps) => {
                   fieldKey={[field.fieldKey, 'key']}
                   rules={[{ required: true, message: '请输入key' }]}
                 >
-                  <Input placeholder="key" />
+                  <Input placeholder="key" allowClear />
                 </Form.Item>
                 <Button
                   type="link"
@@ -270,7 +271,7 @@ const Setting = (props: IProps) => {
                     fieldKey={[field.fieldKey, 'label']}
                     rules={[{ required: true, message: '请输入label' }]}
                   >
-                    <Input placeholder="label" />
+                    <Input placeholder="label" allowClear />
                   </Form.Item>
 
                   <Form.Item
@@ -279,7 +280,7 @@ const Setting = (props: IProps) => {
                     fieldKey={[field.fieldKey, 'key']}
                     rules={[{ required: true, message: '请输入key' }]}
                   >
-                    <Input placeholder="key" />
+                    <Input placeholder="key" allowClear />
                   </Form.Item>
                   <Form.Item
                     noStyle
@@ -294,7 +295,11 @@ const Setting = (props: IProps) => {
                         fieldKey={[field.fieldKey, 'type']}
                         rules={[{ required: true, message: '请选择类型' }]}
                       >
-                        <Select style={{ width: 130 }} placeholder="类型">
+                        <Select
+                          style={{ width: 130 }}
+                          placeholder="类型"
+                          allowClear
+                        >
                           {Object.entries(FormComponentObj).map(([k, v]) => (
                             <Option key={k} value={k}>
                               {v}
@@ -336,7 +341,7 @@ const Setting = (props: IProps) => {
                   fieldKey={[field.fieldKey, 'label']}
                   rules={[{ required: true, message: '请输入label' }]}
                 >
-                  <Input placeholder="label" />
+                  <Input placeholder="label" allowClear />
                 </Form.Item>
 
                 <Form.Item
@@ -345,7 +350,7 @@ const Setting = (props: IProps) => {
                   fieldKey={[field.fieldKey, 'key']}
                   rules={[{ required: true, message: '请输入key' }]}
                 >
-                  <Input placeholder="key" />
+                  <Input placeholder="key" allowClear />
                 </Form.Item>
 
                 <Form.Item
@@ -361,7 +366,11 @@ const Setting = (props: IProps) => {
                       fieldKey={[field.fieldKey, 'type']}
                       rules={[{ required: true, message: '请选择类型' }]}
                     >
-                      <Select style={{ width: 130 }} placeholder="类型">
+                      <Select
+                        style={{ width: 130 }}
+                        placeholder="类型"
+                        allowClear
+                      >
                         {Object.entries(FormComponentObj).map(([k, v]) => (
                           <Option key={k} value={k}>
                             {v}
