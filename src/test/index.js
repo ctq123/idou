@@ -22,33 +22,42 @@ const handleEditorPage = async () => {
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
   await page.goto('http://localhost:8000/setting');
-  // 打开请求tab
-  await page.waitForSelector('#rc-tabs-0-tab-request');
-  ele = await page.$('#rc-tabs-0-tab-request');
-  ele.click();
 
-  // 选择框
-  await page.waitForTimeout(1 * 1000);
-  await common.select(page, 'PUT');
+  const apiChange = async () => {
+    // 打开请求tab
+    await page.waitForSelector('#rc-tabs-0-tab-request');
+    ele = await page.$('#rc-tabs-0-tab-request');
+    ele.click();
 
-  // 输入框
-  await page.waitForSelector('#url');
-  ele = await page.$('#rc-tabs-0-panel-request .ant-input-suffix');
-  ele && ele.click();
+    // 选择框
+    await page.waitForTimeout(1 * 1000);
+    await common.select(page, 'PUT');
 
-  await page.waitForSelector('#url');
-  ele = await page.$('#url');
-  ele.click();
-  await page.waitForTimeout(1 * 1000);
-  await ele.type('/api/v1/123', { delay: 10 });
+    // 输入框
+    await page.waitForSelector('#url');
+    ele = await page.$('#rc-tabs-0-panel-request .ant-input-suffix');
+    ele && ele.click();
 
-  // 点击提交
-  await page.waitForSelector(
-    '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
-  );
-  ele = await page.$(
-    '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
-  );
+    await page.waitForSelector('#url');
+    ele = await page.$('#url');
+    ele.click();
+    await page.waitForTimeout(1 * 1000);
+    await ele.type('/api/v1/123', { delay: 10 });
+
+    // 点击提交
+    await page.waitForSelector(
+      '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
+    );
+    ele = await page.$(
+      '#rc-tabs-0-panel-request button.ant-btn-primary[type="submit"]',
+    );
+    ele.click();
+  };
+
+  // 点击搜索组件
+  await page.waitForSelector("div[class^='page-container']");
+  ele = await page.$("div[class^='page-container']");
+  console.log('ele', ele);
   ele.click();
 };
 

@@ -37,6 +37,13 @@ async function select(page, val) {
   eles[index].click();
 }
 
+async function findButton(page) {
+  let texts = await page.$$eval(
+    '.rc-virtual-list-holder-inner .ant-select-item-option-content',
+    (node) => node.map((n) => n.innerText),
+  );
+}
+
 module.exports = {
   select,
 };
