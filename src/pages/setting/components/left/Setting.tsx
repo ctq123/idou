@@ -401,19 +401,21 @@ const Setting = (props: IProps) => {
             <>{generateFormItem(fields, remove, move, add)}</>
           )}
         </Form.List>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            提交
-          </Button>
-          <Button
-            style={{ marginLeft: 8 }}
-            type="primary"
-            danger
-            onClick={() => handleShowCode('component')}
-          >
-            代码编辑
-          </Button>
-        </Form.Item>
+        {props.component && (
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              提交
+            </Button>
+            <Button
+              style={{ marginLeft: 8 }}
+              type="primary"
+              danger
+              onClick={() => handleShowCode('component')}
+            >
+              代码编辑
+            </Button>
+          </Form.Item>
+        )}
       </Form>
       <CodeDrawer
         value={codeValue}
