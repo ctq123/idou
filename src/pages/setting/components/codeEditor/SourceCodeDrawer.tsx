@@ -164,7 +164,10 @@ const SourceCodeDrawer = (props: IProps) => {
               },
             ]}
           >
-            <Input placeholder="请输入文件夹名称，子文件夹使用/分隔" />
+            <Input
+              placeholder="请输入文件夹名称，子文件夹使用/分隔"
+              allowClear
+            />
           </Form.Item>
         </Form>
       </Modal>

@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 00:58:07
- * @LastEditTime: 2021-06-13 03:56:43
+ * @LastEditTime: 2021-06-13 14:59:55
  * @LastEditors: chengtianqing
  */
 
@@ -169,9 +169,26 @@ const handleEditorPage = async () => {
     );
   };
 
-  // await apiChange();
+  const generateCode = async () => {
+    await common.clickButton(page, "div[class^='c-header']", '生成源码');
+    await page.waitForSelector(
+      '.ant-drawer .ant-drawer-body .ant-tabs-content .monaco-editor .view-lines',
+    );
+    await page.waitForSelector(
+      '.ant-drawer .ant-drawer-title button span.anticon-download',
+    );
+    await common.clickDom(
+      page,
+      '.ant-drawer .ant-drawer-title button span.anticon-download',
+    );
+    await page.waitForSelector('.ant-modal .ant-modal-footer button');
+    await common.clickButton(page, '.ant-modal .ant-modal-footer', '下载');
+  };
+
+  await apiChange();
   await searchChange();
-  // await tableChange();
+  await tableChange();
+  await generateCode();
 };
 
 /**

@@ -1,47 +1,9 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 01:50:35
- * @LastEditTime: 2021-06-13 04:01:12
+ * @LastEditTime: 2021-06-13 14:50:17
  * @LastEditors: chengtianqing
  */
-/**
- * 处理选择框
- * @param page
- * @param val
- */
-async function select(page, val) {
-  let ele = null;
-  await page.waitForSelector(
-    '#rc-tabs-0-panel-request .ant-select-selection-search',
-  );
-
-  ele = await page.$('#rc-tabs-0-panel-request .ant-select-clear');
-  ele && ele.click();
-
-  ele = await page.$(
-    '#rc-tabs-0-panel-request span.ant-select-selection-search',
-  );
-  ele.click();
-
-  await page.waitForSelector(
-    '.rc-virtual-list-holder-inner .ant-select-item-option-content',
-  );
-  // 查找对应的内容
-  const texts = await page.$$eval(
-    '.rc-virtual-list-holder-inner .ant-select-item-option-content',
-    (node) => node.map((n) => n.innerText),
-  );
-  const index = texts.findIndex((k) => k === val);
-  console.log('index', index);
-
-  // 等待1s
-  await page.waitForTimeout(1000);
-
-  const eles = await page.$$(
-    '.rc-virtual-list-holder-inner .ant-select-item-option-content',
-  );
-  eles[index].click();
-}
 
 /**
  * 设置选择框
@@ -51,42 +13,39 @@ async function select(page, val) {
  * @param {*} index 第几个下拉框
  */
 async function setSelect(page, classPath, val, index = 0) {
-  try {
-    let ele = null,
-      eles = null;
-    await page.waitForTimeout(1 * 1000);
-    ele = await page.$(`${classPath} .ant-select-clear`);
-    ele && ele.click();
+  let ele = null,
+    eles = null;
+  await page.waitForSelector(`${classPath} .ant-select-selection-search`);
+  await page.focus(`${classPath} input`);
+  await page.waitForTimeout(500);
+  ele = await page.$(`${classPath} .ant-select-clear`);
+  ele && ele.click();
 
-    ele = await page.$(`${classPath} .ant-select-selection-search`);
-    ele.click();
+  ele = await page.$(`${classPath} .ant-select-selection-search`);
+  ele.click();
 
-    await page.waitForTimeout(1 * 1000);
+  await page.waitForTimeout(1 * 1000);
 
-    await page.waitForSelector(
-      `div.ant-select-dropdown .rc-virtual-list-holder-inner .ant-select-item-option-content`,
-    );
-    eles = await page.$$(`div.ant-select-dropdown`);
-    ele = eles[index];
+  await page.waitForSelector(
+    `div.ant-select-dropdown .rc-virtual-list-holder-inner .ant-select-item-option-content`,
+  );
+  eles = await page.$$(`div.ant-select-dropdown`);
+  ele = eles[index];
 
-    // 查找对应的内容
-    const texts = await ele.$$eval(
-      '.rc-virtual-list-holder-inner .ant-select-item-option-content',
-      (node) => node.map((n) => n.innerText),
-    );
-    const i = texts.findIndex((k) => k === val);
+  // 查找对应的内容
+  const texts = await ele.$$eval(
+    '.rc-virtual-list-holder-inner .ant-select-item-option-content',
+    (node) => node.map((n) => n.innerText),
+  );
+  const i = texts.findIndex((k) => k === val);
 
-    // 等待1s
-    await page.waitForTimeout(1 * 1000);
+  // 等待1s
+  await page.waitForTimeout(1 * 1000);
 
-    eles = await ele.$$(
-      '.rc-virtual-list-holder-inner .ant-select-item-option-content',
-    );
-    eles[i].click();
-  } catch (e) {
-    console.log(`方法异常：setSelect ${classPath} ${val} ${index}`);
-    console.log(`错误信息：${e}`);
-  }
+  eles = await ele.$$(
+    '.rc-virtual-list-holder-inner .ant-select-item-option-content',
+  );
+  eles[i].click();
 }
 
 /**
@@ -96,21 +55,16 @@ async function setSelect(page, classPath, val, index = 0) {
  * @param {*} val 值
  */
 async function setInput(page, classPath, val) {
-  try {
-    let ele = null;
-    await page.waitForTimeout(500);
-    ele = await page.$(`${classPath} .ant-input-suffix`);
-    ele && ele.click();
+  let ele = null;
+  await page.waitForTimeout(500);
+  ele = await page.$(`${classPath} .ant-input-suffix`);
+  ele && ele.click();
 
-    await page.waitForTimeout(500);
-    ele = await page.$(`${classPath} input.ant-input`);
-    ele.click();
-    await page.waitForTimeout(1 * 1000);
-    await ele.type(val);
-  } catch (e) {
-    console.log(`方法异常：setInput ${classPath} ${val}`);
-    console.log(`错误信息：${e}`);
-  }
+  await page.waitForTimeout(500);
+  ele = await page.$(`${classPath} input.ant-input`);
+  ele.click();
+  await page.waitForTimeout(1 * 1000);
+  await ele.type(val);
 }
 
 /**
@@ -120,25 +74,20 @@ async function setInput(page, classPath, val) {
  * @param {*} btnText 按钮文字
  */
 async function clickButton(page, classPath, btnText) {
-  try {
-    const texts = await page.$$eval(`${classPath} button > span`, (node) =>
-      node.map((n) => n.innerText.replace(/\s/g, '')),
-    );
+  const texts = await page.$$eval(`${classPath} button > span`, (node) =>
+    node.map((n) => n.innerText.replace(/\s/g, '')),
+  );
 
-    console.log('texts', texts);
+  // console.log('texts', texts);
 
-    const index = texts.findIndex((k) => k === btnText);
-    // console.log('index', index);
+  const index = texts.findIndex((k) => k === btnText);
+  // console.log('index', index);
 
-    // 等待1s
-    await page.waitForTimeout(1000);
+  // 等待1s
+  await page.waitForTimeout(1000);
 
-    const eles = await page.$$(`${classPath} button`);
-    eles[index].click();
-  } catch (e) {
-    console.log(`方法异常：clickButton ${classPath} ${btnText}`);
-    console.log(`错误信息：${e}`);
-  }
+  const eles = await page.$$(`${classPath} button`);
+  eles[index].click();
 }
 
 /**
@@ -147,17 +96,11 @@ async function clickButton(page, classPath, btnText) {
  * @param {*} classPath 自身路径
  */
 async function clickDom(page, classPath) {
-  try {
-    const ele = await page.$(`${classPath}`);
-    ele && ele.click();
-  } catch (e) {
-    console.log(`方法异常：clickDom ${classPath} ${btnText}`);
-    console.log(`错误信息：${e}`);
-  }
+  const ele = await page.$(`${classPath}`);
+  ele && ele.click();
 }
 
 module.exports = {
-  select,
   clickButton,
   setInput,
   setSelect,
