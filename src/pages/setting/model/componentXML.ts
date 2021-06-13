@@ -57,7 +57,7 @@ export const VueTableRenderXML: any = {
       size="small"
       @click="handleView(row)"
     >
-      详情
+      查看
     </el-button>
     <el-button
       type="text"

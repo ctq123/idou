@@ -72,6 +72,18 @@ const Setting = (props: IProps) => {
               return null;
             })
             .filter(Boolean);
+        case 'DIV':
+          return (children || [])
+            .map((item: any, i: number) => {
+              if (typeof item.children === 'string') {
+                return {
+                  oldIndex: i,
+                  children: item.children,
+                };
+              }
+              return null;
+            })
+            .filter(Boolean);
         case 'Form':
         default:
           let nodes = children;
@@ -165,6 +177,18 @@ const Setting = (props: IProps) => {
             });
           }
           component.children = [].concat(formChild, optItem);
+          break;
+        case 'DIV':
+          if (configs.length) {
+            configs.forEach((item: any) => {
+              if (item.oldIndex !== undefined) {
+                component.children[item.oldIndex] = {
+                  ...component.children[item.oldIndex],
+                  children: item.children,
+                };
+              }
+            });
+          }
           break;
         default:
           if (configs.length) {
@@ -342,6 +366,23 @@ const Setting = (props: IProps) => {
                 icon={<PlusOutlined />}
               ></Button>
             </Form.Item>
+          </>
+        );
+      case 'DIV':
+        return (
+          <>
+            {fields.map((field: any, i: number) => (
+              <Space key={field.key} align="baseline">
+                <Form.Item
+                  {...field}
+                  name={[field.name, 'children']}
+                  fieldKey={[field.fieldKey, 'children']}
+                  rules={[{ required: true, message: '请输入文本' }]}
+                >
+                  <Input placeholder="文本" allowClear />
+                </Form.Item>
+              </Space>
+            ))}
           </>
         );
       default:

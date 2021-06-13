@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 01:50:35
- * @LastEditTime: 2021-06-13 14:50:17
+ * @LastEditTime: 2021-06-14 04:44:49
  * @LastEditors: chengtianqing
  */
 
@@ -13,16 +13,17 @@
  * @param {*} index 第几个下拉框
  */
 async function setSelect(page, classPath, val, index = 0) {
+  // console.log(classPath, val)
   let ele = null,
     eles = null;
   await page.waitForSelector(`${classPath} .ant-select-selection-search`);
   await page.focus(`${classPath} input`);
   await page.waitForTimeout(500);
   ele = await page.$(`${classPath} .ant-select-clear`);
-  ele && ele.click();
+  (await ele) && ele.click();
 
   ele = await page.$(`${classPath} .ant-select-selection-search`);
-  ele.click();
+  await ele.click();
 
   await page.waitForTimeout(1 * 1000);
 
@@ -45,7 +46,7 @@ async function setSelect(page, classPath, val, index = 0) {
   eles = await ele.$$(
     '.rc-virtual-list-holder-inner .ant-select-item-option-content',
   );
-  eles[i].click();
+  await eles[i].click();
 }
 
 /**
@@ -56,13 +57,15 @@ async function setSelect(page, classPath, val, index = 0) {
  */
 async function setInput(page, classPath, val) {
   let ele = null;
-  await page.waitForTimeout(500);
+  // await page.waitForTimeout(500);
+  await page.focus(`${classPath} input`);
   ele = await page.$(`${classPath} .ant-input-suffix`);
-  ele && ele.click();
+  (await ele) && ele.click();
 
   await page.waitForTimeout(500);
+  await page.waitForSelector(`${classPath} input.ant-input`);
   ele = await page.$(`${classPath} input.ant-input`);
-  ele.click();
+  await ele.click();
   await page.waitForTimeout(1 * 1000);
   await ele.type(val);
 }
@@ -87,7 +90,7 @@ async function clickButton(page, classPath, btnText) {
   await page.waitForTimeout(1000);
 
   const eles = await page.$$(`${classPath} button`);
-  eles[index].click();
+  await eles[index].click();
 }
 
 /**
@@ -97,7 +100,19 @@ async function clickButton(page, classPath, btnText) {
  */
 async function clickDom(page, classPath) {
   const ele = await page.$(`${classPath}`);
-  ele && ele.click();
+  (await ele) && ele.click();
+}
+
+/**
+ * 点击节点
+ * @param {*} page
+ * @param {*} classPath 自身路径
+ */
+async function clickAllDom(page, classPath) {
+  const eles = await page.$$(`${classPath}`);
+  for (let i = 0; i < eles.length; i++) {
+    await eles[i].click();
+  }
 }
 
 module.exports = {
@@ -105,4 +120,5 @@ module.exports = {
   setInput,
   setSelect,
   clickDom,
+  clickAllDom,
 };

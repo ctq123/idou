@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 00:58:07
- * @LastEditTime: 2021-06-13 14:59:55
+ * @LastEditTime: 2021-06-14 04:52:52
  * @LastEditors: chengtianqing
  */
 
@@ -81,36 +81,43 @@ const handleEditorPage = async () => {
     await common.clickButton(page, "div[class^='page-container'] form", '重置');
     await page.waitForSelector('#rc-tabs-0-panel-setting');
 
+    // 先清空所有数据
+    await page.waitForSelector(
+      '#rc-tabs-0-panel-setting form .ant-space .ant-space-item button span.anticon-delete',
+    );
+    await common.clickAllDom(
+      page,
+      '#rc-tabs-0-panel-setting form .ant-space .ant-space-item button span.anticon-delete',
+    );
+    await page.waitForTimeout(1 * 1000);
     const form = get(apiData, 'search.form');
     console.log('form', form);
     let i = 0;
     for (let k in form) {
-      if (i > 4) {
-        await common.clickDom(
-          page,
-          '#rc-tabs-0-panel-setting form .ant-form-item .ant-btn-block .anticon-plus',
-        );
-        await page.waitForTimeout(1 * 1000);
-      }
+      await common.clickDom(
+        page,
+        '#rc-tabs-0-panel-setting form .ant-form-item .ant-btn-block .anticon-plus',
+      );
+      await page.waitForTimeout(1 * 1000);
       await common.setInput(
         page,
         `#rc-tabs-0-panel-setting form div:nth-child(${
           i + 1
-        }) .ant-space-item:nth-child(1)`,
+        }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
         form[k].description,
       );
       await common.setInput(
         page,
         `#rc-tabs-0-panel-setting form div:nth-child(${
           i + 1
-        }) .ant-space-item:nth-child(2)`,
+        }) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
       await common.setSelect(
         page,
         `#rc-tabs-0-panel-setting form div:nth-child(${
           i + 1
-        }) .ant-space-item:nth-child(3)`,
+        }) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
         form[k].componentType,
         i,
       );
@@ -118,6 +125,33 @@ const handleEditorPage = async () => {
     }
 
     // 提交
+    await common.clickButton(
+      page,
+      '#rc-tabs-0-panel-setting form .ant-form-item',
+      '提交',
+    );
+  };
+
+  // 处理表格顶部模块
+  const operateChange = async () => {
+    await page.waitForTimeout(1 * 1000);
+    await page.waitForSelector(
+      "div[class^='page-container'] div[class^='flex-between'] div[class^='title']",
+    );
+    await common.clickDom(
+      page,
+      "div[class^='page-container'] div[class^='flex-between'] div[class^='title']",
+    );
+    await page.waitForSelector(
+      '#rc-tabs-0-panel-setting form .ant-space-item .ant-form-item-control-input',
+    );
+    await page.waitForTimeout(1 * 1000);
+    await common.setInput(
+      page,
+      `#rc-tabs-0-panel-setting form .ant-space-item .ant-form-item-control-input`,
+      apiData.title,
+    );
+
     await common.clickButton(
       page,
       '#rc-tabs-0-panel-setting form .ant-form-item',
@@ -133,30 +167,51 @@ const handleEditorPage = async () => {
     await common.clickDom(page, "div[class^='page-container'] table");
     await page.waitForSelector('#rc-tabs-0-panel-setting');
 
-    const columns = get(apiData, 'columns');
+    // 先清空所有数据
+    await page.waitForSelector(
+      '#rc-tabs-0-panel-setting form .ant-space .ant-space-item button span.anticon-delete',
+    );
+    await common.clickAllDom(
+      page,
+      '#rc-tabs-0-panel-setting form .ant-space .ant-space-item button span.anticon-delete',
+    );
+    await page.waitForTimeout(1 * 1000);
+    let columnsObj = get(apiData, 'columnsObj');
     // console.log("form", form)
+    columnsObj = Object.assign(columnsObj, {
+      '-': {
+        description: '操作',
+        componentType: '操作',
+      },
+    });
     let i = 0;
-    for (let k in columns) {
-      // if (i > 4) {
-      //   await common.clickDom(
-      //     page,
-      //     "#rc-tabs-0-panel-setting form .ant-form-item .ant-btn-block .anticon-plus",
-      //   );
-      //   await page.waitForTimeout(1 * 1000);
-      // }
+    for (let k in columnsObj) {
+      await common.clickDom(
+        page,
+        '#rc-tabs-0-panel-setting form .ant-form-item .ant-btn-block .anticon-plus',
+      );
+      await page.waitForTimeout(1 * 1000);
       await common.setInput(
         page,
         `#rc-tabs-0-panel-setting form div:nth-child(${
           i + 1
-        }) .ant-space-item:nth-child(1)`,
-        columns[k].description,
+        }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
+        columnsObj[k].description,
       );
       await common.setInput(
         page,
         `#rc-tabs-0-panel-setting form div:nth-child(${
           i + 1
-        }) .ant-space-item:nth-child(2)`,
+        }) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
+      );
+      await common.setSelect(
+        page,
+        `#rc-tabs-0-panel-setting form div:nth-child(${
+          i + 1
+        }) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
+        columnsObj[k].componentType,
+        i,
       );
       i++;
     }
@@ -187,6 +242,7 @@ const handleEditorPage = async () => {
 
   await apiChange();
   await searchChange();
+  await operateChange();
   await tableChange();
   await generateCode();
 };

@@ -1,3 +1,11 @@
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-06-07 01:10:38
+ * @LastEditTime: 2021-06-14 03:32:40
+ * @LastEditors: chengtianqing
+ * @Description:
+ */
+import moment from 'moment';
 /**
  * 根据key获取对应的数据
  * @param keyStr
@@ -14,7 +22,7 @@ const createMockData = (keyStr: string, i: number) => {
     },
     {
       keys: ['mount', 'price'],
-      value: Math.floor(Math.random() * 10000),
+      value: Math.floor(Math.random() * 100) * 100,
     },
     {
       keys: ['status'],
@@ -22,7 +30,7 @@ const createMockData = (keyStr: string, i: number) => {
     },
     {
       keys: ['time'],
-      value: Date.now() - i,
+      value: moment().subtract(i, 'days').format('YYYY-MM-DD HH:mm:ss'),
     },
   ];
   for (let i = 0; i < mockTypes.length; i++) {

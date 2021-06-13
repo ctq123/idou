@@ -145,6 +145,7 @@ const DSL = {
           props: {
             className: 'flex-between',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -161,21 +162,53 @@ const DSL = {
               children: [
                 {
                   componentName: 'Button',
-                  props: {},
+                  props: {
+                    type: 'text',
+                  },
                   children: '导出结果',
                   onClick: 'function handleExport() {}',
                 },
                 {
+                  componentName: 'Divider',
+                  props: {
+                    direction: 'vertical',
+                  },
+                },
+                {
                   componentName: 'Button',
-                  props: {},
+                  props: {
+                    type: 'text',
+                  },
                   children: '批量导入',
                   onClick: 'function handleUpload() {}',
                 },
                 {
+                  componentName: 'Divider',
+                  props: {
+                    direction: 'vertical',
+                  },
+                },
+                {
                   componentName: 'Button',
-                  props: {},
+                  props: {
+                    type: 'text',
+                  },
                   children: '下载模版',
                   onClick: 'function downloadTemplate() {}',
+                },
+                {
+                  componentName: 'Divider',
+                  props: {
+                    direction: 'vertical',
+                  },
+                },
+                {
+                  componentName: 'Button',
+                  props: {
+                    type: 'primary',
+                  },
+                  children: '新增',
+                  onClick: 'function handleCreate() {}',
                 },
               ],
             },

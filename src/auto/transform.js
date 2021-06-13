@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 16:43:10
- * @LastEditTime: 2021-06-13 03:37:46
+ * @LastEditTime: 2021-06-14 04:35:28
  * @LastEditors: chengtianqing
  * @Description: 转换api数据，映射对应的编辑内容
  */
@@ -56,9 +56,9 @@ const apiData = {
             mock: [Object],
           },
           status: { type: 'string', description: '预约单状态', mock: [Object] },
-          warehouseCode: {
+          avgPrice: {
             type: 'string',
-            description: '收货地址',
+            description: '均价',
             mock: [Object],
           },
           appointTime: {
@@ -152,8 +152,29 @@ function transData(apiData) {
       if (isObject(response)) {
         const { contents = {}, rows = {}, list = {} } = response;
         const temp = Object.assign(contents, rows, list);
-        const columns = get(temp, 'items.properties');
-        apiData.columns = columns;
+        const columnsObj = get(temp, 'items.properties');
+        const col = {};
+        Object.entries(columnsObj).forEach(([k, v]) => {
+          if (isObject(v)) {
+            const obj = { ...v };
+            const { description = '' } = obj;
+            if (
+              ['金额', '价', '付款'].some((s) => description.indexOf(s) > -1)
+            ) {
+              obj.componentType = '金额';
+            } else if (
+              ['时间', '日期'].some((s) => description.indexOf(s) > -1)
+            ) {
+              obj.componentType = '时间';
+            } else {
+              obj.componentType = '默认';
+            }
+            col[k] = obj;
+          } else {
+            col[k] = v;
+          }
+        });
+        apiData.columnsObj = col;
       }
     }
   }

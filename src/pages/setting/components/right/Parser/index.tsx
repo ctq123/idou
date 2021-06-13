@@ -8,6 +8,8 @@ import { getUid } from '@/utils';
 import { getMockDataList } from '@/utils/mock';
 import styles from './index.less';
 import 'antd/dist/antd.css';
+import { Button, Divider } from 'antd';
+import { useEffect } from 'react';
 
 const antd = require('antd');
 
@@ -38,6 +40,12 @@ const Parser = () => {
   const [activeComponent, setActiveComponent] = useState<any>({});
   const [mockList, setMockList] = useState([]);
   const [cols, setCols] = useState(cols);
+  const [newDSL, setNewDSL] = useState({});
+
+  useEffect(() => {
+    const newDSL = cloneDeep(appContext.state.dsl);
+    setNewDSL(newDSL);
+  }, [appContext.state.dsl]);
 
   // 模拟数据
   const getMockData = (columns) => {
@@ -176,17 +184,29 @@ const Parser = () => {
     parentUuid: any,
     index: number,
   ) => {
-    const { componentName, children, props, uuid, options = [] } = componentDSL;
+    const {
+      componentName,
+      children,
+      props,
+      uuid,
+      options = [],
+      isEdit,
+    } = componentDSL;
     const recursionParser = () => {
       switch (componentName) {
         case 'DIV':
+          const divProps = { ...props };
+          if (isEdit) {
+            divProps.onClick = (e: any) =>
+              handleComponentClick(e, componentDSL, parentUuid, index);
+          }
           const childNodes = Array.isArray(children)
             ? children
                 .filter(Boolean)
                 .map((item: any, i: number) => generateComponent(item, uuid, i))
             : children || '';
           return (
-            <div {...props} className={getClassNameStr(props)}>
+            <div {...divProps} className={getClassNameStr(props)}>
               {childNodes}
             </div>
           );
@@ -245,10 +265,22 @@ const Parser = () => {
         case 'Table':
           const Table = antd['Table'];
           const columns = (children || []).filter(Boolean).map((item: any) => {
-            return {
+            const col = {
               title: item.label,
               dataIndex: item.key,
             };
+            if (item.label === '操作') {
+              col.render = () => {
+                return (
+                  <>
+                    <a>查看</a>
+                    <Divider type="vertical"></Divider>
+                    <a>编辑</a>
+                  </>
+                );
+              };
+            }
+            return col;
           });
           // 模拟mock数据
           getMockData(columns);
@@ -259,7 +291,11 @@ const Parser = () => {
                 handleComponentClick(e, componentDSL, parentUuid, index)
               }
             >
-              <Table columns={columns} dataSource={mockList}></Table>
+              <Table
+                columns={columns}
+                dataSource={mockList}
+                pagination={false}
+              ></Table>
             </div>
           );
         case 'Pagination':
@@ -295,6 +331,16 @@ const Parser = () => {
           const DatePicker = antd['DatePicker'];
           const { RangePicker } = DatePicker;
           return <RangePicker {...props} />;
+        case 'Button':
+          // 转换属性
+          if (props.type === 'text') {
+            props.type = 'link';
+          }
+        case 'Divider':
+          // 转换属性
+          if (props.direction) {
+            props.type = props.direction;
+          }
         default:
           return React.createElement(
             antd[componentName],
@@ -309,9 +355,10 @@ const Parser = () => {
     }
     return null;
   };
+
   return (
     <div className={styles['container']}>
-      {generateComponent(appContext.state.dsl, null, 0)}
+      {generateComponent(newDSL, null, 0)}
       <SelectBox
         style={selectStyle}
         handleCB={(action: string) => handleOptCB(action)}

@@ -150,9 +150,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       break;
     case 'RangePicker':
       const rangepickerProps: any = {
-        type: 'datetimerange',
+        type: 'daterange',
         'unlink-panels': true,
-        'value-format': 'timestamp',
         'default-time': ['00:00:00', '23:59:59'],
         'range-separator': '至',
         'start-placeholder': '开始日期',
