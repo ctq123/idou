@@ -1,6 +1,8 @@
 .b-left {
   position: relative;
   border-right: 1px solid #f1f1f5;
+  // height: calc(100vh - 50px);
+  // overflow-y: auto;
   .resize-box {
     width: 350px;
     resize: horizontal;
@@ -19,10 +21,13 @@
     left: 8px;
     right: 8px;
     overflow-x: hidden;
-    min-height: calc(100vh - 50px);
+    height: calc(100vh - 50px);
+    overflow-y: hidden;
     :global {
       .ant-tabs-tabpane {
         padding-bottom: 8px;
+        height: calc(100vh - 112px);
+        overflow-y: auto;
       }
     }
     .template {

@@ -114,22 +114,6 @@ const ComponentsDSL = {
   },
 };
 
-// /**
-//  * element-ui的前缀
-//  */
-// const elementUI = 'el-'
-
-// /**
-//  * 组件-源码名称映射表
-//  */
-// const componentNameMap = Object.keys(ComponentsDSL).map((k: string) => {
-//   let uiName = elementUI + k.toLowerCase()
-//   if (['RangePicker'].includes(k)) {
-//     uiName = 'el-date-picker'
-//   }
-//   return { uiName };
-// });
-
 /**
  * 注册的组件名称
  */
@@ -144,6 +128,13 @@ const componentNames = {
   Table: '表格',
   Pagination: '分页',
 };
+
+const TableRenderType = [
+  {
+    name: '时间',
+    render: '',
+  },
+];
 
 /**
  * 注册的组件列表

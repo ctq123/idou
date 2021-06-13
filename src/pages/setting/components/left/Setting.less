@@ -1,6 +1,20 @@
 .setting-container {
   font-size: 12px;
+  box-sizing: border-box;
+  .list-item {
+    padding-bottom: 8px;
+  }
+  .list-item + .list-item {
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding-top: 16px;
+  }
+  .w100 {
+    width: 100%;
+  }
   :global {
+    .ant-form-item {
+      margin-bottom: 8px;
+    }
     .ant-input {
       font-size: 12px;
     }

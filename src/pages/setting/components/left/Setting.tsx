@@ -203,50 +203,74 @@ const Setting = (props: IProps) => {
         return (
           <>
             {fields.map((field: any, i: number) => (
-              <Space key={field.key} align="baseline">
-                <Form.Item
-                  {...field}
-                  name={[field.name, 'label']}
-                  fieldKey={[field.fieldKey, 'label']}
-                  rules={[{ required: true, message: '请输入label' }]}
-                >
-                  <Input placeholder="label" allowClear />
-                </Form.Item>
+              <div key={field.key} className={styles['list-item']}>
+                <Space key={field.key} align="baseline">
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'label']}
+                    fieldKey={[field.fieldKey, 'label']}
+                    rules={[{ required: true, message: '请输入label' }]}
+                  >
+                    <Input placeholder="label" allowClear />
+                  </Form.Item>
 
-                <Form.Item
-                  {...field}
-                  name={[field.name, 'key']}
-                  fieldKey={[field.fieldKey, 'key']}
-                  rules={[{ required: true, message: '请输入key' }]}
-                >
-                  <Input placeholder="key" allowClear />
-                </Form.Item>
-                <Button
-                  type="link"
-                  size="small"
-                  icon={<ArrowUpOutlined />}
-                  onClick={() => move(i, i - 1)}
-                />
-                <Button
-                  type="link"
-                  size="small"
-                  icon={<ArrowDownOutlined />}
-                  onClick={() => move(i, i + 1)}
-                />
-                <Button
-                  type="link"
-                  size="small"
-                  icon={<DeleteOutlined />}
-                  onClick={() => remove(field.name)}
-                />
-                <Tooltip title="自定义渲染函数">
-                  <Button
-                    type="link"
-                    icon={<HighlightOutlined />}
-                    onClick={() => handleShowCode('html', i)}
-                  ></Button>
-                </Tooltip>
-              </Space>
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'key']}
+                    fieldKey={[field.fieldKey, 'key']}
+                    rules={[{ required: true, message: '请输入key' }]}
+                  >
+                    <Input placeholder="key" allowClear />
+                  </Form.Item>
+                </Space>
+                <Space align="baseline">
+                  <Form.Item
+                    {...field}
+                    name={[field.name, 'type']}
+                    fieldKey={[field.fieldKey, 'type']}
+                    rules={[{ required: true, message: '请选择类型' }]}
+                  >
+                    <Select
+                      style={{ width: 163 }}
+                      placeholder="类型"
+                      allowClear
+                    >
+                      {Object.entries(FormComponentObj).map(([k, v]) => (
+                        <Option key={k} value={k}>
+                          {v}
+                        </Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item>
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<ArrowUpOutlined />}
+                      onClick={() => move(i, i - 1)}
+                    />
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<ArrowDownOutlined />}
+                      onClick={() => move(i, i + 1)}
+                    />
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => remove(field.name)}
+                    />
+                    <Tooltip title="自定义渲染函数">
+                      <Button
+                        type="link"
+                        icon={<HighlightOutlined />}
+                        onClick={() => handleShowCode('html', i)}
+                      ></Button>
+                    </Tooltip>
+                  </Form.Item>
+                </Space>
+              </div>
             ))}
             <Form.Item>
               <Button
@@ -263,7 +287,7 @@ const Setting = (props: IProps) => {
         return (
           <>
             {fields.map((field: any, i: number) => (
-              <Fragment key={field.key}>
+              <div key={field.key} className={styles['list-item']}>
                 <Space align="baseline">
                   <Form.Item
                     {...field}
@@ -282,42 +306,48 @@ const Setting = (props: IProps) => {
                   >
                     <Input placeholder="key" allowClear />
                   </Form.Item>
+                </Space>
+                <Space align="baseline">
                   <Form.Item
-                    noStyle
-                    shouldUpdate={(prevValues, curValues) =>
-                      prevValues.type !== curValues.type
-                    }
+                    {...field}
+                    name={[field.name, 'type']}
+                    fieldKey={[field.fieldKey, 'type']}
+                    rules={[{ required: true, message: '请选择类型' }]}
                   >
-                    {() => (
-                      <Form.Item
-                        {...field}
-                        name={[field.name, 'type']}
-                        fieldKey={[field.fieldKey, 'type']}
-                        rules={[{ required: true, message: '请选择类型' }]}
-                      >
-                        <Select
-                          style={{ width: 130 }}
-                          placeholder="类型"
-                          allowClear
-                        >
-                          {Object.entries(FormComponentObj).map(([k, v]) => (
-                            <Option key={k} value={k}>
-                              {v}
-                            </Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                    )}
+                    <Select
+                      style={{ width: 163 }}
+                      placeholder="类型"
+                      allowClear
+                    >
+                      {Object.entries(FormComponentObj).map(([k, v]) => (
+                        <Option key={k} value={k}>
+                          {v}
+                        </Option>
+                      ))}
+                    </Select>
                   </Form.Item>
-                  <Popover content={() => moreButtons(field, i)}>
+                  <Form.Item>
                     <Button
                       type="link"
                       size="small"
-                      icon={<EllipsisOutlined />}
+                      icon={<ArrowUpOutlined />}
+                      onClick={() => move(i, i - 1)}
                     />
-                  </Popover>
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<ArrowDownOutlined />}
+                      onClick={() => move(i, i + 1)}
+                    />
+                    <Button
+                      type="link"
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => remove(field.name)}
+                    />
+                  </Form.Item>
                 </Space>
-              </Fragment>
+              </div>
             ))}
             <Form.Item>
               <Button
