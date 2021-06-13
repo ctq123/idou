@@ -28,17 +28,13 @@ import CodeDrawer from '../codeEditor/CodeDrawer';
 import { getUid } from '@/utils';
 import { FormComponentObj, ComponentsDSL } from '../../const/componentDSL';
 import styles from './Setting.less';
-import Item from 'antd/lib/list/Item';
 interface IProps {
+  colRender?: any;
   component?: any;
   handleCB?: any;
 }
 
 const { Option } = Select;
-
-const functionTpl = `function render(_, row) {
-
-}`;
 
 const Setting = (props: IProps) => {
   console.log('props', props);
@@ -47,15 +43,31 @@ const Setting = (props: IProps) => {
   const [codeType, setCodeType] = useState('component') as any;
   const [codeValue, setCodeValue] = useState('');
   const [codeKey, setCodeKey] = useState('');
+  const [renderList, setRenderList] = useState([]);
   const [form] = Form.useForm();
   useEffect(() => {
     const getInitialValue = () => {
       switch (componentName) {
         case 'Table':
+          const obj = {
+            renderTime: '时间',
+            renderAmount: '金额',
+            renderOperate: '操作',
+            renderDefault: '默认',
+          };
+          const list: any = Object.entries(obj).map(([value, label]) => ({
+            value,
+            label,
+          }));
+          setRenderList(list);
           return (children || [])
             .map((item: any) => {
               if (item.key) {
-                return { key: item.key, label: item.label };
+                return {
+                  key: item.key,
+                  label: item.label,
+                  renderKey: item.renderKey,
+                };
               }
               return null;
             })
@@ -96,7 +108,8 @@ const Setting = (props: IProps) => {
         message.error('请先提交');
         return;
       }
-      const value = target.render ? target.render : functionTpl;
+      const str = props.colRender[target.renderKey](target.key);
+      const value = target.render ? target.render : str;
       setCodeValue(value);
       setCodeKey(newItem.key);
     }
@@ -174,30 +187,6 @@ const Setting = (props: IProps) => {
   };
 
   const generateFormItem = (fields: any, remove: any, move: any, add: any) => {
-    const moreButtons = (field: any, i: number) => {
-      return (
-        <>
-          <Button
-            type="link"
-            size="small"
-            icon={<ArrowUpOutlined />}
-            onClick={() => move(i, i - 1)}
-          />
-          <Button
-            type="link"
-            size="small"
-            icon={<ArrowDownOutlined />}
-            onClick={() => move(i, i + 1)}
-          />
-          <Button
-            type="link"
-            size="small"
-            icon={<DeleteOutlined />}
-            onClick={() => remove(field.name)}
-          />
-        </>
-      );
-    };
     switch (componentName) {
       case 'Table':
         return (
@@ -226,18 +215,18 @@ const Setting = (props: IProps) => {
                 <Space align="baseline">
                   <Form.Item
                     {...field}
-                    name={[field.name, 'type']}
-                    fieldKey={[field.fieldKey, 'type']}
-                    rules={[{ required: true, message: '请选择类型' }]}
+                    name={[field.name, 'renderKey']}
+                    fieldKey={[field.fieldKey, 'renderKey']}
+                    rules={[{ required: true, message: '请选择处理类型' }]}
                   >
                     <Select
                       style={{ width: 163 }}
-                      placeholder="类型"
+                      placeholder="处理类型"
                       allowClear
                     >
-                      {Object.entries(FormComponentObj).map(([k, v]) => (
-                        <Option key={k} value={k}>
-                          {v}
+                      {renderList.map(({ value, label }) => (
+                        <Option key={value} value={value}>
+                          {label}
                         </Option>
                       ))}
                     </Select>

@@ -1,7 +1,7 @@
 /**
  * vue-组件源码片段
  */
-export const VueXML = {
+export const VueXML: any = {
   Form: (attrStr: any, childStr: any) => {
     return `
     <!--搜索区域-->
@@ -39,9 +39,44 @@ export const VueXML = {
 };
 
 /**
+ * 表格渲染函数-源码片段
+ */
+export const VueTableRenderXML: any = {
+  renderTime: (key: any) => {
+    return `{{ row.${key} | formatTime }}`;
+  },
+  renderAmount: (key: any) => {
+    return `<span>
+    {{ row.${key} ? Number(row.${key}) / 100 : '-' }}
+    </span>`;
+  },
+  renderOperate: () => {
+    return `
+    <el-button
+      type="text"
+      size="small"
+      @click="handleView(row)"
+    >
+      详情
+    </el-button>
+    <el-button
+      type="text"
+      size="small"
+      @click="handleEdit(row)"
+    >
+      编辑
+    </el-button>       
+    `;
+  },
+  renderDefault: (key: any) => {
+    return `{{ row.${key} }}`;
+  },
+};
+
+/**
  * 样式-组件源码片段
  */
-export const styleXML = {
+export const styleXML: any = {
   list: () => {
     return `
     .page-container {

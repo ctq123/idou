@@ -3,7 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { DSL } from '../const/dsl';
 import { getUid } from '@/utils';
 import { getSourceCode } from './generateVue';
-
+import { VueTableRenderXML } from './componentXML';
 interface IObject {
   [key: string]: any;
 }
@@ -120,6 +120,7 @@ const initState = {
   vueCode: null,
   apiCode: null,
   showVueCode: false,
+  VueTableRenderXML,
 };
 
 const reducer = (state: any, action: any) => {

@@ -8,7 +8,7 @@ import { message } from 'antd';
 // import parserBabel from 'https://unpkg.com/prettier@2.3.0/esm/parser-babel.mjs';
 // import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
 
-import { VueXML, styleXML } from './componentXML';
+import { VueXML, styleXML, VueTableRenderXML } from './componentXML';
 import { prettierFormat, transformFunc, replaceObjKey } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
@@ -207,15 +207,17 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const columns = (children || [])
         .map((item: any) => {
           const newProps = { ...item };
-          let childStr = `{{ row.${item.key} }}`;
+          let childStr = VueTableRenderXML[item.renderKey](item.key);
           if (item.key) {
             delete newProps.key;
+            delete newProps.renderKey;
           }
           if (item.render) {
             delete newProps.render;
-            const { funcBody } = transformFunc(item.render);
-            childStr = funcBody.replace('return', '');
+            childStr = item.render;
           }
+          // 重新扫描是否包含函数
+          checkFuncStr(childStr);
           return VueXML['TableColumn'](getPropsStr(newProps), childStr);
         })
         .join('\n');
@@ -308,7 +310,6 @@ const getMethods = (item: object) => {
 
 const getStyles = (type: string) => {
   const slist: any = [];
-  // @ts-ignore
   const css = styleXML[type]();
   slist.push(css);
   return slist;
@@ -349,6 +350,26 @@ const getEventStr = (item: object, extraMap: any = {}) => {
     }
   });
   return funcStr;
+};
+
+const checkFuncStr = (str: string) => {
+  const reg = /@click=|@change=|@input=/g;
+  if (str) {
+    const ex = reg.exec(str);
+    if (ex) {
+      const s = str.substr(ex.index + ex[0].length);
+      console.log('s', s);
+      let funcName = s.split(/["']/g)[1];
+      let func = funcName;
+      if (funcName.endsWith(')')) {
+        func += '{ }';
+      } else {
+        func += '() { }';
+      }
+      renderData.methods.push(func);
+      checkFuncStr(s);
+    }
+  }
 };
 
 const getPropsStr = (obj: any) => {

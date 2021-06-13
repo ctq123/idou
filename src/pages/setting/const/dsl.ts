@@ -190,52 +190,38 @@ const DSL = {
               key: 'id',
               label: '序号',
               minWidth: 100,
+              renderKey: `renderDefault`,
             },
             {
               key: 'orderNo',
               label: '订单号',
+              renderKey: `renderDefault`,
             },
             {
               key: 'trueName',
               label: '姓名',
+              renderKey: `renderDefault`,
             },
             {
               key: 'amount',
               label: '订单金额',
-              render: `function render(_, row) {
-                return {{ Number(row.amount) / 100 }}
-              }`,
+              renderKey: `renderAmount`,
             },
             {
               key: 'status',
               label: '校验状态',
+              renderKey: `renderDefault`,
             },
             {
               key: 'createTime',
               label: '创建时间',
-              render: `function render(_, row) {
-                return <span>\n{{ new Date(row.createTime * 1000) | datefmt('YYYY-MM-DD HH:mm:ss') }}\n</span>
-              }`,
+              renderKey: 'renderTime',
             },
             {
               key: '-',
               label: '操作',
-              render: `function render(_, row) {
-                return <el-button
-                type="text"
-                size="small"
-                @click="handleView(row)"
-              >
-                详情
-              </el-button>
-              <el-button
-                type="text"
-                size="small"
-                @click="handleEdit(row)"
-              >
-                编辑
-              </el-button>
-              }`,
+              fixed: 'right',
+              renderKey: `renderOperate`,
             },
           ],
         },

@@ -23,9 +23,7 @@ const CodeDrawer = (props: IProps) => {
   const handleSave = () => {
     const code = codeRef.current.getEditorValue();
     console.log('code', code);
-    if (code) {
-      handleCB && handleCB({ visible: false, code });
-    }
+    handleCB && handleCB({ visible: false, code });
   };
   const titleNode = () => (
     <div className={styles['title-con']}>

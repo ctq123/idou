@@ -129,13 +129,6 @@ const componentNames = {
   Pagination: '分页',
 };
 
-const TableRenderType = [
-  {
-    name: '时间',
-    render: '',
-  },
-];
-
 /**
  * 注册的组件列表
  */
