@@ -29,7 +29,7 @@ import { getUid } from '@/utils';
 import { FormComponentObj, ComponentsDSL } from '../../const/componentDSL';
 import styles from './Setting.less';
 interface IProps {
-  colRender?: any;
+  vueColRender?: any;
   component?: any;
   handleCB?: any;
 }
@@ -103,7 +103,7 @@ const Setting = (props: IProps) => {
     } else if (type === 'html') {
       const configs = form.getFieldValue('configs');
       const target = configs[index];
-      const str = props.colRender[target.renderKey](target.key);
+      const str = props.vueColRender[target.renderKey](target.key);
       const value = target.render ? target.render : str;
       setCodeValue(value);
       setCodeKey(target.key);
@@ -245,7 +245,7 @@ const Setting = (props: IProps) => {
                       icon={<DeleteOutlined />}
                       onClick={() => remove(field.name)}
                     />
-                    <Tooltip title="自定义渲染函数">
+                    <Tooltip title="自定义渲染列-vue">
                       <Button
                         type="link"
                         icon={<HighlightOutlined />}
