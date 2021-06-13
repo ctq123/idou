@@ -102,16 +102,11 @@ const Setting = (props: IProps) => {
       setCodeValue(props.component);
     } else if (type === 'html') {
       const configs = form.getFieldValue('configs');
-      const newItem = configs[index];
-      const target = children.find((item: any) => item.key === newItem.key);
-      if (!target) {
-        message.error('请先提交');
-        return;
-      }
+      const target = configs[index];
       const str = props.colRender[target.renderKey](target.key);
       const value = target.render ? target.render : str;
       setCodeValue(value);
-      setCodeKey(newItem.key);
+      setCodeKey(target.key);
     }
     setCodeType(type);
     setVisible(true);
@@ -146,8 +141,8 @@ const Setting = (props: IProps) => {
           let tableChild = [];
           if (configs.length) {
             tableChild = configs.map((item: any, i: number) => {
-              const { key, label } = item;
-              return { ...component.children[i], key, label };
+              const { key, label, renderKey } = item;
+              return { key, label, renderKey };
             });
           }
           component.children = tableChild;
