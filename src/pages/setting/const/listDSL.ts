@@ -1,25 +1,10 @@
 const DSL = {
   componentName: 'DIV',
-  type: 'edit',
+  type: 'list',
   props: {
-    className: 'container',
+    className: 'page-container',
   },
   children: [
-    {
-      componentName: 'CrumbBack',
-      props: {},
-      dataKey: 'title',
-      onClick: `function handleGoBack() {
-        this.$router.go(-1)
-      }`,
-    },
-    {
-      componentName: 'DIV',
-      props: {
-        className: 'content-con bshadow',
-      },
-      children: [],
-    },
     {
       componentName: 'Form',
       props: {

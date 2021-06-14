@@ -100,7 +100,7 @@ const ComponentsDSL = {
       {
         key: 'id',
         label: '序号',
-        minWidth: 100,
+        renderKey: `renderDefault`,
       },
     ],
   },
@@ -111,6 +111,12 @@ const ComponentsDSL = {
       this.pagination.currentPage = val;
       this.queryList();
     }`,
+  },
+
+  // 自定义组件
+  CrumbBack: {
+    componentName: 'CrumbBack',
+    props: {},
   },
 };
 
@@ -127,6 +133,7 @@ const componentNames = {
   Form: '表单',
   Table: '表格',
   Pagination: '分页',
+  CrumbBack: '返回组件',
 };
 
 /**
