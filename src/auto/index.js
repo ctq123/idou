@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 00:58:07
- * @LastEditTime: 2021-06-14 04:52:52
+ * @LastEditTime: 2021-06-14 12:01:29
  * @LastEditors: chengtianqing
  */
 
@@ -240,11 +240,17 @@ const handleEditorPage = async () => {
     await common.clickButton(page, '.ant-modal .ant-modal-footer', '下载');
   };
 
-  await apiChange();
-  await searchChange();
-  await operateChange();
-  await tableChange();
-  await generateCode();
+  if (apiData.componentType === 'list') {
+    await apiChange();
+    await searchChange();
+    await operateChange();
+    await tableChange();
+    await generateCode();
+  } else {
+    console.log('接口数据不是列表页面');
+    page.close();
+    browser.close();
+  }
 };
 
 /**
