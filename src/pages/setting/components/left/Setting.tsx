@@ -1,3 +1,10 @@
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-06-14 01:33:29
+ * @LastEditTime: 2021-06-14 13:37:21
+ * @LastEditors: chengtianqing
+ * @Description:
+ */
 import React, { Fragment, useEffect, useState } from 'react';
 import {
   Form,
@@ -20,10 +27,12 @@ import {
   ArrowDownOutlined,
   EllipsisOutlined,
   HighlightOutlined,
+  EditOutlined,
 } from '@ant-design/icons';
 import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
 import isObject from 'lodash/isObject';
+import isEqual from 'lodash/isEqual';
 import CodeDrawer from '../codeEditor/CodeDrawer';
 import { getUid } from '@/utils';
 import { FormComponentObj, ComponentsDSL } from '../../const/componentDSL';
@@ -42,8 +51,9 @@ const Setting = (props: IProps) => {
   const [visible, setVisible] = useState(false);
   const [codeType, setCodeType] = useState('component') as any;
   const [codeValue, setCodeValue] = useState('');
-  const [codeKey, setCodeKey] = useState('');
+  const [codeKey, setCodeKey] = useState(-1);
   const [renderList, setRenderList] = useState([]);
+  const [initValues, setInitValues] = useState({});
   const [form] = Form.useForm();
   useEffect(() => {
     const getInitialValue = () => {
@@ -104,22 +114,43 @@ const Setting = (props: IProps) => {
             .filter(Boolean);
       }
     };
+    const configs = getInitialValue();
     form.setFieldsValue({
-      configs: getInitialValue(),
+      configs,
     });
+    setInitValues(configs);
   }, [uuid]);
 
   const handleShowCode = (type: string, index: number = 0) => {
     if (type === 'component') {
-      setCodeValue(props.component);
+      if (index === -1) {
+        const configs = form.getFieldValue('configs');
+        if (!isEqual(initValues, configs)) {
+          message.warning('内容已更改但未保存，请先提交再操作');
+          return;
+        }
+        setCodeValue(props.component);
+      } else {
+        const configs = form.getFieldValue('configs');
+        const { label, key, type } = configs[index];
+        // @ts-ignore
+        const childNode = ComponentsDSL[type];
+        const target = {
+          ...children[index],
+          label,
+          key,
+          children: [childNode],
+        };
+        setCodeValue(target);
+      }
     } else if (type === 'html') {
       const configs = form.getFieldValue('configs');
       const target = configs[index];
       const str = props.vueColRender[target.renderKey](target.key);
       const value = target.render ? target.render : str;
       setCodeValue(value);
-      setCodeKey(target.key);
     }
+    setCodeKey(index);
     setCodeType(type);
     setVisible(true);
   };
@@ -129,14 +160,15 @@ const Setting = (props: IProps) => {
     let newCode = code;
     setVisible(visible);
     if (props.component && !isEmpty(code)) {
-      if (!isObject(code)) {
-        const target = children.find((item: any) => item.key === codeKey);
-        if (!target) {
-          message.error('保存异常');
-          return;
+      if (codeKey > -1) {
+        if (codeType === 'html') {
+          children[codeKey].render = code;
+          newCode = props.component;
+        } else if (codeType === 'component') {
+          // 改变原数据component.children
+          children.splice(codeKey, 1, code);
+          newCode = props.component;
         }
-        target.render = code;
-        newCode = props.component;
       }
       newCode['uuid'] = getUid(); // 更新uuid，让监听uuid变化的组件都能同步更新
       props.handleCB && props.handleCB(newCode);
@@ -353,6 +385,11 @@ const Setting = (props: IProps) => {
                       icon={<DeleteOutlined />}
                       onClick={() => remove(field.name)}
                     />
+                    <Button
+                      type="link"
+                      icon={<EditOutlined />}
+                      onClick={() => handleShowCode('component', i)}
+                    ></Button>
                   </Form.Item>
                 </Space>
               </div>
@@ -465,7 +502,7 @@ const Setting = (props: IProps) => {
               style={{ marginLeft: 8 }}
               type="primary"
               danger
-              onClick={() => handleShowCode('component')}
+              onClick={() => handleShowCode('component', -1)}
             >
               代码编辑
             </Button>

@@ -230,10 +230,10 @@ const Parser = () => {
                 lg: 8,
                 xl: 8,
               };
-              if (key) {
-                colProps.onClick = (e: any) =>
-                  handleComponentClick(e, item, uuid, i);
-              }
+              // if (key) {
+              //   colProps.onClick = (e: any) =>
+              //     handleComponentClick(e, item, uuid, i);
+              // }
 
               return (
                 <Col key={i} {...colProps}>
