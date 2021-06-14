@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-14 01:33:29
- * @LastEditTime: 2021-06-14 13:37:21
+ * @LastEditTime: 2021-06-14 14:42:50
  * @LastEditors: chengtianqing
  * @Description:
  */
@@ -126,7 +126,7 @@ const Setting = (props: IProps) => {
       if (index === -1) {
         const configs = form.getFieldValue('configs');
         if (!isEqual(initValues, configs)) {
-          message.warning('内容已更改但未保存，请先提交再操作');
+          message.warning('内容已更改，请先提交再操作');
           return;
         }
         setCodeValue(props.component);
