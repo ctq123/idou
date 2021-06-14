@@ -133,6 +133,7 @@ const Setting = (props: IProps) => {
       } else {
         const configs = form.getFieldValue('configs');
         const { label, key, type } = configs[index];
+        if (!type) return;
         // @ts-ignore
         const childNode = ComponentsDSL[type];
         const target = {
@@ -146,6 +147,7 @@ const Setting = (props: IProps) => {
     } else if (type === 'html') {
       const configs = form.getFieldValue('configs');
       const target = configs[index];
+      if (!target.renderKey) return;
       const str = props.vueColRender[target.renderKey](target.key);
       const value = target.render ? target.render : str;
       setCodeValue(value);
