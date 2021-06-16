@@ -218,9 +218,11 @@ const Setting = (props: IProps) => {
           component.children = tableChild;
           break;
         case 'Form':
+          // 先剔除按钮
           const tIndex = component.children.findIndex((it: any) => !it.key);
           const optItem =
             tIndex > -1 ? component.children.splice(tIndex, 1) : [];
+
           let formChild = [];
           if (configs.length) {
             formChild = configs.map((item: any, i: number) => {
