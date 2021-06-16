@@ -1,6 +1,23 @@
 .container {
   padding: 0px;
   font-family: PingFang SC;
+  .edit-container {
+    .go-back {
+      display: flex;
+      align-items: center;
+      i {
+        font-size: 22px;
+        cursor: pointer;
+      }
+      i:hover {
+        color: #01c2c3;
+      }
+      .bread {
+        font-size: 14px;
+        margin-left: 8px;
+      }
+    }
+  }
   .page-container {
     box-sizing: border-box;
     font-family: PingFangSC-Regular;
@@ -61,6 +78,22 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 50px;
+  }
+  .footer-block {
+    position: sticky;
+    bottom: 0px;
+    height: 64px;
+    padding: 0 24px;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    .footer-con {
+      height: 64px;
+      line-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
   }
   :global {
     .ant-form-item {

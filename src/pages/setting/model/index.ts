@@ -170,7 +170,9 @@ const reducer = (state: any, action: any) => {
       return { ...state, selectedComponent: data };
     case 'generate/vue':
       const newDSL = cloneDeep(state.dsl);
-      const { vueCode, apiCode } = getSourceCode(newDSL);
+      const { vueCode, apiCode } = getSourceCode(newDSL) || {};
+      console.log('vueCode', vueCode);
+      if (!vueCode) return { ...state };
       return { ...state, vueCode, apiCode, showVueCode: !state.showVueCode };
     case 'dsl/apis/update':
       const newDSL2 = cloneDeep(state.dsl);

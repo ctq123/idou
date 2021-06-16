@@ -6,74 +6,83 @@ const DSL = {
   },
   children: [
     {
-      componentName: 'Form',
+      componentName: 'DIV',
       props: {
-        'label-width': '80px',
+        className: 'bc_fff bshadow pl24 pb6 pr24 pt24',
       },
-      dataKey: 'form',
       children: [
         {
-          label: '姓名',
-          key: 'trueName',
+          componentName: 'Form',
+          props: {
+            'label-width': '80px',
+          },
+          dataKey: 'form',
+          type: 'search',
           children: [
             {
-              componentName: 'Input',
-              props: {
-                placeholder: '请输入',
-                clearable: true,
-              },
-            },
-          ],
-        },
-        {
-          label: '状态',
-          key: 'status',
-          children: [
-            {
-              componentName: 'Select',
-              props: {
-                placeholder: '请选择',
-                clearable: true,
-              },
-              options: [
-                { value: '0', label: '审批中' },
-                { value: '1', label: '已通过' },
-                { value: '2', label: '已驳回' },
+              label: '姓名',
+              key: 'trueName',
+              children: [
+                {
+                  componentName: 'Input',
+                  props: {
+                    placeholder: '请输入',
+                    clearable: true,
+                  },
+                },
               ],
             },
-          ],
-        },
-        {
-          label: '创建时间',
-          key: 'createTime',
-          children: [
             {
-              componentName: 'RangePicker',
-              props: {},
-            },
-          ],
-        },
-        {
-          label: '商品类目',
-          key: 'categoryIds',
-          children: [
-            {
-              componentName: 'Cascader',
-              props: {
-                placeholder: '请选择',
-              },
-              options: [
+              label: '状态',
+              key: 'status',
+              children: [
                 {
-                  value: 1,
-                  label: '鞋',
-                  children: [
+                  componentName: 'Select',
+                  props: {
+                    placeholder: '请选择',
+                    clearable: true,
+                  },
+                  options: [
+                    { value: '0', label: '审批中' },
+                    { value: '1', label: '已通过' },
+                    { value: '2', label: '已驳回' },
+                  ],
+                },
+              ],
+            },
+            {
+              label: '创建时间',
+              key: 'createTime',
+              children: [
+                {
+                  componentName: 'RangePicker',
+                  props: {},
+                },
+              ],
+            },
+            {
+              label: '商品类目',
+              key: 'categoryIds',
+              children: [
+                {
+                  componentName: 'Cascader',
+                  props: {
+                    placeholder: '请选择',
+                  },
+                  options: [
                     {
-                      value: 100,
-                      label: '运动鞋',
+                      value: 1,
+                      label: '鞋',
                       children: [
                         {
-                          value: 200,
-                          label: '篮球鞋',
+                          value: 100,
+                          label: '运动鞋',
+                          children: [
+                            {
+                              value: 200,
+                              label: '篮球鞋',
+                            },
+                          ],
                         },
                       ],
                     },
@@ -81,54 +90,54 @@ const DSL = {
                 },
               ],
             },
-          ],
-        },
-        {
-          label: '商品名称',
-          key: 'productName',
-          children: [
             {
-              componentName: 'AutoComplete',
-              props: {
-                placeholder: '请输入',
-                clearable: true,
-              },
-              options: [],
-              onSearch: `function handleSearchText(searchText) {
-                this.queryProductName(searchText);
-                this.productNameOptions = []
-              }`,
-              onSelect: `function handleSelect(data) {
-                this.productName = data;
-              }`,
-            },
-          ],
-        },
-        {
-          label: '',
-          children: [
-            {
-              componentName: 'Button',
-              props: {
-                type: 'default',
-              },
-              children: '重置',
-              onClick: `function handleReset() {
-                this.pagination.currentPage = 1;
-                this.form = {};
-                this.queryList();
-              }`,
+              label: '商品名称',
+              key: 'productName',
+              children: [
+                {
+                  componentName: 'AutoComplete',
+                  props: {
+                    placeholder: '请输入',
+                    clearable: true,
+                  },
+                  options: [],
+                  onSearch: `function handleSearchText(searchText) {
+                    this.queryProductName(searchText);
+                    this.productNameOptions = []
+                  }`,
+                  onSelect: `function handleSelect(data) {
+                    this.productName = data;
+                  }`,
+                },
+              ],
             },
             {
-              componentName: 'Button',
-              props: {
-                type: 'primary',
-              },
-              children: '查询',
-              onClick: `function handleSearch() {
-                this.pagination.currentPage = 1;
-                this.queryList();
-              }`,
+              label: '',
+              children: [
+                {
+                  componentName: 'Button',
+                  props: {
+                    type: 'default',
+                  },
+                  children: '重置',
+                  onClick: `function handleReset() {
+                    this.pagination.currentPage = 1;
+                    this.form = {};
+                    this.queryList();
+                  }`,
+                },
+                {
+                  componentName: 'Button',
+                  props: {
+                    type: 'primary',
+                  },
+                  children: '查询',
+                  onClick: `function handleSearch() {
+                    this.pagination.currentPage = 1;
+                    this.queryList();
+                  }`,
+                },
+              ],
             },
           ],
         },

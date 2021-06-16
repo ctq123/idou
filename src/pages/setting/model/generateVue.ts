@@ -29,7 +29,7 @@ let renderData: any = {
   apis: [],
 };
 
-const lifeCycleMap = {
+const lifeCycleMap: any = {
   constructor: 'created',
   getDerivedStateFromProps: 'beforeUpdate',
   componentDidMount: 'mounted',
@@ -63,15 +63,13 @@ const initData = () => {
 };
 
 const generateTemplate = (schemaDSL: any, vModel?: any) => {
-  const { componentName, props, children, options, dataKey } = schemaDSL || {};
+  const { componentName, props, children, options, dataKey, type } =
+    schemaDSL || {};
   let xml = '';
+  replaceObjKey(props, 'className', 'class');
   switch (componentName) {
     case 'DIV':
-      const divProps = {
-        ...props,
-      };
-      replaceObjKey(divProps, 'className', 'class');
-      const divAttr = `${getPropsStr(divProps)} ${getEventStr(schemaDSL)}`;
+      const divAttr = `${getPropsStr(props)} ${getEventStr(schemaDSL)}`;
       const divChildStr = Array.isArray(children)
         ? children.map((item: any) => generateTemplate(item)).join('')
         : children || '';
@@ -79,7 +77,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       break;
     case 'Form':
       const formDataKey = dataKey || 'form';
-      renderData.data[formDataKey] = {};
+      // 解决多个form公用数据问题
+      renderData.data[formDataKey] = renderData.data[formDataKey]
+        ? { ...renderData.data[formDataKey] }
+        : {};
 
       const childs = children || [];
       const buttonItems = (list: any) =>
@@ -88,7 +89,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           const itemChildren = (item.children || [])
             .map((child: any) => generateTemplate(child))
             .join('');
-          return VueXML.CreateDom('template', `v-slot:doBox`, itemChildren);
+          return itemChildren;
         });
 
       const formItems = (list: any[]) =>
@@ -106,10 +107,20 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                   initValue !== undefined ? initValue : '';
               }
             }
-            const itemChildren = (item.children || [])
+            let itemChildren = (item.children || [])
               .map((child: any) => generateTemplate(child, vmodel))
               .join('');
-            return VueXML['FormItem'](getPropsStr(itemProps), itemChildren);
+
+            itemChildren = VueXML.CreateDom(
+              'el-form-item',
+              getPropsStr(itemProps),
+              itemChildren,
+            );
+            return VueXML.CreateDom(
+              'el-col',
+              `v-bind="colProps"`,
+              itemChildren,
+            );
           })
           .join('\n');
 
@@ -117,18 +128,38 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         ...props,
         ':model': formDataKey,
       };
-      const buttonItemsContainer = !childs[childs.length - 1].key
+      let buttonItemsStr = !childs[childs.length - 1].key
         ? buttonItems(childs.splice(-1))
         : '';
-      const formItemsContainer = VueXML.CreateDom(
-        'template',
-        `v-slot:content`,
-        formItems(childs),
-      );
+      let formItemsStr = formItems(childs);
+      let formChildStr = null;
+      if (type === 'search') {
+        // 搜索的处理
+        buttonItemsStr = VueXML.CreateDom(
+          'template',
+          `v-slot:doBox`,
+          buttonItemsStr,
+        );
+        formItemsStr = VueXML.CreateDom(
+          'template',
+          `v-slot:content`,
+          formItemsStr,
+        );
+        formChildStr = VueXML.CreateDom(
+          'flex-search',
+          '',
+          `${formItemsStr}\n${buttonItemsStr}`,
+        );
+      } else {
+        formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
+      }
 
-      xml = VueXML['Form'](
+      formChildStr = VueXML.CreateDom('el-row', `:gutter="20"`, formChildStr);
+
+      xml = VueXML.CreateDom(
+        'el-form',
         getPropsStr(formProps),
-        `${formItemsContainer}\n${buttonItemsContainer}`,
+        `${formChildStr}`,
       );
       break;
     case 'Select':
@@ -203,10 +234,22 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       const listKey = dataKey || 'list';
       renderData.data[listKey] = [];
 
-      const columns = (children || [])
+      let columns = '';
+      if (type === 'editTable') {
+        // 添加选择行
+        columns += VueXML.CreateDom(
+          'el-table-column',
+          `type="selection" width="50"`,
+          '',
+        );
+      }
+      columns += (children || [])
         .map((item: any) => {
           const newProps = { ...item };
-          let childStr = VueTableRenderXML[item.renderKey](item.key);
+          const renderMothod = item.renderKey || 'renderDefault';
+          let childStr = VueTableRenderXML[renderMothod](item.key);
+          // 重新扫描是否包含函数
+          checkFuncStr(childStr);
           if (item.key) {
             delete newProps.key;
             delete newProps.renderKey;
@@ -215,9 +258,29 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             delete newProps.render;
             childStr = item.render;
           }
-          // 重新扫描是否包含函数
-          checkFuncStr(childStr);
-          return VueXML['TableColumn'](getPropsStr(newProps), childStr);
+          if (Array.isArray(item.children)) {
+            // 编辑类型
+            delete newProps.children;
+            delete newProps.uuid;
+            const vmodel = listKey && item.key ? `row.${item.key}` : '';
+            let itemChildren = (item.children || [])
+              .map((child: any) => generateTemplate(child, vmodel))
+              .join('');
+
+            // 覆盖原渲染col
+            childStr = VueXML.CreateDom(
+              'template',
+              `slot-scope="{ row }"`,
+              itemChildren,
+            );
+            return VueXML.CreateDom(
+              'el-table-column',
+              getPropsStr(newProps),
+              childStr,
+            );
+          } else {
+            return VueXML['TableColumn'](getPropsStr(newProps), childStr);
+          }
         })
         .join('\n');
 
@@ -231,6 +294,44 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         getPropsStr(tableProps),
         `\n${columns}\n`,
       );
+      break;
+    case 'Col':
+      if (dataKey) {
+        renderData.data[dataKey] = renderData.data[dataKey]
+          ? { ...renderData.data[dataKey] }
+          : {};
+      }
+
+      const colChilds = (children || [])
+        .filter(Boolean)
+        .map((item: any) => {
+          if (item.componentName) {
+            return generateTemplate(item);
+          } else {
+            if (item.key && dataKey) {
+              renderData.data[dataKey][item.key] = '';
+            }
+            let spans = VueXML.CreateDom('span', '', `${item.label}：`);
+            spans += '\n';
+            if (item.isEllipsis) {
+              spans += VueXML.CreateDom(
+                'ellipsis-popover',
+                `class="fw600" :content="${dataKey}.${item.key}"`,
+                ``,
+              );
+            } else {
+              spans += VueXML.CreateDom(
+                'span',
+                `class="fw600"`,
+                `{{${dataKey}.${item.key}}}`,
+              );
+            }
+            return spans;
+          }
+        })
+        .join('\n');
+
+      xml = VueXML.CreateDom('el-col', getPropsStr(props), colChilds);
       break;
     case 'Pagination':
       const paginationDataKey = dataKey || 'pagination';
@@ -253,7 +354,13 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       )} ${paginationEventStr}`;
       xml = VueXML.CreateDom('el-pagination', paginationAttr, '');
       break;
+    case 'CrumbBack':
+      xml = VueXML['CrumbBack'](getEventStr(schemaDSL), `{{ ${dataKey} }}`);
+      break;
     default:
+      if (dataKey && renderData.data[dataKey] === undefined) {
+        renderData.data[dataKey] = '';
+      }
       const defaultProps = {
         ...props,
       };
@@ -264,7 +371,15 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         schemaDSL,
       )}`;
       const defaultChildStr = Array.isArray(children)
-        ? children.map((t) => t).join('\n')
+        ? children
+            .map((t) => {
+              if (t.componentName) {
+                return generateTemplate(t);
+              } else {
+                return t;
+              }
+            })
+            .join('')
         : children || '';
       xml = VueXML.CreateDom(
         `el-${componentName.toLowerCase()}`,
@@ -278,14 +393,13 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
 
 const getLifeCycle = (item: object) => {
   const lifeList: any = [];
-  Object.entries(item).forEach(([k, v]) => {
-    // @ts-ignore
-    const name = lifeCycleMap[k];
-    if (name) {
-      const { newFunc } = transformFunc(v, name);
+  Object.entries(item)
+    .filter(Boolean)
+    .forEach(([k, v]) => {
+      const name = lifeCycleMap[k];
+      const { newFunc } = transformFunc(v, name || k);
       lifeList.push(newFunc);
-    }
-  });
+    });
   return lifeList;
 };
 
@@ -344,8 +458,9 @@ const getEventStr = (item: object, extraMap: any = {}) => {
         // 特定的函数事件
         funcStr += `${extraMap[k]}="${newFuncName}"`;
       }
-      // @ts-ignore
-      renderData.methods.push(newFunc);
+      if (!renderData.methods.includes(newFunc)) {
+        renderData.methods.push(newFunc);
+      }
     }
   });
   return funcStr;
@@ -365,7 +480,9 @@ const checkFuncStr = (str: string) => {
       } else {
         func += '() { }';
       }
-      renderData.methods.push(func);
+      if (!renderData.methods.includes(func)) {
+        renderData.methods.push(func);
+      }
       checkFuncStr(s);
     }
   }
@@ -382,30 +499,7 @@ const getPropsStr = (obj: any) => {
 };
 
 const generateVue = () => {
-  const vueCode = `
-      <template>
-        ${renderData.template}
-      </template>
-
-      <script>
-        ${renderData.imports.join(';\n')}
-
-        export default {
-          data() {
-            return ${JSON.stringify(renderData.data, null, 2)}
-          },
-          ${renderData.lifecycles.join(',\n')}
-          ,
-          methods: {
-            ${renderData.methods.join(',\n')}
-          }
-        }
-      </script>
-
-      <style lang="scss" scoped>
-        ${renderData.styles.join('\n')}
-      </style>
-    `;
+  const vueCode = VueXML.VueTemplate(renderData);
   return prettierFormat(vueCode, 'vue');
 };
 

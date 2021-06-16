@@ -2,26 +2,31 @@
  * vue-组件源码片段
  */
 export const VueXML: any = {
-  Form: (attrStr: any, childStr: any) => {
+  VueTemplate: (renderData: any) => {
     return `
-    <!--搜索区域-->
-    <div class="bc_fff bshadow pl24 pb6 pr24 pt24">
-      <el-form ${attrStr}>
-        <el-row :gutter="20">
-          <flex-search>
-            ${childStr}
-          </flex-search>
-        </el-row>
-      </el-form>
-    </div>`;
-  },
-  FormItem: (attrStr: any, childStr: any) => {
-    return `
-    <el-col v-bind="colProps">
-      <el-form-item ${attrStr}>
-      ${childStr}
-      </el-form-item>
-    </el-col>`;
+    <template>
+      ${renderData.template}
+    </template>
+
+    <script>
+      ${renderData.imports.join(';\n')};
+
+      export default {
+        data() {
+          return ${JSON.stringify(renderData.data, null, 2)}
+        },
+        ${renderData.lifecycles.join(',\n')}
+        ,
+        methods: {
+          ${renderData.methods.join(',\n')}
+        }
+      }
+    </script>
+
+    <style lang="scss" scoped>
+      ${renderData.styles.join('\n')}
+    </style>
+  `;
   },
   TableColumn: (attrStr: any, childStr: any) => {
     return `
@@ -29,7 +34,16 @@ export const VueXML: any = {
       <template slot-scope="{ row }">
       ${childStr}
       </template>
-    </el-table-column>`;
+    </el-table-column>
+    `;
+  },
+  CrumbBack: (attrStr: any, childStr: any) => {
+    return `
+    <div class="go-back">
+      <i class="el-icon-back" ${attrStr}></i>
+      <span class="bread">${childStr}</span>
+    </div>
+    `;
   },
   CreateDom: (name: any, attrStr: any, childStr: any) => {
     return `<${name} ${attrStr}>
@@ -142,6 +156,13 @@ export const styleXML: any = {
   modal: () => {
     return `
       .modal {
+        padding: 0px;
+      }
+    `;
+  },
+  edit: () => {
+    return `
+      .edit {
         padding: 0px;
       }
     `;

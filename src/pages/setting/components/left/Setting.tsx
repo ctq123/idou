@@ -35,7 +35,11 @@ import isObject from 'lodash/isObject';
 import isEqual from 'lodash/isEqual';
 import CodeDrawer from '../codeEditor/CodeDrawer';
 import { getUid } from '@/utils';
-import { FormComponentObj, ComponentsDSL } from '../../const/componentDSL';
+import {
+  FormComponentObj,
+  TableComponentObj,
+  ComponentsDSL,
+} from '../../const/componentDSL';
 import styles from './Setting.less';
 interface IProps {
   vueColRender?: any;
@@ -44,40 +48,39 @@ interface IProps {
 }
 
 const { Option } = Select;
+const colRenderObj = {
+  renderTime: '时间',
+  renderAmount: '金额',
+  renderOperate: '操作',
+  renderDefault: '默认',
+};
 
 const Setting = (props: IProps) => {
   console.log('props', props);
-  const { componentName, children, uuid } = props.component || {};
+  const { componentName, children, uuid, type } = props.component || {};
   const [visible, setVisible] = useState(false);
   const [codeType, setCodeType] = useState('component') as any;
   const [codeValue, setCodeValue] = useState('');
   const [codeKey, setCodeKey] = useState(-1);
-  const [renderList, setRenderList] = useState([]);
   const [initValues, setInitValues] = useState({});
   const [form] = Form.useForm();
   useEffect(() => {
     const getInitialValue = () => {
       switch (componentName) {
         case 'Table':
-          const obj = {
-            renderTime: '时间',
-            renderAmount: '金额',
-            renderOperate: '操作',
-            renderDefault: '默认',
-          };
-          const list: any = Object.entries(obj).map(([value, label]) => ({
-            value,
-            label,
-          }));
-          setRenderList(list);
           return (children || [])
             .map((item: any) => {
               if (item.key) {
-                return {
+                const obj: any = {
                   key: item.key,
                   label: item.label,
                   renderKey: item.renderKey,
                 };
+                if (Array.isArray(item.children)) {
+                  obj['type'] = item.children[0]?.componentName;
+                  obj['child'] = item.children;
+                }
+                return obj;
               }
               return null;
             })
@@ -103,11 +106,15 @@ const Setting = (props: IProps) => {
           return (nodes || [])
             .map((item: any) => {
               if (item.key) {
-                return {
+                const obj: any = {
                   key: item.key,
                   label: item.label,
-                  type: item?.children[0]?.componentName,
                 };
+                if (Array.isArray(item.children)) {
+                  obj['type'] = item.children[0]?.componentName;
+                  obj['child'] = item.children;
+                }
+                return obj;
               }
               return null;
             })
@@ -121,8 +128,8 @@ const Setting = (props: IProps) => {
     setInitValues(configs);
   }, [uuid]);
 
-  const handleShowCode = (type: string, index: number = 0) => {
-    if (type === 'component') {
+  const handleShowCode = (codeType: string, index: number = 0) => {
+    if (codeType === 'component') {
       if (index === -1) {
         const configs = form.getFieldValue('configs');
         if (!isEqual(initValues, configs)) {
@@ -132,19 +139,18 @@ const Setting = (props: IProps) => {
         setCodeValue(props.component);
       } else {
         const configs = form.getFieldValue('configs');
-        const { label, key, type } = configs[index];
+        const { label, key, type, child } = configs[index];
         if (!type) return;
-        // @ts-ignore
-        const childNode = ComponentsDSL[type];
         const target = {
           ...children[index],
           label,
           key,
-          children: [childNode],
+          children: child,
         };
         setCodeValue(target);
       }
-    } else if (type === 'html') {
+    } else if (codeType === 'html') {
+      // 自定义渲染函数
       const configs = form.getFieldValue('configs');
       const target = configs[index];
       if (!target.renderKey) return;
@@ -153,7 +159,7 @@ const Setting = (props: IProps) => {
       setCodeValue(value);
     }
     setCodeKey(index);
-    setCodeType(type);
+    setCodeType(codeType);
     setVisible(true);
   };
 
@@ -177,6 +183,17 @@ const Setting = (props: IProps) => {
     }
   };
 
+  const handleTypeChange = (comType: any, i: number) => {
+    console.log('comType', comType);
+    const configs = form.getFieldValue('configs');
+    if (comType) {
+      // @ts-ignore
+      configs[i].child = [ComponentsDSL[comType]];
+    } else {
+      configs[i].child = undefined;
+    }
+  };
+
   const onFinish = (values: any) => {
     console.log('Received values of form:', values);
     const { configs } = values || {};
@@ -187,8 +204,15 @@ const Setting = (props: IProps) => {
           let tableChild = [];
           if (configs.length) {
             tableChild = configs.map((item: any, i: number) => {
-              const { key, label, renderKey } = item;
-              return { key, label, renderKey };
+              const { key, label, renderKey, child } = item;
+              const obj: any = { key, label };
+              if (renderKey) {
+                obj['renderKey'] = renderKey;
+              }
+              if (child) {
+                obj['children'] = child;
+              }
+              return obj;
             });
           }
           component.children = tableChild;
@@ -200,14 +224,12 @@ const Setting = (props: IProps) => {
           let formChild = [];
           if (configs.length) {
             formChild = configs.map((item: any, i: number) => {
-              // @ts-ignore
-              const childNode = ComponentsDSL[item.type];
-              return {
-                ...component.children[i],
-                key: item.key,
-                label: item.label,
-                children: [childNode],
-              };
+              const { key, label, child } = item;
+              const obj: any = { key, label };
+              if (child) {
+                obj['children'] = child;
+              }
+              return obj;
             });
           }
           component.children = [].concat(formChild, optItem);
@@ -228,8 +250,7 @@ const Setting = (props: IProps) => {
           if (configs.length) {
             component['key'] = configs[0].key;
             component['label'] = configs[0].label;
-            // @ts-ignore
-            component['children'] = [ComponentsDSL[configs[0].type]];
+            component['children'] = configs[0].child;
           }
           break;
       }
@@ -240,6 +261,7 @@ const Setting = (props: IProps) => {
   };
 
   const generateFormItem = (fields: any, remove: any, move: any, add: any) => {
+    console.log('fields', fields);
     switch (componentName) {
       case 'Table':
         return (
@@ -266,24 +288,46 @@ const Setting = (props: IProps) => {
                   </Form.Item>
                 </Space>
                 <Space align="baseline">
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'renderKey']}
-                    fieldKey={[field.fieldKey, 'renderKey']}
-                    rules={[{ required: true, message: '请选择处理类型' }]}
-                  >
-                    <Select
-                      style={{ width: 163 }}
-                      placeholder="处理类型"
-                      allowClear
+                  {type === 'editTable' ? (
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'type']}
+                      fieldKey={[field.fieldKey, 'type']}
+                      rules={[{ required: false, message: '请选择处理类型' }]}
                     >
-                      {renderList.map(({ value, label }) => (
-                        <Option key={value} value={value}>
-                          {label}
-                        </Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
+                      <Select
+                        style={{ width: 163 }}
+                        placeholder="处理类型"
+                        allowClear
+                        onChange={(val) => handleTypeChange(val, i)}
+                      >
+                        {Object.entries(TableComponentObj).map(([k, v]) => (
+                          <Option key={k} value={k}>
+                            {v}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  ) : (
+                    <Form.Item
+                      {...field}
+                      name={[field.name, 'renderKey']}
+                      fieldKey={[field.fieldKey, 'renderKey']}
+                      rules={[{ required: true, message: '请选择处理类型' }]}
+                    >
+                      <Select
+                        style={{ width: 163 }}
+                        placeholder="处理类型"
+                        allowClear
+                      >
+                        {Object.entries(colRenderObj).map(([k, v]) => (
+                          <Option key={k} value={k}>
+                            {v}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  )}
                   <Form.Item>
                     <Button
                       type="link"
@@ -303,13 +347,15 @@ const Setting = (props: IProps) => {
                       icon={<DeleteOutlined />}
                       onClick={() => remove(field.name)}
                     />
-                    <Tooltip title="自定义渲染列-vue">
-                      <Button
-                        type="link"
-                        icon={<HighlightOutlined />}
-                        onClick={() => handleShowCode('html', i)}
-                      ></Button>
-                    </Tooltip>
+                    {type === 'editTable' ? null : (
+                      <Tooltip title="自定义渲染列-vue">
+                        <Button
+                          type="link"
+                          icon={<HighlightOutlined />}
+                          onClick={() => handleShowCode('html', i)}
+                        ></Button>
+                      </Tooltip>
+                    )}
                   </Form.Item>
                 </Space>
               </div>
@@ -360,6 +406,7 @@ const Setting = (props: IProps) => {
                       style={{ width: 163 }}
                       placeholder="类型"
                       allowClear
+                      onChange={(val) => handleTypeChange(val, i)}
                     >
                       {Object.entries(FormComponentObj).map(([k, v]) => (
                         <Option key={k} value={k}>
@@ -464,6 +511,7 @@ const Setting = (props: IProps) => {
                         style={{ width: 130 }}
                         placeholder="类型"
                         allowClear
+                        onChange={(val) => handleTypeChange(val, i)}
                       >
                         {Object.entries(FormComponentObj).map(([k, v]) => (
                           <Option key={k} value={k}>

@@ -6,12 +6,14 @@ const ComponentsDSL = {
     componentName: 'Input',
     props: {
       placeholder: '请输入',
+      clearable: true,
     },
   },
   Select: {
     componentName: 'Select',
     props: {
       placeholder: '请选择',
+      clearable: true,
     },
     options: [
       { value: '0', label: '审批中' },
@@ -51,6 +53,7 @@ const ComponentsDSL = {
     componentName: 'AutoComplete',
     props: {
       placeholder: '请输入',
+      clearable: true,
     },
     options: [],
     onSearch: `function handleSearchText(searchText) {
@@ -80,12 +83,13 @@ const ComponentsDSL = {
     children: [
       {
         label: '姓名',
-        key: 'trueName',
+        key: 'name',
         children: [
           {
             componentName: 'Input',
             props: {
               placeholder: '请输入',
+              clearable: true,
             },
           },
         ],
@@ -155,4 +159,12 @@ const FormComponentObj = {
   AutoComplete: componentNames['AutoComplete'],
 };
 
-export { componentList, ComponentsDSL, FormComponentObj };
+/**
+ * Table表单允许使用的组件
+ */
+const TableComponentObj = {
+  Input: componentNames['Input'],
+  Select: componentNames['Select'],
+};
+
+export { componentList, ComponentsDSL, FormComponentObj, TableComponentObj };

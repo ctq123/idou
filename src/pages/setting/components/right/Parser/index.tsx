@@ -9,6 +9,7 @@ import { getMockDataList } from '@/utils/mock';
 import styles from './index.less';
 import 'antd/dist/antd.css';
 import { Button, Divider } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useEffect } from 'react';
 
 const antd = require('antd');
@@ -41,9 +42,12 @@ const Parser = () => {
   const [mockList, setMockList] = useState([]);
   const [cols, setCols] = useState(cols);
   const [newDSL, setNewDSL] = useState({});
+  const [dataSource, setDataSource] = useState({});
 
   useEffect(() => {
     const newDSL = cloneDeep(appContext.state.dsl);
+    const { dataSource = {} } = newDSL || {};
+    setDataSource(dataSource);
     setNewDSL(newDSL);
   }, [appContext.state.dsl]);
 
@@ -217,19 +221,14 @@ const Parser = () => {
           const formNodes = (children || [])
             .filter(Boolean)
             .map((item: any, i: number) => {
-              const { key, label, initValue } = item || {};
+              const { key, label, initialValue } = item || {};
               console.log('Form item', item);
               const itemProps = {
                 name: key,
                 label,
-                initialValue: initValue,
+                initialValue: initialValue,
               };
-              const colProps: any = {
-                xs: 24,
-                sm: 12,
-                lg: 8,
-                xl: 8,
-              };
+              const colProps: any = dataSource.colProps || {};
               // if (key) {
               //   colProps.onClick = (e: any) =>
               //     handleComponentClick(e, item, uuid, i);
@@ -278,6 +277,11 @@ const Parser = () => {
                     <a>编辑</a>
                   </>
                 );
+              };
+            }
+            if (Array.isArray(item.children)) {
+              col.render = () => {
+                return generateComponent(item.children[0], uuid, 0);
               };
             }
             return col;
@@ -331,6 +335,33 @@ const Parser = () => {
           const DatePicker = antd['DatePicker'];
           const { RangePicker } = DatePicker;
           return <RangePicker {...props} />;
+        case 'Col':
+          const Col2 = antd['Col'];
+          const colChilds = (children || [])
+            .filter(Boolean)
+            .map((item: any, i: number) => {
+              if (item.componentName) {
+                return generateComponent(item, uuid, i);
+              } else {
+                return (
+                  <>
+                    <span>{item.label}:</span>
+                    {item.key}
+                  </>
+                );
+              }
+            });
+          return <Col2 {...props}>{colChilds}</Col2>;
+        case 'CrumbBack':
+          const title: any = dataSource.title || '';
+          return (
+            <div {...props} className={styles['go-back']}>
+              <i>
+                <ArrowLeftOutlined />
+              </i>{' '}
+              <span className={styles['bread']}>{title}</span>
+            </div>
+          );
         case 'Button':
           // 转换属性
           if (props.type === 'text') {
@@ -342,10 +373,20 @@ const Parser = () => {
             props.type = props.direction;
           }
         default:
+          const defaultProps = { ...props };
+          if (isEdit) {
+            defaultProps.onClick = (e: any) =>
+              handleComponentClick(e, componentDSL, parentUuid, index);
+          }
+          const defaultChildren = Array.isArray(children)
+            ? children
+                .filter(Boolean)
+                .map((item: any, i: number) => generateComponent(item, uuid, i))
+            : children;
           return React.createElement(
             antd[componentName],
             { ...props },
-            children,
+            defaultChildren,
           );
       }
     };
