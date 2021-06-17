@@ -10,8 +10,8 @@ const get = require('lodash/get');
 const cloneDeep = require('lodash/cloneDeep');
 const common = require('./common.js');
 const transform = require('./transform.js');
-const domain = 'xxx.com';
-const openUrl = `https://mock.${domain}/project/574/interface/api/134167`;
+const domain = 'shizhuang-inc.com';
+const openUrl = `https://mock.${domain}/project/574/interface/api/111276`;
 let apiData = {};
 let browser = null;
 
@@ -304,6 +304,9 @@ const handleApiData = async () => {
         apiData['request'] = requestObj;
         apiData['response'] = responseObj;
         console.log('apiData', apiData);
+
+        apiData = transform.transData(apiData);
+        await handleEditorPage();
       }
     });
 
@@ -326,7 +329,7 @@ const handleApiData = async () => {
   // await browser.close();
 };
 
-// handleApiData();
-apiData = cloneDeep(transform.mockApiData);
-apiData = transform.transData(apiData);
-handleEditorPage();
+handleApiData();
+// apiData = cloneDeep(transform.mockApiData);
+// apiData = transform.transData(apiData);
+// await handleEditorPage();
