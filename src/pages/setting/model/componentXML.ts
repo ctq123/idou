@@ -36,14 +36,13 @@ export const VueXML: any = {
     </div>
     `;
   },
-  StatusTag: (attrStr: any, childStr: any) => {
+  StatusTag: (key: any, tagObj: any) => {
     return `
     <el-tag
-      v-if="record['status'] && RecordStatusObj[record['status']]"
-      :type="(RecordStatusObj[record['status']] || {}).tag"
-      class="tag"
+      v-if="${key} && ${tagObj[key]}"
+      :type="${(tagObj[key] || {}).tag}"
     >
-      {{ (RecordStatusObj[record['status']] || {}).value }}
+      {{ ${(tagObj[key] || {}).value} }}
     </el-tag>
     `;
   },

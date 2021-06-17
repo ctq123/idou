@@ -87,6 +87,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     dataKey,
     type,
     componentType,
+    tagObj,
   } = schemaDSL || {};
   let xml = '';
   if (componentName) {
@@ -370,6 +371,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         break;
       case 'CrumbBack':
         xml = VueXML['CrumbBack'](getEventStr(schemaDSL), `{{ ${dataKey} }}`);
+        break;
+      case 'StatusTag':
+        // TODO 这个自定义设计需要改进
+        xml = VueXML['StatusTag'](dataKey, tagObj);
         break;
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {

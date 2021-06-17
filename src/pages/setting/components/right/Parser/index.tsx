@@ -286,7 +286,7 @@ const Parser = () => {
             }
             return col;
           });
-          // 模拟mock数据
+          // 动态生成mock数据
           getMockData(columns);
           console.log('mockList', mockList);
           return (
