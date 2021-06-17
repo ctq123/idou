@@ -28,15 +28,14 @@ export const VueXML: any = {
     </style>
   `;
   },
-  TableColumn: (attrStr: any, childStr: any) => {
-    return `
-    <el-table-column ${attrStr}>
-      <template slot-scope="{ row }">
-      ${childStr}
-      </template>
-    </el-table-column>
-    `;
-  },
+  // CrumbBack: (attrStr: any, childStr: any) => {
+  //   return `
+  //   <div class="go-back">
+  //     <i class="el-icon-back" ${attrStr}></i>
+  //     <span class="bread">${childStr}</span>
+  //   </div>
+  //   `;
+  // },
   CrumbBack: (attrStr: any, childStr: any) => {
     return `
     <div class="go-back">
