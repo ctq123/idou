@@ -50,6 +50,9 @@ const Parser = () => {
     setDataSource(dataSource);
     setNewDSL(newDSL);
   }, [appContext.state.dsl]);
+  useEffect(() => {
+    setSelectStyle({});
+  }, [appContext.state.dslType]);
 
   // 模拟数据
   const getMockData = (columns) => {

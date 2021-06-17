@@ -11,6 +11,7 @@ const { TabPane } = Tabs;
 
 const Left = () => {
   const [tab, setTab] = useState('template');
+  const [tmpl, setTmpl] = useState('list');
   const [selectedComponent, setSelectedComponent]: any = useState(null);
   const appContext: any = useContext(Context);
   useEffect(() => {
@@ -19,6 +20,9 @@ const Left = () => {
       setTab('setting');
     }
   }, [appContext.state.selectedComponent]);
+  useEffect(() => {
+    setTmpl(appContext.state.dslType);
+  }, [appContext.state.dslType]);
 
   const handleSettingCB = (com: any) => {
     const { from } = selectedComponent;
@@ -40,6 +44,15 @@ const Left = () => {
     }
   };
 
+  const selectTemplate = (code: any) => {
+    appContext.dispatch({
+      type: 'dsl/type/update',
+      data: {
+        dslType: code,
+      },
+    });
+  };
+
   const handleRequestCB = (apis: any) => {
     if (apis) {
       appContext.dispatch({
@@ -57,7 +70,15 @@ const Left = () => {
         return (
           <div className={styles['template']}>
             {(templates || []).map((item, i) => (
-              <div key={i} className={styles['item']}>
+              <div
+                key={i}
+                className={
+                  tmpl === item.code
+                    ? `${styles['active-item']} ${styles['item']}`
+                    : styles['item']
+                }
+                onClick={() => selectTemplate(item.code)}
+              >
                 <img alt="图片" src={item.img} />
                 <div className={styles['title']}>{item.label}</div>
               </div>

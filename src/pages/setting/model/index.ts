@@ -1,6 +1,9 @@
 import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { DSL } from '../const/dsl';
+import { DSL as ListDSL } from '../const/listDSL';
+import { DSL as DetailDSL } from '../const/detailDSL';
+import { DSL as EditDSL } from '../const/editDSL';
 import { getUid } from '@/utils';
 import { getSourceCode } from './generateVue';
 import { VueTableRenderXML } from './componentXML';
@@ -120,6 +123,7 @@ const initState = {
   vueCode: null,
   apiCode: null,
   showVueCode: false,
+  dslType: 'list',
   VueTableRenderXML,
 };
 
@@ -178,6 +182,26 @@ const reducer = (state: any, action: any) => {
       const newDSL2 = cloneDeep(state.dsl);
       newDSL2.apis = apis;
       return { ...state, dsl: newDSL2 };
+    case 'dsl/type/update':
+      let newTypeDSL = null;
+      switch (data.dslType) {
+        case 'detail':
+          newTypeDSL = DetailDSL;
+          break;
+        case 'edit':
+          newTypeDSL = EditDSL;
+          break;
+        case 'list':
+        default:
+          newTypeDSL = ListDSL;
+          break;
+      }
+      return {
+        ...state,
+        dslType: data.dslType,
+        dsl: cloneDeep(newTypeDSL),
+        selectedComponent: null,
+      };
     default:
       return state;
   }
