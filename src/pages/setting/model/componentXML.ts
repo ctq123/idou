@@ -36,6 +36,17 @@ export const VueXML: any = {
     </div>
     `;
   },
+  StatusTag: (attrStr: any, childStr: any) => {
+    return `
+    <el-tag
+      v-if="record['status'] && RecordStatusObj[record['status']]"
+      :type="(RecordStatusObj[record['status']] || {}).tag"
+      class="tag"
+    >
+      {{ (RecordStatusObj[record['status']] || {}).value }}
+    </el-tag>
+    `;
+  },
   CreateDom: (name: any, attrStr: any, childStr: any) => {
     return `<${name} ${attrStr}>
     ${childStr}

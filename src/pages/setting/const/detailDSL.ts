@@ -26,7 +26,11 @@ const DSL = {
               children: '预约单详情',
             },
             {
-              componentName: 'Tag',
+              componentName: 'StatusTag',
+              props: {},
+              dataKey: 'record.status',
+              statusObj: 'statusObj',
+              children: null,
             },
           ],
         },

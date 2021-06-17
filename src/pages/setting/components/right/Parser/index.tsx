@@ -183,6 +183,21 @@ const Parser = () => {
     return classStr;
   };
 
+  const getDomName = (componentType: any, componentName: string) => {
+    // TODO 特殊处理div
+    if (componentName.toLowerCase() === 'div') {
+      return 'div';
+    }
+    switch (componentType) {
+      case 'native':
+        return componentName.toLowerCase();
+      case 'custom':
+        return componentName;
+      default:
+        return antd[componentName];
+    }
+  };
+
   const generateComponent = (
     componentDSL: IComponent,
     parentUuid: any,
@@ -195,25 +210,10 @@ const Parser = () => {
       uuid,
       options = [],
       isEdit,
+      componentType,
     } = componentDSL;
     const recursionParser = () => {
       switch (componentName) {
-        case 'DIV':
-          const divProps = { ...props };
-          if (isEdit) {
-            divProps.onClick = (e: any) =>
-              handleComponentClick(e, componentDSL, parentUuid, index);
-          }
-          const childNodes = Array.isArray(children)
-            ? children
-                .filter(Boolean)
-                .map((item: any, i: number) => generateComponent(item, uuid, i))
-            : children || '';
-          return (
-            <div {...divProps} className={getClassNameStr(props)}>
-              {childNodes}
-            </div>
-          );
         case 'Form':
           const Form = antd['Form'];
           const Row = antd['Row'];
@@ -374,6 +374,10 @@ const Parser = () => {
           }
         default:
           const defaultProps = { ...props };
+          const className = getClassNameStr(defaultProps);
+          if (className) {
+            defaultProps.className = className;
+          }
           if (isEdit) {
             defaultProps.onClick = (e: any) =>
               handleComponentClick(e, componentDSL, parentUuid, index);
@@ -383,11 +387,8 @@ const Parser = () => {
                 .filter(Boolean)
                 .map((item: any, i: number) => generateComponent(item, uuid, i))
             : children;
-          return React.createElement(
-            antd[componentName],
-            { ...props },
-            defaultChildren,
-          );
+          const eleName = getDomName(componentType, componentName);
+          return React.createElement(eleName, defaultProps, defaultChildren);
       }
     };
     if (componentName) {

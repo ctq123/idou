@@ -64,6 +64,10 @@ const initData = () => {
 
 // 转换componentName成对应的源码名称
 const getDomName = (componentType: any, componentName: string) => {
+  // TODO 特殊处理div
+  if (componentName.toLowerCase() === 'div') {
+    return 'div';
+  }
   switch (componentType) {
     case 'native':
       return componentName.toLowerCase();
@@ -87,7 +91,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
   let xml = '';
   if (componentName) {
     replaceObjKey(props, 'className', 'class');
-    let domName = getDomName(componentType, componentName);
+
     switch (componentName) {
       case 'Form':
         const formDataKey = dataKey || 'form';
@@ -367,8 +371,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       case 'CrumbBack':
         xml = VueXML['CrumbBack'](getEventStr(schemaDSL), `{{ ${dataKey} }}`);
         break;
-      case 'DIV':
-        domName = 'div';
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {
           renderData.data[dataKey] = '';
@@ -377,6 +379,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const defaultAttr = `${getPropsStr(props)} ${getEventStr(schemaDSL)}`;
         const defaultChildStr = Array.isArray(children)
           ? children
+              .filter(Boolean)
               .map((t) => {
                 if (t.componentName) {
                   return generateTemplate(t);
@@ -386,8 +389,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               })
               .join('')
           : children || '';
-
-        xml = VueXML.CreateDom(domName, defaultAttr, defaultChildStr);
+        const eleName = getDomName(componentType, componentName);
+        xml = VueXML.CreateDom(eleName, defaultAttr, defaultChildStr);
         break;
     }
   }
