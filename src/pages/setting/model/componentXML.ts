@@ -37,12 +37,11 @@ export const VueXML: any = {
     `;
   },
   StatusTag: (key: any, tagObj: any) => {
-    return `
-    <el-tag
-      v-if="${key} && ${tagObj[key]}"
-      :type="${(tagObj[key] || {}).tag}"
+    return `<el-tag
+      v-if="${key} && ${tagObj}[${key}]"
+      :type="(${tagObj}[${key}] || {}).tag"
     >
-      {{ ${(tagObj[key] || {}).value} }}
+      {{ (${tagObj}[${key}] || {}).value }}
     </el-tag>
     `;
   },
@@ -170,9 +169,117 @@ export const styleXML: any = {
   },
   detail: () => {
     return `
-      .modal {
-        padding: 0px;
+    .el-modal {
+      box-sizing: border-box;
+      font-family: PingFangSC-Regular;
+    }
+    .info-list {
+      color: #2B2C3C;
+      .title {
+        color: #7F7F8E;
       }
+      .el-col {
+        padding: 12px 0;
+      }
+    }
+    .pro-img {
+      width: 60px;
+      height: 60px;
+      img {
+        width: 100%;
+        vertical-align: middle;
+      }
+    }
+    .mt-8{
+      margin-top: -8px;
+    }
+    .bb {
+      border-bottom: solid 1px #f5f5f9;
+    }
+    .fs18 {
+      font-size: 18px;
+    }
+    .fs16 {
+      font-size: 16px;
+    }
+    .fw600 {
+      font-weight: 600;
+    }
+    .fw700 {
+      font-weight: 700;
+    }
+    .f1 {
+      flex: 1;
+      min-width: 0;
+    }
+    .bc_fff {
+      background-color: #ffffff;
+    }
+    .bshadow {
+      border-radius: 2px;
+      box-shadow: 0px 2px 4px 0px #0000001a;
+    }
+    .pl24 {
+      padding-left: 24px;
+    }
+    .pb12 {
+      padding-bottom: 12px;
+    }
+    .pb24 {
+      padding-bottom: 24px;
+    }
+    .pr24 {
+      padding-right: 24px;
+    }
+    .pt24 {
+      padding-top: 24px;
+    }
+    .mt12 {
+      margin-top: 12px;
+    }
+    .mt24 {
+      margin-top: 24px;
+    }
+    .mb24 {
+      margin-bottom: 24px;
+    }
+    .mb12 {
+      margin-bottom: 12px;
+    }
+    .mr12 {
+      margin-right: 12px;
+    }
+    .w90 {
+      width: 90px;
+    }
+    .w100 {
+      width: 100%;
+    }
+    .h32 {
+      height: 32px;
+    }
+    .lh1 {
+      line-height: 1;
+    }
+    .tar {
+      text-align: right;
+    }
+    .df {
+      display: flex;
+    }
+    .jcsb {
+      justify-content: space-between;
+    }
+    .aic {
+      align-items: center;
+    }
+    .text-li {
+      span {
+        width: 120px;
+        display: inline-block;
+        text-align: right;
+      }
+    }
     `;
   },
 };

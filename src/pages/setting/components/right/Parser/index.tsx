@@ -185,7 +185,7 @@ const Parser = () => {
 
   const getDomName = (componentType: any, componentName: string) => {
     // TODO 特殊处理div
-    if (componentName.toLowerCase() === 'div') {
+    if (['modal', 'div'].includes(componentName.toLowerCase())) {
       return 'div';
     }
     switch (componentType) {
@@ -211,6 +211,7 @@ const Parser = () => {
       options = [],
       isEdit,
       componentType,
+      tagObj,
     } = componentDSL;
     const recursionParser = () => {
       switch (componentName) {
@@ -362,6 +363,11 @@ const Parser = () => {
               <span className={styles['bread']}>{title}</span>
             </div>
           );
+        case 'StatusTag':
+          const Tag = antd['Tag'];
+          const statusObj = dataSource[tagObj] || '';
+          const target = statusObj[1];
+          return <Tag color={target.tag}>{target.value}</Tag>;
         case 'Button':
           // 转换属性
           if (props.type === 'text') {

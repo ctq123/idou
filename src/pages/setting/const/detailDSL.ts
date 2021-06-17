@@ -19,6 +19,7 @@ const DSL = {
           props: {
             className: 'left',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'SPAN',
@@ -26,7 +27,7 @@ const DSL = {
               props: {
                 className: 'fs18 fw600',
               },
-              children: '预约单详情',
+              children: 'XX详情',
             },
             {
               componentName: 'StatusTag',
@@ -240,7 +241,6 @@ const DSL = {
     },
     record: {},
     loading: false,
-    title: 'XX详情',
     detailModalShow: false,
   },
   lifeCycle: {
