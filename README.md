@@ -13,7 +13,10 @@ Start the dev server,
 ```bash
 $ yarn start
 ```
-
+```bash
+// 自动化生成代码
+$ yarn auto
+```
 #### 待解决
 1）预览功能，打通codesandbox，实现项目的在线预览
 
