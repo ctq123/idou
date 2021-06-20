@@ -199,7 +199,7 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         dslType: data.dslType,
-        dsl: cloneDeep(newTypeDSL),
+        dsl: initDSL(newTypeDSL),
         selectedComponent: null,
       };
     default:

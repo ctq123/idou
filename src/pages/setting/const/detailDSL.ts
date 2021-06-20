@@ -17,7 +17,7 @@ const DSL = {
         {
           componentName: 'DIV',
           props: {
-            className: 'left',
+            className: 'left df aic',
           },
           isEdit: true,
           children: [
@@ -31,9 +31,10 @@ const DSL = {
             },
             {
               componentName: 'StatusTag',
-              props: {},
-              dataKey: 'record.status',
-              tagObj: 'statusObj',
+              props: {
+                statusKey: 'record.status',
+              },
+              dataKey: 'StatusObj',
               children: null,
             },
           ],
@@ -121,7 +122,7 @@ const DSL = {
                   dataKey: 'record',
                   children: [
                     {
-                      label: '收件人手机号',
+                      label: '发件人手机号',
                       key: 'senderMobile',
                     },
                   ],
@@ -174,6 +175,72 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
+          // isEdit: true,
+          children: [
+            {
+              componentName: 'DIV',
+              props: {
+                className: 'mb12 fs16 fw700',
+              },
+              isEdit: true,
+              children: '收件方信息',
+            },
+            {
+              componentName: 'Row',
+              props: {
+                gutter: 20,
+              },
+              children: [
+                {
+                  componentName: 'Col',
+                  props: {
+                    span: 8,
+                  },
+                  dataKey: 'record',
+                  children: [
+                    {
+                      label: '收件人',
+                      key: 'recipientName',
+                    },
+                  ],
+                },
+                {
+                  componentName: 'Col',
+                  props: {
+                    span: 16,
+                  },
+                  dataKey: 'record',
+                  children: [
+                    {
+                      label: '收件人手机',
+                      key: 'recipientPhone',
+                    },
+                  ],
+                },
+                {
+                  componentName: 'Col',
+                  props: {
+                    span: 24,
+                    className: 'f1',
+                  },
+                  dataKey: 'record',
+                  children: [
+                    {
+                      label: '收件地址',
+                      key: 'warehouseAddress',
+                      isEllipsis: true,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          componentName: 'DIV',
+          props: {
+            className: 'info-list bb mb24 pb12',
+          },
           isEdit: true,
           children: [
             {
@@ -189,10 +256,28 @@ const DSL = {
               dataKey: 'list',
               children: [
                 {
-                  key: 'id',
-                  label: '序号',
-                  minWidth: 100,
-                  renderKey: `renderDefault`,
+                  key: 'info',
+                  label: '商品信息',
+                  minWidth: 250,
+                  render: `<div class="goods-info df aic">
+                  <div class="pro-img df aic oh bc_fff mr12">
+                    <el-popover
+                      placement="right"
+                      trigger="hover"
+                    >
+                      <div class="imgBox">
+                        <img :src="row.productImg" class="h200">
+                      </div>
+                      <img slot="reference" :src="row.productImg" class="aic">
+                    </el-popover>
+                  </div>
+                  <div>
+                    <div>
+                      <span>货号：</span><strong class="fw600">{{ row.productNo }}</strong>
+                    </div>
+                    <ellipsis-popover class="f1" :content="row.productName"></ellipsis-popover>
+                  </div>
+                </div>`,
                 },
                 {
                   key: 'orderNo',
@@ -233,13 +318,13 @@ const DSL = {
       lg: 8,
       xl: 8,
     },
-    statusObj: {
+    record: {},
+    StatusObj: {
       1: { value: '待提交', tag: 'warning' },
       2: { value: '审核中', tag: 'info' },
       3: { value: '已通过', tag: 'success' },
       4: { value: '已驳回', tag: 'danger' },
     },
-    record: {},
     loading: false,
     detailModalShow: false,
   },

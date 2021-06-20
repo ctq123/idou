@@ -67,7 +67,7 @@ const Parser = () => {
         data[item.dataIndex] = item.title;
       }
     });
-    console.log('cols,data', cols, data);
+    // console.log('cols,data', cols, data);
     if (isEqual(cols, data)) return;
     setCols(data);
     getMockDataList(data)
@@ -75,7 +75,7 @@ const Parser = () => {
       .catch((e) => setMockList([]));
   };
 
-  console.log('Parser, state', appContext.state);
+  // console.log('Parser, state', appContext.state);
   const handleComponentClick = (
     e: any,
     item: any,
@@ -87,7 +87,7 @@ const Parser = () => {
       const t = e.currentTarget;
       const rect = t.getBoundingClientRect();
       const { left, top, width, height } = rect || {};
-      console.log('rect', rect);
+      // console.log('rect item', rect, item);
       setSelectStyle({
         left,
         top,
@@ -213,8 +213,8 @@ const Parser = () => {
       uuid,
       options = [],
       isEdit,
+      dataKey,
       componentType,
-      tagObj,
     } = componentDSL;
     const recursionParser = () => {
       switch (componentName) {
@@ -292,7 +292,7 @@ const Parser = () => {
           });
           // 动态生成mock数据
           getMockData(columns);
-          console.log('mockList', mockList);
+          // console.log('mockList', mockList);
           return (
             <div
               onClick={(e: any) =>
@@ -368,9 +368,10 @@ const Parser = () => {
           );
         case 'StatusTag':
           const Tag = antd['Tag'];
-          const statusObj = dataSource[tagObj] || '';
-          const target = statusObj[1];
-          return <Tag color={target.tag}>{target.value}</Tag>;
+          const tagObj = dataSource[dataKey] || {};
+          const k = Object.keys(tagObj).find((_, i) => i === 0);
+          const target = tagObj[k];
+          return target ? <Tag color={target.tag}>{target.value}</Tag> : null;
         case 'Button':
           // 转换属性
           if (props.type === 'text') {
@@ -402,6 +403,15 @@ const Parser = () => {
     };
     if (componentName) {
       const key = getUid();
+      if (componentName === 'Modal') {
+        return (
+          <div className={styles['modal']} key={key}>
+            <span className={styles['modal-close']}>X</span>
+            <div className={styles['header-line']}></div>
+            {recursionParser()}
+          </div>
+        );
+      }
       return <Fragment key={key}>{recursionParser()}</Fragment>;
     }
     return null;

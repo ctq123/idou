@@ -51,8 +51,10 @@ const { Option } = Select;
 const colRenderObj = {
   renderTime: '时间',
   renderAmount: '金额',
+  // renderStatus: '状态',
   renderOperate: '操作',
   renderDefault: '默认',
+  renderCustom: '自定义',
 };
 
 const Setting = (props: IProps) => {
@@ -74,11 +76,14 @@ const Setting = (props: IProps) => {
                 const obj: any = {
                   key: item.key,
                   label: item.label,
-                  renderKey: item.renderKey,
+                  renderKey: item.render
+                    ? 'renderCustom'
+                    : item.renderKey || 'renderDefault',
+                  render: item.render,
                 };
                 if (Array.isArray(item.children)) {
                   obj['type'] = item.children[0]?.componentName;
-                  obj['child'] = item.children;
+                  obj['children'] = item.children;
                 }
                 return obj;
               }
@@ -86,23 +91,26 @@ const Setting = (props: IProps) => {
             })
             .filter(Boolean);
         case 'DIV':
-          return (children || [])
-            .map((item: any, i: number) => {
-              if (typeof item.children === 'string') {
-                return {
-                  oldIndex: i,
-                  children: item.children,
-                };
-              }
-              return null;
-            })
-            .filter(Boolean);
+          return Array.isArray(children)
+            ? children
+                .map((item: any, i: number) => {
+                  if (typeof item.children === 'string') {
+                    return {
+                      oldIndex: i,
+                      children: item.children,
+                    };
+                  }
+                  return null;
+                })
+                .filter(Boolean)
+            : [{ children: children }];
         case 'Form':
         default:
           let nodes = children;
           if (componentName !== 'Form') {
             nodes = [props.component];
           }
+          // console.log("nodes", nodes)
           return (nodes || [])
             .map((item: any) => {
               if (item.key) {
@@ -112,7 +120,7 @@ const Setting = (props: IProps) => {
                 };
                 if (Array.isArray(item.children)) {
                   obj['type'] = item.children[0]?.componentName;
-                  obj['child'] = item.children;
+                  obj['children'] = item.children;
                 }
                 return obj;
               }
@@ -139,7 +147,7 @@ const Setting = (props: IProps) => {
         setCodeValue(props.component);
       } else {
         const configs = form.getFieldValue('configs');
-        const { label, key, type, child } = configs[index];
+        const { label, key, type, children: child } = configs[index];
         if (!type) return;
         const target = {
           ...children[index],
@@ -153,9 +161,15 @@ const Setting = (props: IProps) => {
       // 自定义渲染函数
       const configs = form.getFieldValue('configs');
       const target = configs[index];
-      if (!target.renderKey) return;
-      const str = props.vueColRender[target.renderKey](target.key);
-      const value = target.render ? target.render : str;
+      const { renderKey, key } = target;
+      let rkey = renderKey;
+      let value = '';
+      if (rkey === 'renderCustom' && target.render) {
+        value = target.render;
+      } else {
+        if (!props.vueColRender[rkey]) rkey = 'renderDefault';
+        value = props.vueColRender[rkey](key);
+      }
       setCodeValue(value);
     }
     setCodeKey(index);
@@ -188,9 +202,9 @@ const Setting = (props: IProps) => {
     const configs = form.getFieldValue('configs');
     if (comType) {
       // @ts-ignore
-      configs[i].child = [ComponentsDSL[comType]];
+      configs[i].children = [ComponentsDSL[comType]];
     } else {
-      configs[i].child = undefined;
+      configs[i].children = undefined;
     }
   };
 
@@ -204,13 +218,12 @@ const Setting = (props: IProps) => {
           let tableChild = [];
           if (configs.length) {
             tableChild = configs.map((item: any, i: number) => {
-              const { key, label, renderKey, child } = item;
-              const obj: any = { key, label };
-              if (renderKey) {
-                obj['renderKey'] = renderKey;
-              }
-              if (child) {
-                obj['children'] = child;
+              const obj: any = { ...item };
+              if (
+                obj.render === undefined ||
+                (item.renderKey !== 'renderCustom' && obj.render)
+              ) {
+                delete obj.render;
               }
               return obj;
             });
@@ -226,7 +239,7 @@ const Setting = (props: IProps) => {
           let formChild = [];
           if (configs.length) {
             formChild = configs.map((item: any, i: number) => {
-              const { key, label, child } = item;
+              const { key, label, children: child } = item;
               const obj: any = { key, label };
               if (child) {
                 obj['children'] = child;
@@ -244,6 +257,8 @@ const Setting = (props: IProps) => {
                   ...component.children[item.oldIndex],
                   children: item.children,
                 };
+              } else {
+                component.children = item.children;
               }
             });
           }
@@ -252,7 +267,7 @@ const Setting = (props: IProps) => {
           if (configs.length) {
             component['key'] = configs[0].key;
             component['label'] = configs[0].label;
-            component['children'] = configs[0].child;
+            component['children'] = configs[0].children;
           }
           break;
       }

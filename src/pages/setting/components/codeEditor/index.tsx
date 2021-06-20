@@ -53,6 +53,7 @@ class CodeEditor extends PureComponent<IProps> {
     });
     editor.onDidChangeCursorPosition((e: any) => {
       const lineCount = editor.getModel().getLineCount();
+      // console.log("type", type)
       if (type === 'component') {
         if (e.position.lineNumber === 1) {
           editor.setPosition({

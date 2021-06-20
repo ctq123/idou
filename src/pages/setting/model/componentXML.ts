@@ -36,13 +36,43 @@ export const VueXML: any = {
     </div>
     `;
   },
-  StatusTag: (key: any, tagObj: any) => {
+  StatusTag: (status: any, tagObj: any) => {
     return `<el-tag
-      v-if="${key} && ${tagObj}[${key}]"
-      :type="(${tagObj}[${key}] || {}).tag"
+      v-if="${tagObj}[${status}]"
+      :type="(${tagObj}[${status}] || {}).tag"
     >
-      {{ (${tagObj}[${key}] || {}).value }}
+      {{ (${tagObj}[${status}] || {}).value }}
     </el-tag>
+    `;
+  },
+  EllipsisText: (text: any) => {
+    return `
+    <span class="f1">
+      <ellipsis-popover :content="${text}"></ellipsis-popover>
+    </span>
+    `;
+  },
+  ProductInfo: (productImg: any, productNo: any, productName: any) => {
+    return `
+    <div class="goods-info df aic">
+      <div class="pro-img df aic oh bc_fff mr12">
+        <el-popover
+          placement="right"
+          trigger="hover"
+        >
+          <div class="imgBox">
+            <img :src="${productImg}" class="h200">
+          </div>
+          <img slot="reference" :src="${productImg}" class="aic">
+        </el-popover>
+      </div>
+      <div>
+        <div>
+          <span>货号：</span><strong class="fw600">{{ ${productNo} }}</strong>
+        </div>
+        <ellipsis-popover class="f1" :content="${productName}"></ellipsis-popover>
+      </div>
+    </div>
     `;
   },
   CreateDom: (name: any, attrStr: any, childStr: any) => {
@@ -169,115 +199,110 @@ export const styleXML: any = {
   },
   detail: () => {
     return `
-    .el-modal {
+    .detail-container {
       box-sizing: border-box;
-      font-family: PingFangSC-Regular;
-    }
-    .info-list {
-      color: #2B2C3C;
-      .title {
-        color: #7F7F8E;
+      .info-list {
+        color: #2B2C3C;
+        .title {
+          color: #7F7F8E;
+        }
+        .el-col {
+          padding: 12px 0;
+        }
       }
-      .el-col {
-        padding: 12px 0;
+      .pro-img {
+        width: 60px;
+        height: 60px;
+        img {
+          width: 100%;
+          vertical-align: middle;
+        }
       }
-    }
-    .pro-img {
-      width: 60px;
-      height: 60px;
-      img {
+      .mt-8{
+        margin-top: -8px;
+      }
+      .bb {
+        border-bottom: solid 1px #f5f5f9;
+      }
+      .bb:last-child {
+        border-bottom: none;
+      }
+      .fs18 {
+        font-size: 18px;
+      }
+      .fs16 {
+        font-size: 16px;
+      }
+      .fw600 {
+        font-weight: 600;
+      }
+      .fw700 {
+        font-weight: 700;
+      }
+      .f1 {
+        flex: 1;
+        min-width: 0;
+      }
+      .bc_fff {
+        background-color: #ffffff;
+      }
+      .bshadow {
+        border-radius: 2px;
+        box-shadow: 0px 2px 4px 0px #0000001a;
+      }
+      .pl24 {
+        padding-left: 24px;
+      }
+      .pb12 {
+        padding-bottom: 12px;
+      }
+      .pb24 {
+        padding-bottom: 24px;
+      }
+      .pr24 {
+        padding-right: 24px;
+      }
+      .pt24 {
+        padding-top: 24px;
+      }
+      .mt12 {
+        margin-top: 12px;
+      }
+      .mt24 {
+        margin-top: 24px;
+      }
+      .mb24 {
+        margin-bottom: 24px;
+      }
+      .mb12 {
+        margin-bottom: 12px;
+      }
+      .mr12 {
+        margin-right: 12px;
+      }
+      .w90 {
+        width: 90px;
+      }
+      .w100 {
         width: 100%;
-        vertical-align: middle;
       }
-    }
-    .mt-8{
-      margin-top: -8px;
-    }
-    .bb {
-      border-bottom: solid 1px #f5f5f9;
-    }
-    .fs18 {
-      font-size: 18px;
-    }
-    .fs16 {
-      font-size: 16px;
-    }
-    .fw600 {
-      font-weight: 600;
-    }
-    .fw700 {
-      font-weight: 700;
-    }
-    .f1 {
-      flex: 1;
-      min-width: 0;
-    }
-    .bc_fff {
-      background-color: #ffffff;
-    }
-    .bshadow {
-      border-radius: 2px;
-      box-shadow: 0px 2px 4px 0px #0000001a;
-    }
-    .pl24 {
-      padding-left: 24px;
-    }
-    .pb12 {
-      padding-bottom: 12px;
-    }
-    .pb24 {
-      padding-bottom: 24px;
-    }
-    .pr24 {
-      padding-right: 24px;
-    }
-    .pt24 {
-      padding-top: 24px;
-    }
-    .mt12 {
-      margin-top: 12px;
-    }
-    .mt24 {
-      margin-top: 24px;
-    }
-    .mb24 {
-      margin-bottom: 24px;
-    }
-    .mb12 {
-      margin-bottom: 12px;
-    }
-    .mr12 {
-      margin-right: 12px;
-    }
-    .w90 {
-      width: 90px;
-    }
-    .w100 {
-      width: 100%;
-    }
-    .h32 {
-      height: 32px;
-    }
-    .lh1 {
-      line-height: 1;
-    }
-    .tar {
-      text-align: right;
-    }
-    .df {
-      display: flex;
-    }
-    .jcsb {
-      justify-content: space-between;
-    }
-    .aic {
-      align-items: center;
-    }
-    .text-li {
-      span {
-        width: 120px;
-        display: inline-block;
+      .h32 {
+        height: 32px;
+      }
+      .lh1 {
+        line-height: 1;
+      }
+      .tar {
         text-align: right;
+      }
+      .df {
+        display: flex;
+      }
+      .jcsb {
+        justify-content: space-between;
+      }
+      .aic {
+        align-items: center;
       }
     }
     `;

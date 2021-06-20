@@ -87,7 +87,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     dataKey,
     type,
     componentType,
-    tagObj,
   } = schemaDSL || {};
   let xml = '';
   if (componentName) {
@@ -265,8 +264,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         columns += (children || [])
           .map((item: any) => {
             const newProps = { ...item };
-            const renderMothod = item.renderKey || 'renderDefault';
-            let childStr = VueTableRenderXML[renderMothod](item.key);
+            const renderMothod =
+              VueTableRenderXML[item.renderKey] ||
+              VueTableRenderXML['renderDefault'];
+            let childStr = renderMothod(item.key);
             // 重新扫描是否包含函数
             checkFuncStr(childStr);
             if (item.key) {
@@ -326,12 +327,16 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               if (item.key && dataKey) {
                 renderData.data[dataKey][item.key] = '';
               }
-              let spans = VueXML.CreateDom('span', '', `${item.label}：`);
+              let spans = VueXML.CreateDom(
+                'span',
+                'class="title"',
+                `${item.label}：`,
+              );
               spans += '\n';
               if (item.isEllipsis) {
                 spans += VueXML.CreateDom(
                   'ellipsis-popover',
-                  `class="fw600" :content="${dataKey}.${item.key}"`,
+                  `class="f1" :content="${dataKey}.${item.key}"`,
                   ``,
                 );
               } else {
@@ -374,7 +379,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         break;
       case 'StatusTag':
         // TODO 这个自定义设计需要改进
-        xml = VueXML['StatusTag'](dataKey, tagObj);
+        const { statusKey } = props;
+        xml = VueXML['StatusTag'](statusKey, dataKey);
         break;
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {
@@ -502,6 +508,7 @@ const checkFuncStr = (str: string) => {
 
 const getPropsStr = (obj: any) => {
   return Object.entries(obj).reduce((pre, [k, v]) => {
+    if (v === undefined || v === null) return pre;
     if (typeof v !== 'string') {
       return `${pre} :${k}="${JSON.stringify(v).replace(/\"/g, "'")}"`;
     } else {

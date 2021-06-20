@@ -26,6 +26,7 @@ const Left = () => {
 
   const handleSettingCB = (com: any) => {
     const { from } = selectedComponent;
+    console.log('handleSettingCB com', com);
     if (com) {
       appContext.dispatch({
         type: 'component/replace',
