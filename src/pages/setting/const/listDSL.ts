@@ -269,7 +269,10 @@ const DSL = {
         },
         {
           componentName: 'Pagination',
-          props: {},
+          props: {
+            className: 'mt24 tar',
+          },
+          isEdit: true,
           dataKey: 'pagination',
           onPageChange: `function handleCurrentChange(val) {
             this.pagination.currentPage = val;

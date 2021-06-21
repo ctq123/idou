@@ -45,13 +45,6 @@ export const VueXML: any = {
     </el-tag>
     `;
   },
-  EllipsisText: (text: any) => {
-    return `
-    <span class="f1">
-      <ellipsis-popover :content="${text}"></ellipsis-popover>
-    </span>
-    `;
-  },
   ProductInfo: (productImg: any, productNo: any, productName: any) => {
     return `
     <div class="goods-info df aic">
@@ -86,13 +79,11 @@ export const VueXML: any = {
  * 表格渲染函数-源码片段
  */
 export const VueTableRenderXML: any = {
-  renderTime: (key: any) => {
-    return `{{ row.${key} | formatTime }}`;
+  renderTime: (key: string, obj = 'row') => {
+    return `{{ ${obj}.${key} | formatTime }}`;
   },
-  renderAmount: (key: any) => {
-    return `<span>
-    {{ row.${key} ? Number(row.${key}) / 100 : '-' }}
-    </span>`;
+  renderAmount: (key: string, obj = 'row') => {
+    return `{{ ${obj}.${key} ? Number(${obj}.${key}) / 100 : '-' }}`;
   },
   renderOperate: () => {
     return `
@@ -112,8 +103,11 @@ export const VueTableRenderXML: any = {
     </el-button>       
     `;
   },
-  renderDefault: (key: any) => {
-    return `{{ row.${key} }}`;
+  renderEllipsis: (key: string, obj = 'row') => {
+    return `<ellipsis-popover class="f1" :content="${obj}.${key}"></ellipsis-popover>`;
+  },
+  renderDefault: (key: string, obj = 'row') => {
+    return `{{ ${obj}.${key} }}`;
   },
 };
 

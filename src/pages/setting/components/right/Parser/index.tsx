@@ -250,12 +250,8 @@ const Parser = () => {
                 </Col>
               );
             });
-          const classStr = getClassNameStr({
-            className: 'bc_fff bshadow pl24 pb6 pr24 pt24',
-          });
           return (
             <div
-              className={classStr}
               onClick={(e: any) =>
                 handleComponentClick(e, componentDSL, parentUuid, index)
               }
@@ -304,18 +300,6 @@ const Parser = () => {
                 dataSource={mockList}
                 pagination={false}
               ></Table>
-            </div>
-          );
-        case 'Pagination':
-          const Pagination = antd['Pagination'];
-          return (
-            <div
-              className={styles['flex-end']}
-              onClick={(e: any) =>
-                handleComponentClick(e, componentDSL, parentUuid, index)
-              }
-            >
-              <Pagination />
             </div>
           );
         case 'Select':

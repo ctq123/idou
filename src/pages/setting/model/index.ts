@@ -1,6 +1,6 @@
 import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import { DSL } from '../const/dsl';
+// import { DSL } from '../const/dsl';
 import { DSL as ListDSL } from '../const/listDSL';
 import { DSL as DetailDSL } from '../const/detailDSL';
 import { DSL as EditDSL } from '../const/editDSL';
@@ -122,7 +122,7 @@ const initDSL = (data: IObject) => {
 };
 
 const initState = {
-  dsl: initDSL(DSL),
+  dsl: initDSL(ListDSL),
   selectedComponent: null,
   vueCode: null,
   apiCode: null,

@@ -328,9 +328,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 dataKey && item.key ? `${dataKey}.${item.key}` : '';
               return generateTemplate(item, vmodel);
             } else {
-              // const renderMothod =
-              //   VueTableRenderXML[item.renderKey] ||
-              //   VueTableRenderXML['renderDefault'];
+              const renderMothod =
+                VueTableRenderXML[item.renderKey] ||
+                VueTableRenderXML['renderDefault'];
               // let childStr = renderMothod(item.key);
               let childStr = '';
 
@@ -347,19 +347,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                   `${item.label}：`,
                 );
                 childStr += '\n';
-                if (item.isEllipsis) {
-                  childStr += VueXML.CreateDom(
-                    'ellipsis-popover',
-                    `class="f1" :content="${dataKey}.${item.key}"`,
-                    ``,
-                  );
-                } else {
-                  childStr += VueXML.CreateDom(
-                    'span',
-                    `class="fw600"`,
-                    `{{${dataKey}.${item.key}}}`,
-                  );
-                }
+                childStr += renderMothod(item.key, dataKey);
               }
 
               // 重新扫描是否包含函数
@@ -391,7 +379,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           onPageChange: '@current-change',
         });
         const paginationPorps = {
-          class: 'mt24 tar',
           layout: 'total, prev, pager, next, jumper',
           ...props,
           'v-bind': paginationDataKey,

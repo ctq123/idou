@@ -6,32 +6,17 @@
  * @Description:
  */
 import React, { Fragment, useEffect, useState } from 'react';
-import {
-  Form,
-  Input,
-  Button,
-  Space,
-  Select,
-  Drawer,
-  Dropdown,
-  Menu,
-  Popover,
-  Tooltip,
-  message,
-} from 'antd';
+import { Form, Input, Button, Space, Select, Tooltip, message } from 'antd';
 import {
   DeleteOutlined,
   PlusOutlined,
-  SaveOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  EllipsisOutlined,
   HighlightOutlined,
   EditOutlined,
 } from '@ant-design/icons';
 import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
-import isObject from 'lodash/isObject';
 import isEqual from 'lodash/isEqual';
 import CodeDrawer from '../codeEditor/CodeDrawer';
 import { getUid } from '@/utils';
@@ -42,24 +27,26 @@ import {
 } from '../../const/componentDSL';
 import styles from './Setting.less';
 interface IProps {
-  vueColRender?: any;
+  VueTableRenderXML?: any;
   component?: any;
   handleCB?: any;
 }
 
 const { Option } = Select;
-const colRenderObj = {
+const colRenderObj: any = {
   renderTime: '时间',
   renderAmount: '金额',
   // renderStatus: '状态',
-  renderOperate: '操作',
+  // renderOperate: '操作',
   renderDefault: '默认',
+  renderEllipsis: '超长文本',
   renderCustom: '自定义',
 };
 
 const Setting = (props: IProps) => {
   console.log('props', props);
-  const { componentName, children, uuid, type } = props.component || {};
+  const { componentName, children, uuid, type, dataKey } =
+    props.component || {};
   const [visible, setVisible] = useState(false);
   const [codeType, setCodeType] = useState('component') as any;
   const [codeValue, setCodeValue] = useState('');
@@ -82,6 +69,13 @@ const Setting = (props: IProps) => {
                 if (Array.isArray(item.children)) {
                   obj['type'] = item.children[0]?.componentName;
                   obj['children'] = item.children;
+                }
+                if (componentName === 'Table') {
+                  obj['objKey'] = 'row';
+                  colRenderObj['renderOperate'] = '操作';
+                } else {
+                  obj['objKey'] = dataKey;
+                  delete colRenderObj['renderOperate'];
                 }
                 return obj;
               }
@@ -159,14 +153,14 @@ const Setting = (props: IProps) => {
       // 自定义渲染函数
       const configs = form.getFieldValue('configs');
       const target = configs[index];
-      const { renderKey, key } = target;
+      const { renderKey, key, objKey } = target;
       let rkey = renderKey;
       let value = '';
       if (rkey === 'renderCustom' && target.render) {
         value = target.render;
       } else {
-        if (!props.vueColRender[rkey]) rkey = 'renderDefault';
-        value = props.vueColRender[rkey](key);
+        if (!props.VueTableRenderXML[rkey]) rkey = 'renderDefault';
+        value = props.VueTableRenderXML[rkey](key, objKey);
       }
       setCodeValue(value);
     }
@@ -223,6 +217,9 @@ const Setting = (props: IProps) => {
                 (item.renderKey !== 'renderCustom' && obj.render)
               ) {
                 delete obj.render;
+              }
+              if (obj.objKey) {
+                delete obj.objKey;
               }
               return obj;
             });
@@ -365,7 +362,7 @@ const Setting = (props: IProps) => {
                       onClick={() => remove(field.name)}
                     />
                     {type === 'editTable' ? null : (
-                      <Tooltip title="自定义渲染列-vue">
+                      <Tooltip title="自定义渲染">
                         <Button
                           type="link"
                           icon={<HighlightOutlined />}

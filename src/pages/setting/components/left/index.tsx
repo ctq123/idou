@@ -109,7 +109,7 @@ const Left = () => {
         const { component = {} } = selectedComponent || {};
         return (
           <Setting
-            vueColRender={appContext.state.VueTableRenderXML}
+            VueTableRenderXML={appContext.state.VueTableRenderXML}
             component={component}
             handleCB={(com: any) => handleSettingCB(com)}
           />
