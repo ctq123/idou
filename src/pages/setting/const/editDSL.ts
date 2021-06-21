@@ -24,13 +24,13 @@ const DSL = {
           props: {
             className: 'product-info-block common-block',
           },
-          isEdit: true,
           children: [
             {
               componentName: 'DIV',
               props: {
                 className: 'title',
               },
+              isEdit: true,
               children: '商品信息',
             },
             {
@@ -38,47 +38,27 @@ const DSL = {
               props: {
                 gutter: 20,
               },
+              dataKey: 'form',
+              isEdit: true,
               children: [
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'form',
-                  children: [
-                    {
-                      label: '出库单号',
-                      key: 'SendNo',
-                    },
-                  ],
+                  span: 8,
+                  key: 'sendNo',
+                  label: '出库单号',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'form',
-                  children: [
-                    {
-                      label: '发货人手机号',
-                      key: 'phone',
-                    },
-                  ],
+                  span: 8,
+                  label: '发货人手机号',
+                  key: 'phone',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                    className: 'f1',
-                  },
-                  dataKey: 'form',
-                  children: [
-                    {
-                      label: '退货地址',
-                      key: 'SendAddress',
-                      isEllipsis: true,
-                    },
-                  ],
+                  span: 8,
+                  label: '退货地址',
+                  key: 'warehouseAddress',
+                  isEllipsis: true,
+                  renderKey: `renderDefault`,
                 },
               ],
             },
@@ -89,13 +69,13 @@ const DSL = {
           props: {
             className: 'record-info-block common-block',
           },
-          isEdit: true,
           children: [
             {
               componentName: 'DIV',
               props: {
                 className: 'title',
               },
+              isEdit: true,
               children: '备案信息',
             },
             {
@@ -168,13 +148,13 @@ const DSL = {
           props: {
             className: 'common-block',
           },
-          isEdit: true,
           children: [
             {
               componentName: 'DIV',
               props: {
                 className: 'title',
               },
+              isEdit: true,
               children: 'SKU列表',
             },
             {
@@ -254,6 +234,7 @@ const DSL = {
           props: {
             className: 'footer-con',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'Button',

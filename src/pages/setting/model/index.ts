@@ -108,9 +108,13 @@ const handleDSLComponentChange = (
 const initDSL = (data: IObject) => {
   const copyData = cloneDeep(data);
   const addUuid = (data: IObject) => {
-    if (data && Array.isArray(data.children)) {
-      data.uuid = getUid();
-      data.children.forEach((item) => addUuid(item));
+    if (data) {
+      if (Array.isArray(data.children)) {
+        data.uuid = getUid();
+        data.children.forEach((item) => addUuid(item));
+      } else if (data.isEdit) {
+        data.uuid = getUid();
+      }
     }
   };
   addUuid(copyData);

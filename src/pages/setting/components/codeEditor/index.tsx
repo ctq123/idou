@@ -42,6 +42,7 @@ class CodeEditor extends PureComponent<IProps> {
   onEditorDidMount = (editor: any, monaco: any) => {
     const { type } = this.props;
     this.editorRef = editor;
+    if (type !== 'component') return;
     editor.onKeyDown((e: any) => {
       if (e.shiftKey) {
         this.editorRef &&

@@ -268,8 +268,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               VueTableRenderXML[item.renderKey] ||
               VueTableRenderXML['renderDefault'];
             let childStr = renderMothod(item.key);
-            // 重新扫描是否包含函数
-            checkFuncStr(childStr);
+
             if (item.key) {
               delete newProps.key;
               delete newProps.renderKey;
@@ -287,6 +286,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 .map((child: any) => generateTemplate(child, vmodel))
                 .join('');
             }
+            // 重新扫描是否包含函数
+            checkFuncStr(childStr);
+
             childStr = VueXML.CreateDom(
               'template',
               `slot-scope="{ row }"`,
@@ -311,47 +313,72 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           `\n${columns}\n`,
         );
         break;
-      case 'Col':
+      case 'Row':
         if (dataKey) {
           renderData.data[dataKey] = renderData.data[dataKey]
             ? { ...renderData.data[dataKey] }
             : {};
         }
 
-        const colChilds = (children || [])
+        const rowChilds = (children || [])
           .filter(Boolean)
           .map((item: any) => {
             if (item.componentName) {
-              return generateTemplate(item);
+              const vmodel =
+                dataKey && item.key ? `${dataKey}.${item.key}` : '';
+              return generateTemplate(item, vmodel);
             } else {
+              // const renderMothod =
+              //   VueTableRenderXML[item.renderKey] ||
+              //   VueTableRenderXML['renderDefault'];
+              // let childStr = renderMothod(item.key);
+              let childStr = '';
+
               if (item.key && dataKey) {
                 renderData.data[dataKey][item.key] = '';
               }
-              let spans = VueXML.CreateDom(
-                'span',
-                'class="title"',
-                `${item.label}：`,
-              );
-              spans += '\n';
-              if (item.isEllipsis) {
-                spans += VueXML.CreateDom(
-                  'ellipsis-popover',
-                  `class="f1" :content="${dataKey}.${item.key}"`,
-                  ``,
-                );
+
+              if (item.render) {
+                childStr = item.render;
               } else {
-                spans += VueXML.CreateDom(
+                childStr = VueXML.CreateDom(
                   'span',
-                  `class="fw600"`,
-                  `{{${dataKey}.${item.key}}}`,
+                  'class="title"',
+                  `${item.label}：`,
                 );
+                childStr += '\n';
+                if (item.isEllipsis) {
+                  childStr += VueXML.CreateDom(
+                    'ellipsis-popover',
+                    `class="f1" :content="${dataKey}.${item.key}"`,
+                    ``,
+                  );
+                } else {
+                  childStr += VueXML.CreateDom(
+                    'span',
+                    `class="fw600"`,
+                    `{{${dataKey}.${item.key}}}`,
+                  );
+                }
               }
-              return spans;
+
+              // 重新扫描是否包含函数
+              checkFuncStr(childStr);
+
+              const colProps = {
+                span: item.span ? item.span : 8,
+                ...item.props,
+              };
+              return VueXML.CreateDom(
+                'el-col',
+                getPropsStr(colProps),
+                childStr,
+              );
             }
           })
           .join('\n');
 
-        xml = VueXML.CreateDom('el-col', getPropsStr(props), colChilds);
+        xml = VueXML.CreateDom('el-row', getPropsStr(props), rowChilds);
         break;
       case 'Pagination':
         const paginationDataKey = dataKey || 'pagination';

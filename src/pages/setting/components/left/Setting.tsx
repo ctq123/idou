@@ -69,18 +69,16 @@ const Setting = (props: IProps) => {
   useEffect(() => {
     const getInitialValue = () => {
       switch (componentName) {
+        case 'Row':
         case 'Table':
           return (children || [])
             .map((item: any) => {
               if (item.key) {
-                const obj: any = {
-                  key: item.key,
-                  label: item.label,
-                  renderKey: item.render
-                    ? 'renderCustom'
-                    : item.renderKey || 'renderDefault',
-                  render: item.render,
-                };
+                const obj: any = { ...item };
+                obj['renderKey'] = item.render
+                  ? 'renderCustom'
+                  : item.renderKey || 'renderDefault';
+
                 if (Array.isArray(item.children)) {
                   obj['type'] = item.children[0]?.componentName;
                   obj['children'] = item.children;
@@ -214,6 +212,7 @@ const Setting = (props: IProps) => {
     if (configs) {
       const component = cloneDeep(props.component);
       switch (componentName) {
+        case 'Row':
         case 'Table':
           let tableChild = [];
           if (configs.length) {
@@ -280,6 +279,7 @@ const Setting = (props: IProps) => {
   const generateFormItem = (fields: any, remove: any, move: any, add: any) => {
     console.log('fields', fields);
     switch (componentName) {
+      case 'Row':
       case 'Table':
         return (
           <>

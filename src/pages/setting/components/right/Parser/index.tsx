@@ -339,23 +339,34 @@ const Parser = () => {
           const DatePicker = antd['DatePicker'];
           const { RangePicker } = DatePicker;
           return <RangePicker {...props} />;
-        case 'Col':
+        case 'Row':
+          const Row2 = antd['Row'];
           const Col2 = antd['Col'];
+          const rowProps = { ...props };
+          if (isEdit) {
+            rowProps.onClick = (e: any) =>
+              handleComponentClick(e, componentDSL, parentUuid, index);
+          }
           const colChilds = (children || [])
             .filter(Boolean)
             .map((item: any, i: number) => {
               if (item.componentName) {
                 return generateComponent(item, uuid, i);
               } else {
-                return (
-                  <>
-                    <span>{item.label}:</span>
-                    {item.key}
-                  </>
-                );
+                if (item) {
+                  return (
+                    <Col2 span={item.span}>
+                      <span>{item.label}：</span>
+                      {item.key}
+                    </Col2>
+                  );
+                } else {
+                  return null;
+                }
               }
-            });
-          return <Col2 {...props}>{colChilds}</Col2>;
+            })
+            .filter(Boolean);
+          return <Row2 {...rowProps}>{colChilds}</Row2>;
         case 'CrumbBack':
           const title: any = dataSource.title || '';
           return (

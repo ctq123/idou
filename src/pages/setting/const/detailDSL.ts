@@ -17,7 +17,7 @@ const DSL = {
         {
           componentName: 'DIV',
           props: {
-            className: 'left df aic',
+            className: 'df aic left',
           },
           isEdit: true,
           children: [
@@ -39,13 +39,6 @@ const DSL = {
             },
           ],
         },
-        {
-          componentName: 'DIV',
-          props: {
-            className: 'right',
-          },
-          children: null,
-        },
       ],
     },
     {
@@ -58,13 +51,13 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
-          isEdit: true,
           children: [
             {
               componentName: 'DIV',
               props: {
                 className: 'mb12 fs16 fw700',
               },
+              isEdit: true,
               children: '发货信息',
             },
             {
@@ -72,99 +65,52 @@ const DSL = {
               props: {
                 gutter: 20,
               },
+              dataKey: 'record',
+              isEdit: true,
               children: [
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '预约单号',
-                      key: 'applicationNo',
-                    },
-                  ],
+                  span: 8,
+                  key: 'applicationNo',
+                  label: '预约单号',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '预约数量',
-                      key: 'appointNum',
-                    },
-                  ],
+                  span: 8,
+                  label: '预约数量',
+                  key: 'appointNum',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                    className: 'f1',
-                  },
+                  span: 8,
                   dataKey: 'record',
-                  children: [
-                    {
-                      label: '退货地址',
-                      key: 'SendAddress',
-                      isEllipsis: true,
-                    },
-                  ],
+                  label: '退货地址',
+                  key: 'SendAddress',
+                  isEllipsis: true,
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '发件人手机号',
-                      key: 'senderMobile',
-                    },
-                  ],
+                  span: 8,
+                  label: '发件人手机号',
+                  key: 'senderMobile',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '物流商',
-                      key: 'logisticsName',
-                    },
-                  ],
+                  span: 8,
+                  label: '物流商',
+                  key: 'logisticsName',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '物流单号',
-                      key: 'expressCode',
-                    },
-                  ],
+                  span: 8,
+                  label: '物流单号',
+                  key: 'expressCode',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '预约到货时间',
-                      key: 'appointTime',
-                    },
-                  ],
+                  span: 8,
+                  label: '预约到货时间',
+                  key: 'appointTime',
+                  renderKey: `renderDefault`,
                 },
               ],
             },
@@ -175,7 +121,6 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
-          // isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -190,47 +135,27 @@ const DSL = {
               props: {
                 gutter: 20,
               },
+              isEdit: true,
+              dataKey: 'record',
               children: [
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 8,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '收件人',
-                      key: 'recipientName',
-                    },
-                  ],
+                  span: 8,
+                  key: 'recipientName',
+                  label: '收件人',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 16,
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '收件人手机',
-                      key: 'recipientPhone',
-                    },
-                  ],
+                  span: 16,
+                  label: '收件人手机',
+                  key: 'recipientPhone',
+                  renderKey: `renderDefault`,
                 },
                 {
-                  componentName: 'Col',
-                  props: {
-                    span: 24,
-                    className: 'f1',
-                  },
-                  dataKey: 'record',
-                  children: [
-                    {
-                      label: '收件地址',
-                      key: 'warehouseAddress',
-                      isEllipsis: true,
-                    },
-                  ],
+                  span: 24,
+                  label: '收件地址',
+                  key: 'warehouseAddress',
+                  isEllipsis: true,
+                  renderKey: `renderDefault`,
                 },
               ],
             },
@@ -241,7 +166,6 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
-          isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -249,6 +173,7 @@ const DSL = {
                 className: 'mb12 fs16 fw700',
               },
               children: '预约商品',
+              isEdit: true,
             },
             {
               componentName: 'Table',
