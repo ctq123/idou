@@ -131,12 +131,19 @@ function transData(apiData) {
               }
               if (obj.componentType === '日期范围') {
                 let newDesc = description;
-                k = k.replace(/Start$/i, '');
-                k = k.replace(/End$/i, '');
-                k = k.replace(/^lt/i, '');
-                k = k.replace(/^gt/i, '');
+                if (/Start$|End$/i.test(k)) {
+                  k = k.replace(/Start$/i, '');
+                  k = k.replace(/End$/i, '');
+                } else if (/^start|^end/i.test(k)) {
+                  k = k.replace(/^start/i, '');
+                  k = k.replace(/^end/i, '');
+                } else if (/^lt|^gt/i.test(k)) {
+                  k = k.replace(/^lt/i, '');
+                  k = k.replace(/^gt/i, '');
+                }
                 newDesc = newDesc.split('-')[0];
                 newDesc = newDesc.replace('起始', '');
+                newDesc = newDesc.replace('开始', '');
                 newDesc = newDesc.replace('结束', '');
                 obj.description = newDesc;
               }
