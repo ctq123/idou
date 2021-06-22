@@ -117,11 +117,11 @@ const ComponentsDSL = {
     }`,
   },
 
-  // 自定义组件
-  CrumbBack: {
-    componentName: 'CrumbBack',
-    props: {},
-  },
+  // // 自定义组件
+  // CrumbBack: {
+  //   componentName: 'CrumbBack',
+  //   props: {},
+  // },
 };
 
 /**
@@ -137,7 +137,7 @@ const componentNames = {
   Form: '表单',
   Table: '表格',
   Pagination: '分页',
-  CrumbBack: '返回组件',
+  // CrumbBack: '返回组件',
 };
 
 /**

@@ -152,21 +152,21 @@ const DSL = {
         {
           componentName: 'DIV',
           props: {
-            className: 'flex-between',
+            className: 'df aic jcsb lh50',
           },
           isEdit: true,
           children: [
             {
               componentName: 'DIV',
               props: {
-                className: 'title',
+                className: 'mb12 fs16 fw700',
               },
               children: '商品管理列表',
             },
             {
               componentName: 'DIV',
               props: {
-                className: 'flex-center',
+                className: 'df aic',
               },
               children: [
                 {

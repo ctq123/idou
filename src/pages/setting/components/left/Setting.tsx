@@ -83,6 +83,7 @@ const Setting = (props: IProps) => {
             })
             .filter(Boolean);
         case 'DIV':
+        case 'CrumbBack':
           return Array.isArray(children)
             ? children
                 .map((item: any, i: number) => {
@@ -246,6 +247,7 @@ const Setting = (props: IProps) => {
           component.children = [].concat(formChild, optItem);
           break;
         case 'DIV':
+        case 'CrumbBack':
           if (configs.length) {
             configs.forEach((item: any) => {
               if (item.oldIndex !== undefined) {
@@ -274,7 +276,7 @@ const Setting = (props: IProps) => {
   };
 
   const generateFormItem = (fields: any, remove: any, move: any, add: any) => {
-    console.log('fields', fields);
+    // console.log('fields', fields);
     switch (componentName) {
       case 'Row':
       case 'Table':
@@ -282,7 +284,7 @@ const Setting = (props: IProps) => {
           <>
             {fields.map((field: any, i: number) => (
               <div key={field.key} className={styles['list-item']}>
-                <Space key={field.key} align="baseline">
+                <Space align="baseline">
                   <Form.Item
                     {...field}
                     name={[field.name, 'label']}
@@ -334,7 +336,7 @@ const Setting = (props: IProps) => {
                         placeholder="处理类型"
                         allowClear
                       >
-                        {Object.entries(colRenderObj).map(([k, v]) => (
+                        {Object.entries(colRenderObj).map(([k, v]: any) => (
                           <Option key={k} value={k}>
                             {v}
                           </Option>
@@ -469,6 +471,7 @@ const Setting = (props: IProps) => {
           </>
         );
       case 'DIV':
+      case 'CrumbBack':
         return (
           <>
             {fields.map((field: any, i: number) => (
@@ -582,5 +585,7 @@ const Setting = (props: IProps) => {
     </>
   );
 };
+
+// const SettingMome = React.memo(Setting)
 
 export default Setting;

@@ -389,7 +389,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         xml = VueXML.CreateDom('el-pagination', paginationAttr, '');
         break;
       case 'CrumbBack':
-        xml = VueXML['CrumbBack'](getEventStr(schemaDSL), `{{ ${dataKey} }}`);
+        xml = VueXML['CrumbBack'](getEventStr(schemaDSL), children);
         break;
       case 'StatusTag':
         // TODO 这个自定义设计需要改进

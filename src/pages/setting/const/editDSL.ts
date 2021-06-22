@@ -8,7 +8,8 @@ const DSL = {
     {
       componentName: 'CrumbBack',
       props: {},
-      dataKey: 'title',
+      isEdit: true,
+      children: '编辑商品',
       onClick: `function handleGoBack() {
         this.$router.go(-1);
       }`,
@@ -16,19 +17,19 @@ const DSL = {
     {
       componentName: 'DIV',
       props: {
-        className: 'content-con bshadow',
+        className: 'pl24 pr24 pb24 pt24 mt24 bc_fff bshadow',
       },
       children: [
         {
           componentName: 'DIV',
           props: {
-            className: 'product-info-block common-block',
+            className: 'info-list bb mb24 pb12',
           },
           children: [
             {
               componentName: 'DIV',
               props: {
-                className: 'title',
+                className: 'mb12 fs16 fw700',
               },
               isEdit: true,
               children: '商品信息',
@@ -67,13 +68,13 @@ const DSL = {
         {
           componentName: 'DIV',
           props: {
-            className: 'record-info-block common-block',
+            className: 'info-list bb mb24 pb12',
           },
           children: [
             {
               componentName: 'DIV',
               props: {
-                className: 'title',
+                className: 'mb12 fs16 fw700',
               },
               isEdit: true,
               children: '备案信息',
@@ -146,13 +147,13 @@ const DSL = {
         {
           componentName: 'DIV',
           props: {
-            className: 'common-block',
+            className: 'info-list bb mb24 pb12',
           },
           children: [
             {
               componentName: 'DIV',
               props: {
-                className: 'title',
+                className: 'mb12 fs16 fw700',
               },
               isEdit: true,
               children: 'SKU列表',
@@ -288,7 +289,6 @@ const DSL = {
       xl: 8,
     },
     submitLoading: false,
-    title: '编辑商品',
   },
   lifeCycle: {
     componentDidMount: `function componentDidMount() {

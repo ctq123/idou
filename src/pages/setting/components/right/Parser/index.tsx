@@ -352,13 +352,18 @@ const Parser = () => {
             .filter(Boolean);
           return <Row2 {...rowProps}>{colChilds}</Row2>;
         case 'CrumbBack':
-          const title: any = dataSource.title || '';
+          // const title: any = dataSource.title || '';
+          const crumbbackProps = { ...props };
+          if (isEdit) {
+            crumbbackProps.onClick = (e: any) =>
+              handleComponentClick(e, componentDSL, parentUuid, index);
+          }
           return (
-            <div {...props} className={styles['go-back']}>
+            <div {...crumbbackProps} className={styles['go-back']}>
               <i>
                 <ArrowLeftOutlined />
               </i>{' '}
-              <span className={styles['bread']}>{title}</span>
+              <span className={styles['bread']}>{children || ''}</span>
             </div>
           );
         case 'StatusTag':
