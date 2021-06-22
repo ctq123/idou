@@ -171,7 +171,7 @@ const Request = (props: any) => {
             danger
             onClick={() => setVisible(true)}
           >
-            代码编辑
+            编辑
           </Button>
         </Form.Item>
       </Form>

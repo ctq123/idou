@@ -37,6 +37,8 @@ const lifeCycleMap: any = {
   componentWillUnmount: 'beforeDestroy',
 };
 
+const allMethodKeys: any = [];
+
 // 通用事件
 const commonFunc = [
   'onClick',
@@ -490,21 +492,29 @@ const getEventStr = (item: object, extraMap: any = {}) => {
         // 特定的函数事件
         funcStr += `${extraMap[k]}="${newFuncName}"`;
       }
-      if (!renderData.methods.includes(newFunc)) {
+      if (!allMethodKeys.includes(newFuncName)) {
         renderData.methods.push(newFunc);
+        allMethodKeys.push(newFuncName);
       }
     }
   });
   return funcStr;
 };
 
+/**
+ * 检测字符串中包含的事件-针对vue【@+事件名】
+ * @param str
+ */
 const checkFuncStr = (str: string) => {
-  const reg = /@click=|@change=|@input=/g;
+  const funcs = commonFunc
+    .map((item) => '@' + item.substr(2).toLowerCase())
+    .join('|');
+  const reg = new RegExp(`${funcs}`, 'g');
   if (str) {
     const ex = reg.exec(str);
     if (ex) {
       const s = str.substr(ex.index + ex[0].length);
-      console.log('s', s);
+      // console.log('s', s);
       let funcName = s.split(/["']/g)[1];
       let func = funcName;
       if (funcName.endsWith(')')) {
@@ -512,8 +522,9 @@ const checkFuncStr = (str: string) => {
       } else {
         func += '() { }';
       }
-      if (!renderData.methods.includes(func)) {
+      if (!allMethodKeys.includes(funcName)) {
         renderData.methods.push(func);
+        allMethodKeys.push(funcName);
       }
       checkFuncStr(s);
     }

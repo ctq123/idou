@@ -571,7 +571,7 @@ const Setting = (props: IProps) => {
               danger
               onClick={() => handleShowCode('component', -1)}
             >
-              代码编辑
+              编辑
             </Button>
           </Form.Item>
         )}
