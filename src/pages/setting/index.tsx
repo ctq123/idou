@@ -1,3 +1,4 @@
+import './wdyr';
 import React, { useState, useReducer } from 'react';
 import Header from './components/header';
 import Left from './components/left';
@@ -19,5 +20,7 @@ const SettingPage = () => {
     </div>
   );
 };
+
+// SettingPage.whyDidYouRender = true
 
 export default SettingPage;

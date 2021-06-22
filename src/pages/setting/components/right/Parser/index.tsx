@@ -226,7 +226,7 @@ const Parser = () => {
             .filter(Boolean)
             .map((item: any, i: number) => {
               const { key, label, initialValue } = item || {};
-              console.log('Form item', item);
+              // console.log('Form item', item);
               const itemProps = {
                 name: key,
                 label,

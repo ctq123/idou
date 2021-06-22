@@ -44,7 +44,7 @@ const colRenderObj: any = {
 };
 
 const Setting = (props: IProps) => {
-  console.log('props', props);
+  // console.log('props', props);
   const { componentName, children, uuid, type, dataKey } =
     props.component || {};
   const [visible, setVisible] = useState(false);
@@ -586,6 +586,8 @@ const Setting = (props: IProps) => {
   );
 };
 
-// const SettingMome = React.memo(Setting)
+// Setting.whyDidYouRender = {
+//   logOnDifferentValues: true
+// }
 
-export default Setting;
+export default React.memo(Setting);
