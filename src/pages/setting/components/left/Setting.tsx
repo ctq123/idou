@@ -12,7 +12,7 @@ import {
   PlusOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  HighlightOutlined,
+  FormOutlined,
   EditOutlined,
 } from '@ant-design/icons';
 import cloneDeep from 'lodash/cloneDeep';
@@ -309,11 +309,11 @@ const Setting = (props: IProps) => {
                       {...field}
                       name={[field.name, 'type']}
                       fieldKey={[field.fieldKey, 'type']}
-                      rules={[{ required: false, message: '请选择处理类型' }]}
+                      rules={[{ required: false, message: '请选择渲染类型' }]}
                     >
                       <Select
                         style={{ width: 163 }}
-                        placeholder="处理类型"
+                        placeholder="渲染类型"
                         allowClear
                         onChange={(val) => handleTypeChange(val, i)}
                       >
@@ -329,11 +329,11 @@ const Setting = (props: IProps) => {
                       {...field}
                       name={[field.name, 'renderKey']}
                       fieldKey={[field.fieldKey, 'renderKey']}
-                      rules={[{ required: true, message: '请选择处理类型' }]}
+                      rules={[{ required: true, message: '请选择渲染类型' }]}
                     >
                       <Select
                         style={{ width: 163 }}
-                        placeholder="处理类型"
+                        placeholder="渲染类型"
                         allowClear
                       >
                         {Object.entries(colRenderObj).map(([k, v]: any) => (
@@ -367,7 +367,7 @@ const Setting = (props: IProps) => {
                       <Tooltip title="自定义渲染">
                         <Button
                           type="link"
-                          icon={<HighlightOutlined />}
+                          icon={<FormOutlined />}
                           onClick={() => handleShowCode('html', i)}
                         ></Button>
                       </Tooltip>
