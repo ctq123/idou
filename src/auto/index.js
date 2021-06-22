@@ -11,7 +11,8 @@ const cloneDeep = require('lodash/cloneDeep');
 const common = require('./common.js');
 const transform = require('./transform.js');
 const domain = 'shizhuang-inc.com';
-const openUrl = `https://mock.${domain}/project/574/interface/api/111276`;
+const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;
+const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
 let browser = null;
 
@@ -30,7 +31,7 @@ const handleEditorPage = async () => {
   let ele = null;
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
-  await page.goto('http://localhost:8000/setting');
+  await page.goto(platformUrl);
 
   // 处理请求tab
   const apiChange = async () => {
@@ -39,6 +40,7 @@ const handleEditorPage = async () => {
     ele = await page.$('#rc-tabs-0-tab-request');
     ele.click();
 
+    await page.waitForTimeout(1 * 1000);
     // 选择框
     await common.setSelect(
       page,
@@ -136,11 +138,11 @@ const handleEditorPage = async () => {
   const operateChange = async () => {
     await page.waitForTimeout(1 * 1000);
     await page.waitForSelector(
-      "div[class^='page-container'] div[class^='flex-between'] div[class^='title']",
+      "div[class^='page-container'] div[class^='df'] button",
     );
     await common.clickDom(
       page,
-      "div[class^='page-container'] div[class^='flex-between'] div[class^='title']",
+      "div[class^='page-container'] div[class^='df'] button",
     );
     await page.waitForSelector(
       '#rc-tabs-0-panel-setting form .ant-space-item .ant-form-item-control-input',
@@ -278,7 +280,7 @@ const handleApiData = async () => {
     await page.waitForSelector('.user-toolbar');
 
     // 监听对应的接口
-    const [, id] = openUrl.match(/\d+/g);
+    const [, id] = mockUrl.match(/\d+/g);
     const requestUrl = `https://mock.${domain}/api/interface/get?id=${id}`;
     await page.on('response', async (resp) => {
       // 提取对应的数据
@@ -303,18 +305,20 @@ const handleApiData = async () => {
         apiData['url'] = path;
         apiData['request'] = requestObj;
         apiData['response'] = responseObj;
+        apiData = transform.transData(apiData);
         console.log('apiData', apiData);
 
-        apiData = transform.transData(apiData);
+        await page.waitForTimeout(5 * 1000);
+        page.close();
         await handleEditorPage();
       }
     });
 
-    await page.goto(openUrl);
+    await page.goto(mockUrl);
 
-    await page.screenshot({
-      path: `/Users/alan/Desktop/${Date.now()}.png`,
-    });
+    // await page.screenshot({
+    //   path: `/Users/alan/Desktop/${Date.now()}.png`,
+    // });
 
     // console.log("将等待30秒")
     // // 等待30秒
