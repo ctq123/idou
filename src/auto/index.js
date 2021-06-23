@@ -307,30 +307,20 @@ const handleApiData = async () => {
         apiData['response'] = responseObj;
         apiData = transform.transData(apiData);
         console.log('apiData', apiData);
-
-        await page.waitForTimeout(5 * 1000);
-        page.close();
-        await handleEditorPage();
       }
     });
 
-    await page.goto(mockUrl);
+    const resp = await page.goto(mockUrl);
+    if (resp.ok()) {
+      // await page.waitForTimeout(5 * 1000);
+      page.close();
+      await handleEditorPage();
+    }
 
     // await page.screenshot({
     //   path: `/Users/alan/Desktop/${Date.now()}.png`,
     // });
-
-    // console.log("将等待30秒")
-    // // 等待30秒
-    // await page.waitForTimeout(30 * 1000);
   }
-
-  // handleEditorPage();
-
-  // await page2.$('button[type="submit"]').click();
-
-  // await page.close();
-  // await browser.close();
 };
 
 handleApiData();
