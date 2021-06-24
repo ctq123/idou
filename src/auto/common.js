@@ -71,6 +71,27 @@ async function setInput(page, classPath, val) {
 }
 
 /**
+ * 设置input-优化
+ * @param {*} ele
+ * @param {*} classPath 父节点路径
+ * @param {*} val 值
+ */
+async function setInput2(ele, classPath, val) {
+  const input = await ele.$(`${classPath} input`);
+  if (input) {
+    let suf = null,
+      icon = null;
+    suf = await ele.$(`${classPath} span.ant-input-suffix`);
+    await suf.click();
+    icon = await ele.$(
+      `${classPath} span.ant-input-suffix span.ant-input-clear-icon-hidden`,
+    );
+    input.focus();
+    input.type(val);
+  }
+}
+
+/**
  * 点击按钮
  * @param {*} page
  * @param {*} classPath 按钮父节点路径，自身路径
@@ -118,6 +139,7 @@ async function clickAllDom(page, classPath) {
 module.exports = {
   clickButton,
   setInput,
+  setInput2,
   setSelect,
   clickDom,
   clickAllDom,

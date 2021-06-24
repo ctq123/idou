@@ -312,10 +312,14 @@ const handleApiData = async () => {
 
     const resp = await page.goto(mockUrl);
     if (resp.ok()) {
-      // await page.waitForTimeout(5 * 1000);
+      await page.waitForTimeout(1 * 1000);
       page.close();
       await handleEditorPage();
     }
+    // await page.waitForTimeout(1 * 1000);
+    // const resp2 = await page.goto("https://www.poizon.com/zh-hk/");
+    // const html = await page.content();
+    // console.log("html", html);
 
     // await page.screenshot({
     //   path: `/Users/alan/Desktop/${Date.now()}.png`,
