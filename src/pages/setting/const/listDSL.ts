@@ -235,18 +235,6 @@ const DSL = {
               renderKey: `renderDefault`,
             },
             {
-              key: 'id2',
-              label: '序号',
-              minWidth: 100,
-              renderKey: `renderDefault`,
-            },
-            {
-              key: 'id3',
-              label: '序号',
-              minWidth: 100,
-              renderKey: `renderDefault`,
-            },
-            {
               key: 'orderNo',
               label: '订单号',
               renderKey: `renderDefault`,
