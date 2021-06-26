@@ -2,7 +2,18 @@
   flex: 1;
   padding: 16px;
   width: calc(100% - 351px);
+  height: calc(100vh - 50px);
+  overflow-y: auto;
   .content {
     background-color: #ffffff;
   }
+}
+
+.b-right::-webkit-scrollbar {
+  width: 4px;
+  background-color: #fff;
+}
+.b-right::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: rgb(224, 223, 223);
 }
