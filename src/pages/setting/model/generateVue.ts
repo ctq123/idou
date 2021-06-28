@@ -425,7 +425,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
   return xml + '\n';
 };
 
-const getLifeCycle = (item: object) => {
+const getLifeCycle = (item: object = {}) => {
   const lifeList: any = [];
   Object.entries(item)
     .filter(Boolean)
@@ -437,7 +437,7 @@ const getLifeCycle = (item: object) => {
   return lifeList;
 };
 
-const getImports = (item: object) => {
+const getImports = (item: object = {}) => {
   const ilist: any = [];
   Object.entries(item).forEach(([k, v]) => {
     const importStr = `import ${k} from "${v}"`;
@@ -446,7 +446,7 @@ const getImports = (item: object) => {
   return ilist;
 };
 
-const getMethods = (item: object) => {
+const getMethods = (item: object = {}) => {
   const mlist: any = [];
   Object.entries(item).forEach(([k, v]) => {
     const { newFunc } = transformFunc(v);
@@ -462,7 +462,7 @@ const getStyles = (type: string) => {
   return slist;
 };
 
-const getApis = (item: object) => {
+const getApis = (item: object = {}) => {
   let apiList: any = [];
   let apiImportList: any = [];
   Object.entries(item).forEach(([k, v]) => {

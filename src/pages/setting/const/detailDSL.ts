@@ -45,6 +45,7 @@ const DSL = {
       componentName: 'SECTION',
       componentType: 'native',
       props: {},
+      isEdit: true,
       children: [
         {
           componentName: 'DIV',
@@ -83,7 +84,7 @@ const DSL = {
                 {
                   span: 8,
                   label: '退货地址',
-                  key: 'SendAddress',
+                  key: 'sendAddress',
                   isEllipsis: true,
                   renderKey: `renderEllipsis`,
                 },

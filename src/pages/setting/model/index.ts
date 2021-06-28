@@ -3,6 +3,7 @@ import cloneDeep from 'lodash/cloneDeep';
 // import { DSL } from '../const/dsl';
 import { DSL as ListDSL } from '../const/listDSL';
 import { DSL as DetailDSL } from '../const/detailDSL';
+import { DSL as EditModalDSL } from '../const/editModalDSL';
 import { DSL as EditDSL } from '../const/editDSL';
 import { getUid } from '@/utils';
 import { getSourceCode } from './generateVue';
@@ -191,6 +192,9 @@ const reducer = (state: any, action: any) => {
       switch (data.dslType) {
         case 'detail':
           newTypeDSL = DetailDSL;
+          break;
+        case 'editModal':
+          newTypeDSL = EditModalDSL;
           break;
         case 'edit':
           newTypeDSL = EditDSL;

@@ -16,7 +16,7 @@ export const VueXML: any = {
           return ${JSON.stringify(renderData.data, null, 2)}
         },
         ${renderData.lifecycles.join(',\n')}
-        ,
+        ${renderData.lifecycles.length ? ',' : ''}
         methods: {
           ${renderData.methods.join(',\n')}
         }
@@ -294,6 +294,115 @@ export const styleXML: any = {
         .el-col {
           padding: 0px;
         }
+      }
+    }
+    `;
+  },
+  editModal: () => {
+    return `
+    .detail-container {
+      box-sizing: border-box;
+      background-color: #fff;
+      padding: 16px 24px;
+      border-radius: 5px;
+      .left {
+        min-width: 400px;
+      }
+      .info-list {
+        color: #2b2c3c;
+        .title,
+        span {
+          color: #7f7f8e;
+        }
+        .el-col {
+          padding: 12px 0;
+        }
+      }
+      .mt-8 {
+        margin-top: -8px;
+      }
+      .bb {
+        border-bottom: solid 1px #f5f5f9;
+      }
+      .bb:last-child {
+        border-bottom: none;
+      }
+      .fs18 {
+        font-size: 18px;
+      }
+      .fs16 {
+        font-size: 16px;
+      }
+      .fw600 {
+        font-weight: 600;
+      }
+      .fw700 {
+        font-weight: 700;
+      }
+      .f1 {
+        flex: 1;
+        min-width: 0;
+      }
+      .bc_fff {
+        background-color: #ffffff;
+      }
+      .bshadow {
+        border-radius: 2px;
+        box-shadow: 0px 2px 4px 0px #0000001a;
+      }
+      .pl24 {
+        padding-left: 24px;
+      }
+      .pb12 {
+        padding-bottom: 12px;
+      }
+      .pb24 {
+        padding-bottom: 24px;
+      }
+      .pr24 {
+        padding-right: 24px;
+      }
+      .pt24 {
+        padding-top: 24px;
+      }
+      .mt12 {
+        margin-top: 12px;
+      }
+      .mt24 {
+        margin-top: 24px;
+      }
+      .mb24 {
+        margin-bottom: 24px;
+      }
+      .mb12 {
+        margin-bottom: 12px;
+      }
+      .mr12 {
+        margin-right: 12px;
+      }
+      .w90 {
+        width: 90px;
+      }
+      .w100 {
+        width: 100%;
+      }
+      .h32 {
+        height: 32px;
+      }
+      .lh1 {
+        line-height: 1;
+      }
+      .tar {
+        text-align: right;
+      }
+      .df {
+        display: flex;
+      }
+      .jcsb {
+        justify-content: space-between;
+      }
+      .aic {
+        align-items: center;
       }
     }
     `;
