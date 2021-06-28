@@ -12,6 +12,7 @@ const common = require('./common.js');
 const transform = require('./transform.js');
 const domain = 'shizhuang-inc.com';
 const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;
+// const mockUrl = `https://mock.shizhuang-inc.com/project/781/interface/api/41375`;
 const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
 let browser = null;

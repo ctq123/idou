@@ -96,8 +96,13 @@ function transData(apiData) {
         (title && title.indexOf('列表') > -1)
       ) {
         apiData.componentType = 'list';
-      } else {
-        apiData.componentType = 'modal';
+      } else if (title && title.indexOf('详情') > -1) {
+        apiData.componentType = 'detail';
+      } else if (
+        title &&
+        ['新增', '编辑', '更新'].some((s) => title.indexOf(s) > -1)
+      ) {
+        apiData.componentType = 'edit';
       }
     }
     // 再根据页面类型进行数据处理
