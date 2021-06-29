@@ -339,6 +339,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               if (item.key && dataKey) {
                 renderData.data[dataKey][item.key] = '';
               }
+              if (item.renderKey === 'renderEnum' && item.enumObj) {
+                renderData.data[`${item.key}Obj`] = item.enumObj;
+              }
 
               if (item.render) {
                 childStr = item.render;
@@ -395,8 +398,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         break;
       case 'StatusTag':
         // TODO 这个自定义设计需要改进
-        const { statusKey } = props;
-        xml = VueXML['StatusTag'](statusKey, dataKey);
+        const { statusKey, statusObj } = props;
+        const key = statusKey.split('.').splice(-1)[0];
+        const dataKey1 = key + 'Obj';
+        renderData.data[dataKey1] = statusObj;
+        xml = VueXML['StatusTag'](statusKey, dataKey1);
         break;
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {

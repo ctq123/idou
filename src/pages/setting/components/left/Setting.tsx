@@ -17,8 +17,10 @@ import {
 } from '@ant-design/icons';
 import cloneDeep from 'lodash/cloneDeep';
 import isEmpty from 'lodash/isEmpty';
+import isObject from 'lodash/isObject';
 import isEqual from 'lodash/isEqual';
 import CodeDrawer from '../codeEditor/CodeDrawer';
+import CodeModal from '../codeEditor/CodeModal';
 import { getUid } from '@/utils';
 import {
   FormComponentObj,
@@ -36,12 +38,14 @@ const { Option } = Select;
 const colRenderObj: any = {
   renderTime: '时间',
   renderAmount: '金额',
-  // renderStatus: '状态',
-  // renderOperate: '操作',
-  renderDefault: '默认',
+  renderEnum: '枚举',
   renderEllipsis: '超长文本',
   renderCustom: '自定义',
+  renderOperate: '操作',
+  renderDefault: '默认',
 };
+
+const defaultSelectOptions: any = { '0': '是', '1': '否' };
 
 const Setting = (props: IProps) => {
   // console.log('props', props);
@@ -52,6 +56,10 @@ const Setting = (props: IProps) => {
   const [codeValue, setCodeValue] = useState('');
   const [codeKey, setCodeKey] = useState(-1);
   const [initValues, setInitValues] = useState({});
+  const [modalProps, setModalProps] = useState({
+    value: '' as any,
+    visible: false,
+  });
   const [form] = Form.useForm();
   useEffect(() => {
     const getInitialValue = () => {
@@ -130,6 +138,7 @@ const Setting = (props: IProps) => {
   }, [uuid]);
 
   const handleShowCode = (codeType: string, index: number = 0) => {
+    console.log('handleShowCode', codeType);
     if (codeType === 'component') {
       if (index === -1) {
         const configs = form.getFieldValue('configs');
@@ -190,14 +199,44 @@ const Setting = (props: IProps) => {
     }
   };
 
+  const handleModalCB = (obj: any) => {
+    const { visible, code } = obj;
+    setModalProps({
+      visible: visible,
+      value: {},
+    });
+    console.log('code', code);
+    if (!isEmpty(code)) {
+      const configs = form.getFieldValue('configs');
+      if (codeKey > -1) {
+        configs[codeKey].enumObj = code;
+        form.setFieldsValue(configs);
+      }
+    }
+  };
+
   const handleTypeChange = (comType: any, i: number) => {
-    console.log('comType', comType);
+    console.log('handleTypeChange comType', comType);
     const configs = form.getFieldValue('configs');
     if (comType) {
       // @ts-ignore
       configs[i].children = [ComponentsDSL[comType]];
     } else {
       configs[i].children = undefined;
+    }
+  };
+
+  const handleRenderChange = (comType: any, i: number) => {
+    console.log('handleRenderChange comType', comType);
+    const configs = form.getFieldValue('configs');
+    console.log('configs', configs);
+    if (comType === 'renderEnum') {
+      const value = configs[i].enumObj || defaultSelectOptions;
+      setCodeKey(i);
+      setModalProps({
+        visible: true,
+        value: { ...value },
+      });
     }
   };
 
@@ -218,6 +257,9 @@ const Setting = (props: IProps) => {
                 (item.renderKey !== 'renderCustom' && obj.render)
               ) {
                 delete obj.render;
+              }
+              if (item.renderKey !== 'renderEnum' && obj.enumObj) {
+                delete obj.enumObj;
               }
               if (obj.objKey) {
                 delete obj.objKey;
@@ -335,6 +377,7 @@ const Setting = (props: IProps) => {
                         style={{ width: 163 }}
                         placeholder="渲染类型"
                         allowClear
+                        onChange={(val) => handleRenderChange(val, i)}
                       >
                         {Object.entries(colRenderObj).map(([k, v]: any) => (
                           <Option key={k} value={k}>
@@ -582,6 +625,7 @@ const Setting = (props: IProps) => {
         type={codeType}
         handleCB={(val: any) => handleCodeCB(val)}
       />
+      <CodeModal {...modalProps} handleCB={(v: any) => handleModalCB(v)} />
     </>
   );
 };

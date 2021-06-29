@@ -5,11 +5,18 @@ import { serialize, deserialize, prettierFormat, transformFunc } from '@/utils';
 interface IProps {
   value: any;
   type?: 'component' | 'vue' | 'function' | 'html';
+  height?: number;
   [key: string]: any;
 }
 class CodeEditor extends PureComponent<IProps> {
   editorRef: any = null;
   CONFIG: any = ``;
+
+  componentDidUpdate(prevProps: any) {
+    if (this.props.value !== prevProps.value) {
+      this.forceSetEditorValue(this.props.value);
+    }
+  }
 
   setEditorValue = (val: any) => {
     const { type } = this.props;
@@ -25,6 +32,12 @@ class CodeEditor extends PureComponent<IProps> {
       case 'vue':
       default:
         return val;
+    }
+  };
+
+  forceSetEditorValue = (val: any) => {
+    if (this.editorRef) {
+      this.editorRef.setValue(this.setEditorValue(val));
     }
   };
 
@@ -72,12 +85,12 @@ class CodeEditor extends PureComponent<IProps> {
   };
 
   render() {
-    const { value, type } = this.props;
+    const { value, type, height } = this.props;
     const language = type === 'vue' ? `html` : `javascript`;
 
     return (
       <Editor
-        height={`calc(100vh - ${100}px)`}
+        height={height ? height : `calc(100vh - ${100}px)`}
         language={language}
         onMount={this.onEditorDidMount}
         options={{

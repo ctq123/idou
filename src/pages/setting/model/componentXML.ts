@@ -106,6 +106,9 @@ export const VueTableRenderXML: any = {
   renderEllipsis: (key: string, obj = 'row') => {
     return `<ellipsis-popover class="f1" :content="${obj}.${key}"></ellipsis-popover>`;
   },
+  renderEnum: (key: string, obj = 'row') => {
+    return `{{ ${key}Obj && ${key}Obj[${obj}.${key}] || '-' }}`;
+  },
   renderDefault: (key: string, obj = 'row') => {
     return `{{ ${obj}.${key} }}`;
   },
