@@ -232,6 +232,10 @@ const Parser = () => {
                 label,
                 initialValue: initialValue,
               };
+              itemProps['labelCol'] = { span: 8 };
+              if (!label) {
+                itemProps['wrapperCol'] = { offset: 8 };
+              }
               const colProps: any = dataSource.colProps || {};
               // if (key) {
               //   colProps.onClick = (e: any) =>

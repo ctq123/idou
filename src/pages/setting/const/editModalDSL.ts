@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-29 01:19:08
- * @LastEditTime: 2021-06-29 01:40:37
+ * @LastEditTime: 2021-06-30 02:07:10
  * @LastEditors: chengtianqing
  * @Description:
  */
@@ -93,27 +93,44 @@ const DSL = {
                 },
               ],
             },
-            {
-              label: '商品英文名称',
-              key: 'productEnName',
-              children: [
-                {
-                  componentName: 'Input',
-                  props: {
-                    placeholder: '请输入商品英文名称',
-                    clearable: true,
-                  },
-                },
-              ],
-            },
           ],
+        },
+      ],
+    },
+    {
+      componentName: 'DIV',
+      props: {
+        className: 'df aic fe right',
+      },
+      isEdit: true,
+      children: [
+        {
+          componentName: 'Button',
+          props: {
+            type: 'default',
+          },
+          children: '取消',
+          onClick: `function handleCancel() {
+            
+          }`,
+        },
+        {
+          componentName: 'Button',
+          props: {
+            type: 'primary',
+            className: 'ml8',
+          },
+          children: '确定',
+          onClick: `function handleSubmit() {
+            
+          }`,
         },
       ],
     },
   ],
   dataSource: {
     colProps: {
-      span: 24,
+      span: 16,
     },
     form: {},
     loading: false,

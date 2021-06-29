@@ -380,6 +380,9 @@ export const styleXML: any = {
       .mr12 {
         margin-right: 12px;
       }
+      .ml8 {
+        margin-left: 8px;
+      }
       .w90 {
         width: 90px;
       }
@@ -403,6 +406,9 @@ export const styleXML: any = {
       }
       .aic {
         align-items: center;
+      }
+      .fe {
+        justify-content: flex-end;
       }
     }
     `;
