@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { Link } from 'umi';
-import styles from './index.less';
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-05-29 21:54:56
+ * @LastEditTime: 2021-06-30 00:17:27
+ * @LastEditors: chengtianqing
+ * @Description:
+ */
+import Setting from './setting';
 
 const IndexPage = () => {
-  return (
-    <div className={styles['container']}>
-      <Link to="/setting">转跳配置页</Link>
-    </div>
-  );
+  return <Setting />;
 };
 
 export default IndexPage;
