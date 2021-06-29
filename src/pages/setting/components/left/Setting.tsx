@@ -59,6 +59,7 @@ const Setting = (props: IProps) => {
   const [modalProps, setModalProps] = useState({
     value: '' as any,
     visible: false,
+    contentType: '',
   });
   const [form] = Form.useForm();
   useEffect(() => {
@@ -201,15 +202,26 @@ const Setting = (props: IProps) => {
 
   const handleModalCB = (obj: any) => {
     const { visible, code } = obj;
+    let newCode = code;
     setModalProps({
       visible: visible,
       value: {},
+      contentType: '',
     });
-    console.log('code', code);
-    if (!isEmpty(code)) {
-      const configs = form.getFieldValue('configs');
+    const configs = form.getFieldValue('configs');
+    if (modalProps.contentType === 'Select') {
+      if (isEmpty(newCode)) {
+        newCode = [];
+      }
       if (codeKey > -1) {
-        configs[codeKey].enumObj = code;
+        configs[codeKey].children[0].options = newCode;
+      }
+    } else {
+      if (isEmpty(newCode)) {
+        newCode = {};
+      }
+      if (codeKey > -1) {
+        configs[codeKey].enumObj = newCode;
         form.setFieldsValue(configs);
       }
     }
@@ -220,7 +232,17 @@ const Setting = (props: IProps) => {
     const configs = form.getFieldValue('configs');
     if (comType) {
       // @ts-ignore
-      configs[i].children = [ComponentsDSL[comType]];
+      const obj = { ...ComponentsDSL[comType] };
+      configs[i].children = [obj];
+      if (comType === 'Select') {
+        setCodeKey(i);
+        setModalProps({
+          visible: true,
+          // @ts-ignore
+          value: [].concat(obj.options),
+          contentType: 'Select',
+        });
+      }
     } else {
       configs[i].children = undefined;
     }
@@ -235,7 +257,8 @@ const Setting = (props: IProps) => {
       setCodeKey(i);
       setModalProps({
         visible: true,
-        value: { ...value },
+        value,
+        contentType: 'renderEnum',
       });
     }
   };
