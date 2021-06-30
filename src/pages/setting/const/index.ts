@@ -1,3 +1,10 @@
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-06-26 22:15:04
+ * @LastEditTime: 2021-06-29 01:13:27
+ * @LastEditors: chengtianqing
+ * @Description:
+ */
 /**
  * 左侧内容tab
  */
@@ -21,6 +28,12 @@ export const templates = [
   {
     code: 'detail',
     label: '弹窗详情',
+    img:
+      'https://cdn.poizon.com/node-common/8d2b5a58f7d80bf166706b5d8a9df571.png',
+  },
+  {
+    code: 'editModal',
+    label: '弹窗编辑',
     img:
       'https://cdn.poizon.com/node-common/8d2b5a58f7d80bf166706b5d8a9df571.png',
   },
