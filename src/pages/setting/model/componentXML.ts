@@ -11,12 +11,23 @@ export const VueXML: any = {
     <script>
       ${renderData.imports.join(';\n')};
 
-      export default {
+      export default {${
+        renderData.componentProps.length
+          ? '\nprops: {' + renderData.componentProps.join(',\n') + '},'
+          : ''
+      }
         data() {
           return ${JSON.stringify(renderData.data, null, 2)}
-        },
-        ${renderData.lifecycles.join(',\n')}
-        ${renderData.lifecycles.length ? ',' : ''}
+        },${
+          renderData.computed.length
+            ? '\ncomputed: {' + renderData.computed.join(',\n') + '},'
+            : ''
+        }
+        ${
+          renderData.lifecycles.length
+            ? renderData.lifecycles.join(',\n') + ','
+            : ''
+        }
         methods: {
           ${renderData.methods.join(',\n')}
         }

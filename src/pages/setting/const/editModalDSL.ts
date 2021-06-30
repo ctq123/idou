@@ -11,8 +11,10 @@ const DSL = {
   props: {
     className: 'detail-container',
     size: 'large',
+    'close-on-click-modal': false,
+    // TODO
+    ':visible.sync': 'detailModalShow',
   },
-  dataKey: 'detailModalShow',
   children: [
     {
       componentName: 'DIV',
@@ -100,6 +102,7 @@ const DSL = {
     {
       componentName: 'DIV',
       props: {
+        slot: 'footer',
         className: 'df aic fe right',
       },
       isEdit: true,
@@ -111,7 +114,7 @@ const DSL = {
           },
           children: '取消',
           onClick: `function handleCancel() {
-            
+            this.detailModalShow=false
           }`,
         },
         {
@@ -121,20 +124,42 @@ const DSL = {
             className: 'ml8',
           },
           children: '确定',
-          onClick: `function handleSubmit() {
-            
+          onClick: `async function handleSubmit() {
+            const params = { ...this.form }
+            deleteEmptyParam(params)
+            await API.updateRecord(params, this)
           }`,
         },
       ],
     },
   ],
+  componentProps: {
+    order: `{
+      type: Object,
+      default: () => ({}),
+    }`,
+    visible: `{
+      type: Boolean,
+      default: false,
+    }`,
+  },
   dataSource: {
     colProps: {
       span: 16,
     },
     form: {},
     loading: false,
-    detailModalShow: false,
+    submitLoading: false,
+  },
+  computed: {
+    detailModalShow: `{
+      get() {
+        return this.visible
+      },
+      set(val) {
+        this.$emit('update:visible', val)
+      },
+    }`,
   },
   methods: {
     getRecordDetail: `async function getRecordDetail() {
@@ -153,6 +178,15 @@ const DSL = {
     imports: {
       UmiRequest: '@du/umi-request',
     },
+    updateRecord: `function updateRecord(params, vm) {
+      return UmiRequest.request({
+        method: 'POST',
+        url: '/api/v1/h5/oversea/backend/product/update',
+        data: params,
+        vm,
+        loading: 'submitLoading'
+      })
+    }`,
     getRecordDetail: `function getRecordDetail(params) {
       return UmiRequest.request({
         method: 'POST',

@@ -21,7 +21,9 @@ let renderData: any = {
   vueCode: '',
   template: '',
   imports: [],
+  componentProps: [],
   data: {},
+  computed: [],
   methods: [],
   lifecycles: [],
   styles: [],
@@ -55,7 +57,9 @@ const initData = () => {
     vueCode: '',
     template: '',
     imports: [],
+    componentProps: [],
     data: {},
+    computed: [],
     methods: [],
     lifecycles: [],
     styles: [],
@@ -443,6 +447,26 @@ const getLifeCycle = (item: object = {}) => {
   return lifeList;
 };
 
+const getPageProps = (item: object = {}) => {
+  const propsList: any = [];
+  Object.entries(item)
+    .filter(Boolean)
+    .forEach(([k, v]) => {
+      propsList.push(`${k}: ${v}`);
+    });
+  return propsList;
+};
+
+const getComputed = (item: object = {}) => {
+  const computedList: any = [];
+  Object.entries(item)
+    .filter(Boolean)
+    .forEach(([k, v]) => {
+      computedList.push(`${k}: ${v}`);
+    });
+  return computedList;
+};
+
 const getImports = (item: object = {}) => {
   const ilist: any = [];
   Object.entries(item).forEach(([k, v]) => {
@@ -567,6 +591,8 @@ const getSourceCode = (DSL: any) => {
     initData();
     const { apiList, apiImportList } = getApis(DSL.apis);
     renderData.data = DSL.dataSource || {};
+    renderData.componentProps = getPageProps(DSL.componentProps);
+    renderData.computed = getComputed(DSL.computed);
     renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
     renderData.methods = getMethods(DSL.methods);
     renderData.imports = getImports(DSL.imports);
@@ -576,6 +602,7 @@ const getSourceCode = (DSL: any) => {
     renderData.template = generateTemplate(DSL);
     renderData.vueCode = generateVue();
     renderData.apiCode = generateApi();
+    console.log('renderData.methods', renderData.methods);
     return renderData;
   } catch (e) {
     console.error(e);

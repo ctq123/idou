@@ -333,15 +333,6 @@ const DSL = {
     imports: {
       UmiRequest: '@du/umi-request',
     },
-    getRecordDetail: `function getRecordDetail(params) {
-      return UmiRequest.request({
-        method: 'POST',
-        url: '/api/v1/h5/oversea/backend/product/detail',
-        data: params,
-        vm,
-        loading: 'loading'
-      })
-    }`,
     updateRecord: `function updateRecord(params, vm) {
       return UmiRequest.request({
         method: 'POST',
@@ -349,6 +340,15 @@ const DSL = {
         data: params,
         vm,
         loading: 'submitLoading'
+      })
+    }`,
+    getRecordDetail: `function getRecordDetail(params) {
+      return UmiRequest.request({
+        method: 'POST',
+        url: '/api/v1/h5/oversea/backend/product/detail',
+        data: params,
+        vm,
+        loading: 'loading'
       })
     }`,
   },

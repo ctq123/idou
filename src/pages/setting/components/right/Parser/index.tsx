@@ -1,8 +1,6 @@
 // @ts-nocheck
 import React, { Fragment, useContext, useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
-import isEmpty from 'lodash/isEmpty';
 import SelectBox from '../SelectBox';
 import { Context } from '@/pages/setting/model';
 import { getUid } from '@/utils';
@@ -40,8 +38,6 @@ const Parser = () => {
   const appContext: any = useContext(Context);
   const [selectStyle, setSelectStyle] = useState({});
   const [activeComponent, setActiveComponent] = useState<any>({});
-  const [mockList, setMockList] = useState([]);
-  const [cols, setCols] = useState({});
   const [newDSL, setNewDSL] = useState({});
   const [dataSource, setDataSource] = useState({});
   const [visible, setVisible] = useState(false);
@@ -55,39 +51,7 @@ const Parser = () => {
   useEffect(() => {
     setSelectStyle({});
   }, [appContext.state.dslType]);
-  useEffect(() => {
-    if (isEmpty(cols)) {
-      setMockList([]);
-    } else {
-      getMockListSync(cols)
-        .then((res) => setMockList(res))
-        .catch((e) => setMockList([]));
-    }
-  }, [cols]);
 
-  // 模拟数据
-  // const getMockData = (columns) => {
-  //   let data = {};
-  //   console.log("")
-  //   if (!columns || !columns.length) {
-  //     setMockList([]);
-  //     setCols(data);
-  //     return;
-  //   }
-  //   columns.forEach((item) => {
-  //     if (item.dataIndex !== '-') {
-  //       data[item.dataIndex] = item.title;
-  //     }
-  //   });
-  //   // console.log('cols,data', cols, data);
-  //   if (isEqual(cols, data)) return;
-  //   setCols(data);
-  //   getMockDataList(data)
-  //     .then((res) => setMockList(res))
-  //     .catch((e) => setMockList([]));
-  // };
-
-  // console.log('Parser, state', appContext.state);
   const handleComponentClick = (
     e: any,
     item: any,
@@ -329,7 +293,7 @@ const Parser = () => {
           });
           // 动态生成mock数据
           const mockList = getMockListSync(colKeys);
-          console.log('colKeys', colKeys);
+          // console.log('colKeys', colKeys);
           return (
             <div
               onClick={(e: any) =>

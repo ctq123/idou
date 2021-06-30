@@ -4,8 +4,10 @@ const DSL = {
   props: {
     className: 'detail-container',
     size: 'large',
+    'close-on-click-modal': false,
+    // TODO
+    ':visible.sync': 'detailModalShow',
   },
-  dataKey: 'detailModalShow',
   children: [
     {
       componentName: 'DIV',
@@ -255,6 +257,16 @@ const DSL = {
       ],
     },
   ],
+  componentProps: {
+    order: `{
+      type: Object,
+      default: () => ({}),
+    }`,
+    visible: `{
+      type: Boolean,
+      default: false,
+    }`,
+  },
   dataSource: {
     colProps: {
       xs: 24,
@@ -264,7 +276,16 @@ const DSL = {
     },
     record: {},
     loading: false,
-    detailModalShow: false,
+  },
+  computed: {
+    detailModalShow: `{
+      get() {
+        return this.visible
+      },
+      set(val) {
+        this.$emit('update:visible', val)
+      },
+    }`,
   },
   lifeCycle: {
     componentDidMount: `function componentDidMount() {
