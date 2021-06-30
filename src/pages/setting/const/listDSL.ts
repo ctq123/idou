@@ -268,16 +268,22 @@ const DSL = {
           ],
         },
         {
-          componentName: 'Pagination',
-          props: {
-            className: 'mt24 tar',
-          },
+          componentName: 'DIV',
+          props: {},
           isEdit: true,
-          dataKey: 'pagination',
-          onPageChange: `function handleCurrentChange(val) {
-            this.pagination.currentPage = val;
-            this.queryList();
-          }`,
+          children: [
+            {
+              componentName: 'Pagination',
+              props: {
+                className: 'mt24 tar',
+              },
+              dataKey: 'pagination',
+              onPageChange: `function handleCurrentChange(val) {
+                this.pagination.currentPage = val;
+                this.queryList();
+              }`,
+            },
+          ],
         },
       ],
     },

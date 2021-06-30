@@ -1,16 +1,17 @@
 // @ts-nocheck
-import React, { Fragment, useContext, useState } from 'react';
+import React, { Fragment, useContext, useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import SelectBox from '../SelectBox';
 import { Context } from '@/pages/setting/model';
 import { getUid } from '@/utils';
-import { getMockDataList } from '@/utils/mock';
-import styles from './index.less';
-import 'antd/dist/antd.css';
+import { getMockListSync } from '@/utils/mock';
 import { Button, Divider } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useEffect } from 'react';
+import ComponentModal from './ComponentModal';
+import styles from './index.less';
+import 'antd/dist/antd.css';
 
 const antd = require('antd');
 
@@ -40,9 +41,10 @@ const Parser = () => {
   const [selectStyle, setSelectStyle] = useState({});
   const [activeComponent, setActiveComponent] = useState<any>({});
   const [mockList, setMockList] = useState([]);
-  const [cols, setCols] = useState(cols);
+  const [cols, setCols] = useState({});
   const [newDSL, setNewDSL] = useState({});
   const [dataSource, setDataSource] = useState({});
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const newDSL = cloneDeep(appContext.state.dsl);
@@ -53,27 +55,37 @@ const Parser = () => {
   useEffect(() => {
     setSelectStyle({});
   }, [appContext.state.dslType]);
+  useEffect(() => {
+    if (isEmpty(cols)) {
+      setMockList([]);
+    } else {
+      getMockListSync(cols)
+        .then((res) => setMockList(res))
+        .catch((e) => setMockList([]));
+    }
+  }, [cols]);
 
   // 模拟数据
-  const getMockData = (columns) => {
-    let data = {};
-    if (!columns || !columns.length) {
-      setMockList([]);
-      setCols(data);
-      return;
-    }
-    columns.forEach((item) => {
-      if (item.dataIndex !== '-') {
-        data[item.dataIndex] = item.title;
-      }
-    });
-    // console.log('cols,data', cols, data);
-    if (isEqual(cols, data)) return;
-    setCols(data);
-    getMockDataList(data)
-      .then((res) => setMockList(res))
-      .catch((e) => setMockList([]));
-  };
+  // const getMockData = (columns) => {
+  //   let data = {};
+  //   console.log("")
+  //   if (!columns || !columns.length) {
+  //     setMockList([]);
+  //     setCols(data);
+  //     return;
+  //   }
+  //   columns.forEach((item) => {
+  //     if (item.dataIndex !== '-') {
+  //       data[item.dataIndex] = item.title;
+  //     }
+  //   });
+  //   // console.log('cols,data', cols, data);
+  //   if (isEqual(cols, data)) return;
+  //   setCols(data);
+  //   getMockDataList(data)
+  //     .then((res) => setMockList(res))
+  //     .catch((e) => setMockList([]));
+  // };
 
   // console.log('Parser, state', appContext.state);
   const handleComponentClick = (
@@ -151,6 +163,9 @@ const Parser = () => {
           data['label'] = data['label'] + ' 复制';
         }
         break;
+      case 'add':
+        setVisible(true);
+        return;
       case 'delete':
         type = 'component/delete';
         from['index'] = index;
@@ -173,6 +188,26 @@ const Parser = () => {
       appContext.dispatch({
         type: 'component/selected',
         data: null,
+      });
+    }
+  };
+
+  const handleAddCB = (obj: any) => {
+    const { visible, com } = obj || {};
+    setVisible(visible);
+    if (com) {
+      const { index, parentUuid } = activeComponent;
+      const to: any = {
+        index: index + 1,
+        uuid: parentUuid,
+      };
+      const data = cloneDeep(com);
+      appContext.dispatch({
+        type: 'component/add',
+        data: {
+          component: data,
+          to,
+        },
       });
     }
   };
@@ -263,12 +298,14 @@ const Parser = () => {
           );
         case 'Table':
           const Table = antd['Table'];
+          const colKeys = {};
           const columns = (children || []).filter(Boolean).map((item: any) => {
+            colKeys[item.key] = item.key;
             const col = {
               title: item.label,
               dataIndex: item.key,
             };
-            if (item.label === '操作') {
+            if (item.renderKey === 'renderOperate') {
               col.render = () => {
                 return (
                   <>
@@ -287,8 +324,8 @@ const Parser = () => {
             return col;
           });
           // 动态生成mock数据
-          getMockData(columns);
-          // console.log('mockList', mockList);
+          const mockList = getMockListSync(colKeys);
+          console.log('colKeys', colKeys);
           return (
             <div
               onClick={(e: any) =>
@@ -424,6 +461,7 @@ const Parser = () => {
         style={selectStyle}
         handleCB={(action: string) => handleOptCB(action)}
       />
+      <ComponentModal visible={visible} handleCB={(obj) => handleAddCB(obj)} />
     </div>
   );
 };

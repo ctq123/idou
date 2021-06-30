@@ -17,7 +17,7 @@ const DSL = {
     {
       componentName: 'DIV',
       props: {
-        className: 'pl24 pr24 pb24 pt24 mt24 bc_fff bshadow',
+        className: 'pl24 pr24 pb24 pt24 mt24 bc_fff bshadow edit-content',
       },
       children: [
         {
@@ -25,6 +25,7 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -69,6 +70,7 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -148,6 +150,7 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -228,6 +231,7 @@ const DSL = {
       props: {
         className: 'footer-block',
       },
+      isEdit: true,
       children: [
         {
           componentName: 'DIV',

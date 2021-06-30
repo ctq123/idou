@@ -221,6 +221,9 @@ export const styleXML: any = {
           justify-content: flex-end;
         }
       }
+      .edit-content {
+        min-height: calc(100vh - 204px);
+      }
       .bb {
         border-bottom: solid 1px #f5f5f9;
       }

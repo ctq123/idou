@@ -23,8 +23,8 @@ import CodeDrawer from '../codeEditor/CodeDrawer';
 import CodeModal from '../codeEditor/CodeModal';
 import { getUid } from '@/utils';
 import {
-  FormComponentObj,
-  TableComponentObj,
+  FormComponents,
+  TableComponents,
   ComponentsDSL,
 } from '../../const/componentDSL';
 import styles from './Setting.less';
@@ -234,13 +234,13 @@ const Setting = (props: IProps) => {
       // @ts-ignore
       const obj = { ...ComponentsDSL[comType] };
       configs[i].children = [obj];
-      if (comType === 'Select') {
+      if (comType === 'du-select') {
         setCodeKey(i);
         setModalProps({
           visible: true,
           // @ts-ignore
           value: [].concat(obj.options),
-          contentType: 'Select',
+          contentType: 'du-select',
         });
       }
     } else {
@@ -382,9 +382,9 @@ const Setting = (props: IProps) => {
                         allowClear
                         onChange={(val) => handleTypeChange(val, i)}
                       >
-                        {Object.entries(TableComponentObj).map(([k, v]) => (
-                          <Option key={k} value={k}>
-                            {v}
+                        {TableComponents.map((item: any) => (
+                          <Option key={item.key} value={item.componentName}>
+                            {item.name}
                           </Option>
                         ))}
                       </Select>
@@ -490,9 +490,9 @@ const Setting = (props: IProps) => {
                       allowClear
                       onChange={(val) => handleTypeChange(val, i)}
                     >
-                      {Object.entries(FormComponentObj).map(([k, v]) => (
-                        <Option key={k} value={k}>
-                          {v}
+                      {FormComponents.map((item: any) => (
+                        <Option key={item.key} value={item.componentName}>
+                          {item.name}
                         </Option>
                       ))}
                     </Select>
@@ -596,9 +596,9 @@ const Setting = (props: IProps) => {
                         allowClear
                         onChange={(val) => handleTypeChange(val, i)}
                       >
-                        {Object.entries(FormComponentObj).map(([k, v]) => (
-                          <Option key={k} value={k}>
-                            {v}
+                        {FormComponents.map((item: any) => (
+                          <Option key={item.key} value={item.componentName}>
+                            {item.name}
                           </Option>
                         ))}
                       </Select>

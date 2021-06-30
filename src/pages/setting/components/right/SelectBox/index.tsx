@@ -4,6 +4,7 @@ import {
   ArrowDownOutlined,
   CopyOutlined,
   DeleteOutlined,
+  PlusOutlined,
 } from '@ant-design/icons';
 import styles from './index.less';
 
@@ -22,6 +23,9 @@ const SelectBox = (props: IProps) => {
         </span>
         <span title="下移" onClick={() => handleCB('down')}>
           <ArrowDownOutlined />
+        </span>
+        <span title="添加" onClick={() => handleCB('add')}>
+          <PlusOutlined />
         </span>
         <span title="复制" onClick={() => handleCB('copy')}>
           <CopyOutlined />

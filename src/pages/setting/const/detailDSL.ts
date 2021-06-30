@@ -56,6 +56,7 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -136,6 +137,7 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'DIV',
@@ -180,6 +182,7 @@ const DSL = {
           props: {
             className: 'info-list bb mb24 pb12',
           },
+          isEdit: true,
           children: [
             {
               componentName: 'DIV',

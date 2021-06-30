@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Button, Tabs, Drawer } from 'antd';
+import { Tabs } from 'antd';
 import { templates, tabs } from '../../const';
 import { Context } from '@/pages/setting/model';
-import { componentList } from '../../const/componentDSL';
+import { ModuleComponents } from '../../const/componentDSL';
 import Setting from './Setting';
 import Request from './Request';
 import styles from './index.less';
@@ -65,6 +65,11 @@ const Left = () => {
     }
   };
 
+  const addComponent = (com: any) => {
+    // const { index, parentUuid, item } = selectedComponent || {}
+    // TODO 处理点击事件
+  };
+
   const generateTabPane = () => {
     switch (tab) {
       case 'template':
@@ -89,8 +94,12 @@ const Left = () => {
       case 'component':
         return (
           <div className={styles['component']}>
-            {(componentList || []).map((item, i) => (
-              <div key={i} className={styles['item']}>
+            {(ModuleComponents || []).map((item: any, i: number) => (
+              <div
+                key={i}
+                className={styles['item']}
+                onClick={() => addComponent(item)}
+              >
                 <img
                   alt="图片"
                   src={

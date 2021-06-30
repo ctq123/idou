@@ -1,170 +1,392 @@
 /**
  * 组件DSL片段
  */
-const ComponentsDSL = {
-  Input: {
+const componentList: any = [
+  {
+    key: 'du-input',
+    name: '输入框',
     componentName: 'Input',
-    props: {
-      placeholder: '请输入',
-      clearable: true,
+    componentDSL: {
+      componentName: 'Input',
+      props: {
+        placeholder: '请输入',
+        clearable: true,
+      },
     },
   },
-  Select: {
+  {
+    key: 'du-select',
+    name: '选择器',
     componentName: 'Select',
-    props: {
-      placeholder: '请选择',
-      clearable: true,
+    componentDSL: {
+      componentName: 'Select',
+      props: {
+        placeholder: '请选择',
+        clearable: true,
+      },
+      options: [
+        { value: '0', label: '审批中' },
+        { value: '1', label: '已通过' },
+        { value: '2', label: '已驳回' },
+      ],
     },
-    options: [
-      { value: '0', label: '审批中' },
-      { value: '1', label: '已通过' },
-      { value: '2', label: '已驳回' },
-    ],
   },
-  RangePicker: {
+  {
+    key: 'du-rangePicker',
+    name: '日期范围',
     componentName: 'RangePicker',
-    props: {},
+    componentDSL: {
+      componentName: 'RangePicker',
+      props: {},
+    },
   },
-  Cascader: {
+  {
+    key: 'du-cascader',
+    name: '级联选择',
     componentName: 'Cascader',
-    props: {
-      placeholder: '请选择',
-    },
-    options: [
-      {
-        value: 1,
-        label: '鞋',
-        children: [
-          {
-            value: 100,
-            label: '运动鞋',
-            children: [
-              {
-                value: 200,
-                label: '篮球鞋',
-              },
-            ],
-          },
-        ],
+    componentDSL: {
+      componentName: 'Cascader',
+      props: {
+        placeholder: '请选择',
       },
-    ],
-  },
-  AutoComplete: {
-    componentName: 'AutoComplete',
-    props: {
-      placeholder: '请输入',
-      clearable: true,
-    },
-    options: [],
-    onSearch: `function handleSearchText(searchText) {
-      this.queryProductName(searchText);
-      this.productNameOptions = []
-    }`,
-    onSelect: `function handleSelect(data) {
-      this.productName = data;
-    }`,
-  },
-  Button: {
-    componentName: 'Button',
-    props: {
-      type: 'primary',
-    },
-    children: '确定',
-    onClick: `function search() {
-
-    }`,
-  },
-  Form: {
-    componentName: 'Form',
-    props: {
-      'label-width': 80,
-    },
-    dataKey: 'form',
-    children: [
-      {
-        label: '姓名',
-        key: 'name',
-        children: [
-          {
-            componentName: 'Input',
-            props: {
-              placeholder: '请输入',
-              clearable: true,
+      options: [
+        {
+          value: 1,
+          label: '鞋',
+          children: [
+            {
+              value: 100,
+              label: '运动鞋',
+              children: [
+                {
+                  value: 200,
+                  label: '篮球鞋',
+                },
+              ],
             },
-          },
-        ],
-      },
-    ],
+          ],
+        },
+      ],
+    },
   },
-  Table: {
+  {
+    key: 'du-autoComplete',
+    name: '自动完成',
+    componentName: 'AutoComplete',
+    componentDSL: {
+      componentName: 'AutoComplete',
+      props: {
+        placeholder: '请输入',
+        clearable: true,
+      },
+      options: [],
+      onSearch: `function handleSearchText(searchText) {
+        this.queryProductName(searchText);
+        this.productNameOptions = []
+      }`,
+      onSelect: `function handleSelect(data) {
+        this.productName = data;
+      }`,
+    },
+  },
+  {
+    key: 'du-button',
+    name: '按钮',
+    componentName: 'Button',
+    componentDSL: {
+      componentName: 'Button',
+      props: {
+        type: 'primary',
+      },
+      children: '查询',
+      onClick: `function handleSearch() {
+        this.pagination.currentPage = 1;
+        this.queryList();
+      }`,
+    },
+  },
+  {
+    key: 'du-form',
+    name: '编辑表单',
+    componentName: 'Form',
+    componentDSL: {
+      componentName: 'Form',
+      props: {
+        'label-width': '130px',
+      },
+      dataKey: 'form',
+      children: [
+        {
+          label: '名称',
+          key: 'name',
+          children: [
+            {
+              componentName: 'Input',
+              props: {
+                placeholder: '请输入',
+                clearable: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    key: 'du-searchform',
+    name: '搜索表单',
+    componentName: 'Form',
+    componentDSL: {
+      componentName: 'Form',
+      props: {
+        'label-width': '80px',
+      },
+      dataKey: 'form',
+      type: 'search',
+      children: [
+        {
+          label: '名称',
+          key: 'name',
+          children: [
+            {
+              componentName: 'Input',
+              props: {
+                placeholder: '请输入',
+                clearable: true,
+              },
+            },
+          ],
+        },
+        {
+          label: '',
+          children: [
+            {
+              componentName: 'Button',
+              props: {
+                type: 'default',
+              },
+              children: '重置',
+              onClick: `function handleReset() {
+                this.pagination.currentPage = 1;
+                this.form = {};
+                this.queryList();
+              }`,
+            },
+            {
+              componentName: 'Button',
+              props: {
+                type: 'primary',
+              },
+              children: '查询',
+              onClick: `function handleSearch() {
+                this.pagination.currentPage = 1;
+                this.queryList();
+              }`,
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    key: 'du-table',
+    name: '普通表格',
     componentName: 'Table',
-    props: {},
-    dataKey: 'list',
-    children: [
-      {
-        key: 'id',
-        label: '序号',
-        renderKey: `renderDefault`,
+    componentDSL: {
+      componentName: 'Table',
+      props: {},
+      dataKey: 'list',
+      children: [
+        {
+          key: 'id',
+          label: '序号',
+          renderKey: `renderDefault`,
+        },
+      ],
+    },
+  },
+  {
+    key: 'du-editTable',
+    name: '编辑表格',
+    componentName: 'Table',
+    componentDSL: {
+      componentName: 'Table',
+      props: {
+        size: 'small',
+        border: true,
       },
-    ],
+      type: 'editTable',
+      dataKey: 'dataList',
+      onSelectionChange: `function handleSelectionChange(rows) {
+        this.multipleSelection = rows
+      }`,
+      children: [
+        {
+          key: 'id',
+          label: '序号',
+        },
+        {
+          label: '名称',
+          key: 'name',
+          children: [
+            {
+              componentName: 'Input',
+              props: {
+                placeholder: '请输入名称',
+                clearable: true,
+              },
+            },
+          ],
+        },
+      ],
+    },
   },
-  Pagination: {
-    componentName: 'Pagination',
-    props: {},
-    onPageChange: `function handleCurrentChange(val) {
-      this.pagination.currentPage = val;
-      this.queryList();
-    }`,
+  {
+    key: 'du-pagination',
+    name: '分页',
+    componentName: 'DIV',
+    componentDSL: {
+      componentName: 'DIV',
+      props: {},
+      isEdit: true,
+      children: [
+        {
+          componentName: 'Pagination',
+          props: {
+            className: 'mt24 tar',
+          },
+          dataKey: 'pagination',
+          onPageChange: `function handleCurrentChange(val) {
+            this.pagination.currentPage = val;
+            this.queryList();
+          }`,
+        },
+      ],
+    },
   },
-
-  // // 自定义组件
-  // CrumbBack: {
-  //   componentName: 'CrumbBack',
-  //   props: {},
-  // },
-};
+  {
+    key: 'du-crumbBack',
+    name: '返回模块',
+    componentName: 'CrumbBack',
+    componentDSL: {
+      componentName: 'CrumbBack',
+      props: {},
+      isEdit: true,
+      children: 'XX编辑',
+      onClick: `function handleGoBack() {
+        this.$router.go(-1);
+      }`,
+    },
+  },
+  {
+    key: 'du-baseInfo',
+    name: '基本信息模块',
+    componentName: 'DIV',
+    componentDSL: {
+      componentName: 'DIV',
+      props: {
+        className: 'info-list bb mb24 pb12',
+      },
+      isEdit: true,
+      children: [
+        {
+          componentName: 'DIV',
+          props: {
+            className: 'mb12 fs16 fw700',
+          },
+          isEdit: true,
+          children: 'XX信息',
+        },
+        {
+          componentName: 'Row',
+          props: {
+            gutter: 20,
+          },
+          dataKey: 'record',
+          isEdit: true,
+          children: [
+            {
+              span: 8,
+              key: 'code',
+              label: '单号',
+              renderKey: `renderDefault`,
+            },
+            {
+              span: 8,
+              key: 'status',
+              label: '状态',
+              renderKey: `renderEnum`,
+              enumObj: {
+                1: '成功',
+                2: '失败',
+              },
+            },
+            {
+              span: 8,
+              key: 'address',
+              label: '地址',
+              renderKey: `renderEllipsis`,
+            },
+          ],
+        },
+      ],
+    },
+  },
+];
 
 /**
- * 注册的组件名称
+ * 根据限制获取对应的组件集合
+ * @param childArr
+ * @param arr
+ * @returns
  */
-const componentNames = {
-  Input: '输入框',
-  Select: '选择器',
-  RangePicker: '日期范围',
-  Cascader: '级联选择',
-  AutoComplete: '自动完成',
-  Button: '按钮',
-  Form: '表单',
-  Table: '表格',
-  Pagination: '分页',
-  // CrumbBack: '返回组件',
+const getValidComponents = (childArr = [], arr = []) => {
+  return childArr
+    .map((k) => arr.find((item: any) => item.key === k))
+    .filter(Boolean);
 };
 
-/**
- * 注册的组件列表
- */
-const componentList = Object.entries(componentNames).map(([k, v]) => {
-  // @ts-ignore
-  return { key: k, name: v, componentDSL: ComponentsDSL[k] };
+const ComponentsDSL: any = {};
+componentList.forEach((item: any) => {
+  ComponentsDSL[item.key] = item.componentDSL;
 });
 
 /**
  * Form表单允许使用的组件
  */
-const FormComponentObj = {
-  Input: componentNames['Input'],
-  Select: componentNames['Select'],
-  RangePicker: componentNames['RangePicker'],
-  Cascader: componentNames['Cascader'],
-  AutoComplete: componentNames['AutoComplete'],
-};
+const FormCompList: any = [
+  'du-input',
+  'du-select',
+  'du-rangePicker',
+  'du-cascader',
+  'du-autoComplete',
+];
+const FormComponents = getValidComponents(FormCompList, componentList);
 
 /**
  * Table表单允许使用的组件
  */
-const TableComponentObj = {
-  Input: componentNames['Input'],
-  Select: componentNames['Select'],
-};
+const TableCompList: any = ['du-input', 'du-select'];
+const TableComponents = getValidComponents(TableCompList, componentList);
 
-export { componentList, ComponentsDSL, FormComponentObj, TableComponentObj };
+/**
+ * 允许使用的组件
+ */
+const ModuleCompList: any = [
+  'du-form',
+  'du-searchform',
+  'du-table',
+  'du-editTable',
+  'du-pagination',
+  'du-crumbBack',
+  'du-baseInfo',
+];
+const ModuleComponents = getValidComponents(ModuleCompList, componentList);
+
+export {
+  componentList,
+  ComponentsDSL,
+  FormComponents,
+  TableComponents,
+  ModuleComponents,
+};
