@@ -45,7 +45,7 @@ const colRenderObj: any = {
   renderDefault: '默认',
 };
 
-const defaultSelectOptions: any = { '0': '是', '1': '否' };
+const defaultSelectOptions: any = { '1': '待审批', '2': '审批通过' };
 
 const Setting = (props: IProps) => {
   // console.log('props', props);
@@ -75,8 +75,10 @@ const Setting = (props: IProps) => {
                   ? 'renderCustom'
                   : item.renderKey || 'renderDefault';
 
-                if (Array.isArray(item.children)) {
-                  obj['type'] = item.children[0]?.componentName;
+                if (Array.isArray(item.children) && item.children.length) {
+                  const name = item.children[0].componentName || '';
+                  obj['type'] =
+                    'du-' + name[0].toLowerCase() + name.substring(1);
                   obj['children'] = item.children;
                 }
                 if (componentName === 'Table') {
@@ -120,8 +122,10 @@ const Setting = (props: IProps) => {
                   key: item.key,
                   label: item.label,
                 };
-                if (Array.isArray(item.children)) {
-                  obj['type'] = item.children[0]?.componentName;
+                if (Array.isArray(item.children) && item.children.length) {
+                  const name = item.children[0].componentName || '';
+                  obj['type'] =
+                    'du-' + name[0].toLowerCase() + name.substring(1);
                   obj['children'] = item.children;
                 }
                 return obj;
@@ -209,7 +213,7 @@ const Setting = (props: IProps) => {
       contentType: '',
     });
     const configs = form.getFieldValue('configs');
-    if (modalProps.contentType === 'Select') {
+    if (modalProps.contentType === 'changeOptions') {
       if (isEmpty(newCode)) {
         newCode = [];
       }
@@ -234,13 +238,13 @@ const Setting = (props: IProps) => {
       // @ts-ignore
       const obj = { ...ComponentsDSL[comType] };
       configs[i].children = [obj];
-      if (comType === 'du-select') {
+      if (['du-select', 'du-radioGroup'].includes(comType)) {
         setCodeKey(i);
         setModalProps({
           visible: true,
           // @ts-ignore
           value: [].concat(obj.options),
-          contentType: 'du-select',
+          contentType: 'changeOptions',
         });
       }
     } else {
@@ -383,7 +387,7 @@ const Setting = (props: IProps) => {
                         onChange={(val) => handleTypeChange(val, i)}
                       >
                         {TableComponents.map((item: any) => (
-                          <Option key={item.key} value={item.componentName}>
+                          <Option key={item.key} value={item.key}>
                             {item.name}
                           </Option>
                         ))}
@@ -491,7 +495,7 @@ const Setting = (props: IProps) => {
                       onChange={(val) => handleTypeChange(val, i)}
                     >
                       {FormComponents.map((item: any) => (
-                        <Option key={item.key} value={item.componentName}>
+                        <Option key={item.key} value={item.key}>
                           {item.name}
                         </Option>
                       ))}
@@ -597,7 +601,7 @@ const Setting = (props: IProps) => {
                         onChange={(val) => handleTypeChange(val, i)}
                       >
                         {FormComponents.map((item: any) => (
-                          <Option key={item.key} value={item.componentName}>
+                          <Option key={item.key} value={item.key}>
                             {item.name}
                           </Option>
                         ))}

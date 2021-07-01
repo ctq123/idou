@@ -55,13 +55,26 @@ const DSL = {
           dataKey: 'form',
           children: [
             {
-              label: '实际货号',
-              key: 'actualArticleNumber',
+              label: '货号',
+              key: 'articleNumber',
               children: [
                 {
                   componentName: 'Input',
                   props: {
-                    placeholder: '请输入实际货号',
+                    placeholder: '请输入货号',
+                    clearable: true,
+                  },
+                },
+              ],
+            },
+            {
+              label: '数量',
+              key: 'amount',
+              children: [
+                {
+                  componentName: 'InputNumber',
+                  props: {
+                    placeholder: '请输入数量',
                     clearable: true,
                   },
                 },
@@ -86,8 +99,26 @@ const DSL = {
               ],
             },
             {
-              label: '创建时间',
-              key: 'createTime',
+              label: '商品类型',
+              key: 'productType',
+              children: [
+                {
+                  componentName: 'RadioGroup',
+                  props: {
+                    placeholder: '请选择',
+                    clearable: true,
+                  },
+                  // type: 'button',
+                  options: [
+                    { value: '进口', label: '进口' },
+                    { value: '非进口', label: '非进口' },
+                  ],
+                },
+              ],
+            },
+            {
+              label: '截止时间',
+              key: 'limitTime',
               children: [
                 {
                   componentName: 'RangePicker',

@@ -68,6 +68,7 @@ const DSL = {
                   componentName: 'Cascader',
                   props: {
                     placeholder: '请选择',
+                    clearable: true,
                   },
                   options: [
                     {

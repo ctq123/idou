@@ -106,24 +106,24 @@ const handleDSLComponentChange = (
  * @param data
  * @returns
  */
-const initDSL = (data: IObject) => {
+const addUuid = (data: IObject) => {
   const copyData = cloneDeep(data);
-  const addUuid = (data: IObject) => {
+  const addDataUuid = (data: IObject) => {
     if (data) {
       if (Array.isArray(data.children)) {
         data.uuid = getUid();
-        data.children.forEach((item) => addUuid(item));
+        data.children.forEach((item) => addDataUuid(item));
       } else if (data.isEdit) {
         data.uuid = getUid();
       }
     }
   };
-  addUuid(copyData);
+  addDataUuid(copyData);
   return copyData;
 };
 
 const initState = {
-  dsl: initDSL(ListDSL),
+  dsl: addUuid(ListDSL),
   selectedComponent: null,
   vueCode: null,
   apiCode: null,
@@ -138,9 +138,10 @@ const reducer = (state: any, action: any) => {
   console.log('data', data);
   switch (type) {
     case 'component/add':
+      const newComponent = addUuid(component);
       const { newDSL: addDSL } = handleDSLComponentChange(
         state.dsl,
-        component,
+        newComponent,
         to,
         'add',
       );
@@ -207,7 +208,7 @@ const reducer = (state: any, action: any) => {
       return {
         ...state,
         dslType: data.dslType,
-        dsl: initDSL(newTypeDSL),
+        dsl: addUuid(newTypeDSL),
         selectedComponent: null,
       };
     default:

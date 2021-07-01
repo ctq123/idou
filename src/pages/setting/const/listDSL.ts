@@ -68,6 +68,7 @@ const DSL = {
                   componentName: 'Cascader',
                   props: {
                     placeholder: '请选择',
+                    clearable: true,
                   },
                   options: [
                     {
@@ -102,11 +103,11 @@ const DSL = {
                   },
                   options: [],
                   onSearch: `function handleSearchText(searchText) {
-                    this.queryProductName(searchText);
-                    this.productNameOptions = []
+                    // this.queryProductName(searchText);
+                    // this.productNameOptions = []
                   }`,
                   onSelect: `function handleSelect(data) {
-                    this.productName = data;
+                    // this.productName = data;
                   }`,
                 },
               ],

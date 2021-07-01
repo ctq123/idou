@@ -101,10 +101,16 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     switch (componentName) {
       case 'Form':
         const formDataKey = dataKey || 'form';
+        const rulesKey = type === 'search' ? '' : formDataKey + 'Rules';
         // 解决多个form公用数据问题
         renderData.data[formDataKey] = renderData.data[formDataKey]
           ? { ...renderData.data[formDataKey] }
           : {};
+        if (rulesKey) {
+          renderData.data[rulesKey] = renderData.data[rulesKey]
+            ? { ...renderData.data[rulesKey] }
+            : {};
+        }
 
         const childs = children || [];
         const buttonItems = (list: any) =>
@@ -130,6 +136,24 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                   renderData.data[formDataKey][key] =
                     initValue !== undefined ? initValue : '';
                 }
+                // 生成rules
+                if (rulesKey) {
+                  let message = `请输入${label}`;
+                  if (item.children && item.children.length) {
+                    if (
+                      ['Input', 'InputNumber'].includes(
+                        item.children[0].componentName,
+                      )
+                    ) {
+                      message = `请输入${label}`;
+                    } else {
+                      message = `请选择${label}`;
+                    }
+                  }
+                  renderData.data[rulesKey][key] = [
+                    { required: true, message },
+                  ];
+                }
               }
               let itemChildren = (item.children || [])
                 .map((child: any) => generateTemplate(child, vmodel))
@@ -152,13 +176,18 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           ...props,
           ':model': formDataKey,
         };
+        if (rulesKey) {
+          formProps[':rules'] = rulesKey;
+          formProps['ref'] = formDataKey;
+        }
         let buttonItemsStr = !childs[childs.length - 1].key
           ? buttonItems(childs.splice(-1))
           : '';
         let formItemsStr = formItems(childs);
         let formChildStr = null;
         if (type === 'search') {
-          // 搜索的处理
+          // 搜索组件
+          // 搜索的处理，添加特定的组件
           buttonItemsStr = VueXML.CreateDom(
             'template',
             `v-slot:doBox`,
@@ -175,6 +204,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             `${formItemsStr}\n${buttonItemsStr}`,
           );
         } else {
+          // 普通输入组件
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
         }
 
@@ -203,6 +233,19 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         )}`;
         xml = VueXML.CreateDom('el-select', selectAttr, `\n${selectOptions}\n`);
         break;
+      case 'InputNumber':
+        const inputNumberProps = {
+          ...props,
+          type: 'number',
+        };
+        if (vModel) {
+          inputNumberProps['v-model'] = vModel;
+        }
+        const inputNumberAttr = `${getPropsStr(inputNumberProps)} ${getEventStr(
+          schemaDSL,
+        )}`;
+        xml = VueXML.CreateDom('el-input', inputNumberAttr, '');
+        break;
       case 'RangePicker':
         const rangepickerProps: any = {
           type: 'daterange',
@@ -222,15 +265,40 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         )}`;
         xml = VueXML.CreateDom('el-date-picker', rangePickerAttr, '');
         break;
+      case 'RadioGroup':
+        const radioOptions = (options || [])
+          .map((item: any) => {
+            let name = type === 'button' ? 'el-radio-button' : 'el-radio';
+            const itemProps = { ...item };
+            // 剔除value
+            delete itemProps.value;
+            return VueXML.CreateDom(name, getPropsStr(itemProps), '');
+          })
+          .join('\n');
+        const radioGroupProps: any = {
+          ...props,
+        };
+        if (vModel) {
+          radioGroupProps['v-model'] = vModel;
+        }
+        const radioGroupAttr = `${getPropsStr(radioGroupProps)} ${getEventStr(
+          schemaDSL,
+        )}`;
+        xml = VueXML.CreateDom('el-radio-group', radioGroupAttr, radioOptions);
+        break;
       case 'Cascader':
         const cascaderProps: any = {
           options: options || [],
           props: { multiple: true },
           'collapse-tags': true,
-          clearable: true,
           ...props,
         };
         if (vModel) {
+          const key = vModel.split('.').splice(-1)[0];
+          const dataKey1 = key + 'CategoryOptions';
+          renderData.data[dataKey1] = options || [];
+          delete cascaderProps.options;
+          cascaderProps[':options'] = dataKey1;
           cascaderProps['v-model'] = vModel;
         }
         const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
@@ -243,7 +311,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           onSearch: ':fetch-suggestions',
         });
         const autoCompleteProps: any = {
-          clearable: true,
           ...props,
         };
         if (vModel) {
@@ -602,7 +669,6 @@ const getSourceCode = (DSL: any) => {
     renderData.template = generateTemplate(DSL);
     renderData.vueCode = generateVue();
     renderData.apiCode = generateApi();
-    console.log('renderData.methods', renderData.methods);
     return renderData;
   } catch (e) {
     console.error(e);

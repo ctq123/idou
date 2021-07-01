@@ -1,11 +1,12 @@
 /**
  * 组件DSL片段
+ * key: 只是用于标记它的唯一性，获取对应的dsl片段，并无其他作用
+ * componentDSL是用于生成源码的dsl片段
  */
 const componentList: any = [
   {
     key: 'du-input',
     name: '输入框',
-    componentName: 'Input',
     componentDSL: {
       componentName: 'Input',
       props: {
@@ -15,9 +16,19 @@ const componentList: any = [
     },
   },
   {
+    key: 'du-inputNumber',
+    name: '数字输入框',
+    componentDSL: {
+      componentName: 'InputNumber',
+      props: {
+        placeholder: '请输入',
+        clearable: true,
+      },
+    },
+  },
+  {
     key: 'du-select',
     name: '选择器',
-    componentName: 'Select',
     componentDSL: {
       componentName: 'Select',
       props: {
@@ -34,20 +45,34 @@ const componentList: any = [
   {
     key: 'du-rangePicker',
     name: '日期范围',
-    componentName: 'RangePicker',
     componentDSL: {
       componentName: 'RangePicker',
       props: {},
     },
   },
   {
+    key: 'du-radioGroup',
+    name: '单选框',
+    componentDSL: {
+      componentName: 'RadioGroup',
+      props: {
+        placeholder: '请选择',
+        clearable: true,
+      },
+      options: [
+        { value: '选项1', label: '选项1' },
+        { value: '选项2', label: '选项2' },
+      ],
+    },
+  },
+  {
     key: 'du-cascader',
     name: '级联选择',
-    componentName: 'Cascader',
     componentDSL: {
       componentName: 'Cascader',
       props: {
         placeholder: '请选择',
+        clearable: true,
       },
       options: [
         {
@@ -72,7 +97,6 @@ const componentList: any = [
   {
     key: 'du-autoComplete',
     name: '自动完成',
-    componentName: 'AutoComplete',
     componentDSL: {
       componentName: 'AutoComplete',
       props: {
@@ -80,35 +104,25 @@ const componentList: any = [
         clearable: true,
       },
       options: [],
-      onSearch: `function handleSearchText(searchText) {
-        this.queryProductName(searchText);
-        this.productNameOptions = []
-      }`,
-      onSelect: `function handleSelect(data) {
-        this.productName = data;
-      }`,
+      onSearch: `function handleSearchText(searchText) {}`,
+      onSelect: `function handleSelect(data) {}`,
     },
   },
   {
     key: 'du-button',
     name: '按钮',
-    componentName: 'Button',
     componentDSL: {
       componentName: 'Button',
       props: {
         type: 'primary',
       },
-      children: '查询',
-      onClick: `function handleSearch() {
-        this.pagination.currentPage = 1;
-        this.queryList();
-      }`,
+      children: '确定',
+      onClick: `function handleSearch() {}`,
     },
   },
   {
     key: 'du-form',
     name: '编辑表单',
-    componentName: 'Form',
     componentDSL: {
       componentName: 'Form',
       props: {
@@ -135,7 +149,6 @@ const componentList: any = [
   {
     key: 'du-searchform',
     name: '搜索表单',
-    componentName: 'Form',
     componentDSL: {
       componentName: 'Form',
       props: {
@@ -191,7 +204,6 @@ const componentList: any = [
   {
     key: 'du-table',
     name: '普通表格',
-    componentName: 'Table',
     componentDSL: {
       componentName: 'Table',
       props: {},
@@ -208,7 +220,6 @@ const componentList: any = [
   {
     key: 'du-editTable',
     name: '编辑表格',
-    componentName: 'Table',
     componentDSL: {
       componentName: 'Table',
       props: {
@@ -244,7 +255,6 @@ const componentList: any = [
   {
     key: 'du-pagination',
     name: '分页',
-    componentName: 'DIV',
     componentDSL: {
       componentName: 'DIV',
       props: {},
@@ -267,7 +277,6 @@ const componentList: any = [
   {
     key: 'du-crumbBack',
     name: '返回模块',
-    componentName: 'CrumbBack',
     componentDSL: {
       componentName: 'CrumbBack',
       props: {},
@@ -281,7 +290,6 @@ const componentList: any = [
   {
     key: 'du-baseInfo',
     name: '基本信息模块',
-    componentName: 'DIV',
     componentDSL: {
       componentName: 'DIV',
       props: {
@@ -356,7 +364,9 @@ componentList.forEach((item: any) => {
  */
 const FormCompList: any = [
   'du-input',
+  'du-inputNumber',
   'du-select',
+  'du-radioGroup',
   'du-rangePicker',
   'du-cascader',
   'du-autoComplete',

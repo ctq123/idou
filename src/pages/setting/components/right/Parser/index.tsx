@@ -324,6 +324,16 @@ const Parser = () => {
             options,
           };
           return <Cascader {...cascaderProps}></Cascader>;
+        case 'RadioGroup':
+          const Radio = antd['Radio'];
+          const { Group } = Radio;
+          const radioGroupProps = {
+            ...props,
+            options: options,
+            optionType: componentDSL.type === 'button' ? 'button' : 'default',
+            value: options.length ? options[0].value : '',
+          };
+          return <Group {...radioGroupProps} />;
         case 'RangePicker':
           const DatePicker = antd['DatePicker'];
           const { RangePicker } = DatePicker;
