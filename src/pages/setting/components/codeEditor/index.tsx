@@ -43,7 +43,9 @@ class CodeEditor extends PureComponent<IProps> {
 
   getEditorValue = () => {
     const { type } = this.props;
-    const value = this.editorRef.getValue().slice(this.CONFIG.length);
+    const value = this.editorRef
+      ? this.editorRef.getValue().slice(this.CONFIG.length)
+      : null;
     try {
       const code = type === 'component' ? deserialize(value) : value;
       return code;

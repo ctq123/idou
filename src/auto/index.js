@@ -8,9 +8,9 @@
 const puppeteer = require('puppeteer');
 const get = require('lodash/get');
 const cloneDeep = require('lodash/cloneDeep');
-const common = require('./common.js');
 const transform = require('./transform.js');
-const list = require('./list.js');
+const pageList = require('./page/list.js');
+const pageDetail = require('./page/detail.js');
 const domain = 'shizhuang-inc.com';
 const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;
 // const mockUrl = `https://mock.shizhuang-inc.com/project/781/interface/api/41375`;
@@ -31,12 +31,27 @@ const getBrowser = async () => {
 const autoEditPage = async () => {
   await getBrowser();
   const page = await browser.newPage();
-  if (apiData.componentType === 'list') {
-    await list.generatePage({ page, platformUrl, apiData });
-  } else {
-    console.log('接口数据不是列表页面');
+  if (!apiData.componentType) {
+    console.log('接口匹配不到页面类型，退出');
     page.close();
     browser.close();
+    return;
+  }
+  await page.setViewport({ width: 1366, height: 768 });
+  await page.goto(platformUrl);
+  switch (apiData.componentType) {
+    case 'list':
+      await pageList.generatePage({ page, apiData });
+      break;
+    case 'detail':
+      await pageDetail.generatePage({ page, apiData });
+      break;
+    case 'editModal':
+      // await list.generatePage({ page, apiData });
+      break;
+    case 'edit':
+      // await list.generatePage({ page, apiData });
+      break;
   }
 };
 
@@ -112,7 +127,7 @@ const handleApiData = async () => {
   }
 };
 
-handleApiData();
-// apiData = cloneDeep(transform.mockApiData);
-// apiData = transform.transData(apiData);
-// await handleEditorPage();
+// handleApiData();
+apiData = cloneDeep(transform.mockApiData);
+apiData = transform.transData(apiData);
+autoEditPage();
