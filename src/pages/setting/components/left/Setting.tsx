@@ -38,7 +38,7 @@ const { Option } = Select;
 const colRenderObj: any = {
   renderTime: '时间',
   renderAmount: '金额',
-  renderEnum: '枚举',
+  renderEnum: '状态',
   renderEllipsis: '超长文本',
   renderCustom: '自定义',
   renderOperate: '操作',
