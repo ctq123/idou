@@ -87,7 +87,7 @@ const generateCode = async ({ page }) => {
   await base.clickDom(
     page,
     null,
-    'body div .ant-drawer .ant-drawer-title button span.anticon-download',
+    'body > div > div > div.ant-drawer-content-wrapper > div > div > div.ant-drawer-header > div > div > div button span[aria-label="download"]',
   );
   await page.waitForSelector('body div .ant-modal .ant-modal-footer button');
   await page.waitForTimeout(1000);

@@ -131,7 +131,7 @@ const handleApiData = async () => {
 };
 
 // handleApiData();
-apiData = cloneDeep(mockApiData.editModalData);
+apiData = cloneDeep(mockApiData.listData);
 apiData = transform.transData(apiData);
 console.log('apiData', apiData);
 autoEditPage();

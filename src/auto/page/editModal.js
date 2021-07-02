@@ -65,8 +65,8 @@ const generatePage = async ({ page, apiData }) => {
 
   // 处理
   await common.tmplChange({ page, text: '弹窗编辑' });
-  // await common.apiChange({ page, apiData });
-  // await common.modalTitleChange({ page, apiData, text: 'XX编辑' });
+  await common.apiChange({ page, apiData });
+  await common.modalTitleChange({ page, apiData, text: 'XX编辑' });
   await formChange();
   await common.generateCode({ page });
 };
