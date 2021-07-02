@@ -25,7 +25,7 @@ const getBrowser = async () => {
   if (!browser) {
     browser = await puppeteer.launch({
       headless: false, //有浏览器界面启动
-      args: [`--window-size=1366,768`],
+      args: [`--window-size=1440,900`],
     });
   }
   return browser;
@@ -40,7 +40,7 @@ const autoEditPage = async () => {
     browser.close();
     return;
   }
-  await page.setViewport({ width: 1366, height: 768 });
+  await page.setViewport({ width: 1440, height: 900 });
   await page.goto(platformUrl);
   switch (apiData.componentType) {
     case 'list':
@@ -131,7 +131,7 @@ const handleApiData = async () => {
 };
 
 // handleApiData();
-apiData = cloneDeep(mockApiData.listData);
+apiData = cloneDeep(mockApiData.detailData);
 apiData = transform.transData(apiData);
 console.log('apiData', apiData);
 autoEditPage();

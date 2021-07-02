@@ -83,7 +83,6 @@ const detailData = {
       minimum: -128,
       maximum: 127,
     },
-    pageName: { type: 'string', description: '展示页面' },
     platform: {
       type: 'integer',
       format: 'int32',
@@ -102,14 +101,7 @@ const detailData = {
       format: 'int32',
       description: '弹窗类型 1-网页2-图片',
     },
-    popTypeName: { type: 'string', description: '弹窗类型名称' },
     popUpNumber: { type: 'integer', format: 'int32', description: '弹出次数' },
-    popWebViewDto: {
-      type: 'object',
-      properties: [Object],
-      title: '网页信息',
-      $$ref: '#/definitions/网页信息',
-    },
     populationChoose: {
       type: 'integer',
       format: 'int32',
@@ -117,13 +109,6 @@ const detailData = {
       minimum: -128,
       maximum: 127,
     },
-    populationId: {
-      type: 'integer',
-      format: 'int64',
-      description: '人群Id-459版本新增',
-    },
-    routeUrl: { type: 'string', description: 'routeUrl' },
-    showPageUrl: { type: 'string', description: '展示页面url-459版本新增' },
     startTime: { type: 'string', format: 'date-time', description: '开始时间' },
   },
   componentType: 'detail',
@@ -169,9 +154,6 @@ const editModalData = {
       description: '气泡图标宽高比 精确度小数点后2位',
       mock: [Object],
     },
-    routerUrl: { type: 'string', description: '跳转地址', mock: [Object] },
-    version: { type: 'string', description: '客户端版本号', mock: [Object] },
-    reduceUrl: { type: 'string', description: '降级页面地址', mock: [Object] },
     rely: {
       type: 'number',
       description: '是否业务依赖 0-无业务依赖 1-有业务依赖',
@@ -180,11 +162,6 @@ const editModalData = {
     type: {
       type: 'number',
       description: '支持平台，1-app 2-小程序 3-全部',
-      mock: [Object],
-    },
-    appletRouterUrl: {
-      type: 'string',
-      description: '小程序跳转地址',
       mock: [Object],
     },
     editor: { type: 'number', description: '编辑者id', mock: [Object] },

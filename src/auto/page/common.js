@@ -83,11 +83,13 @@ const generateCode = async ({ page }) => {
   await page.waitForSelector(
     'body div .ant-drawer .ant-drawer-body .ant-tabs-content .monaco-editor .view-lines',
   );
-  await page.waitForSelector('body div .ant-drawer .ant-drawer-title button');
+  await page.waitForSelector(
+    'body div .ant-drawer div.ant-drawer-header button span[aria-label="download"]',
+  );
   await base.clickDom(
     page,
     null,
-    'body > div > div > div.ant-drawer-content-wrapper > div > div > div.ant-drawer-header > div > div > div button span[aria-label="download"]',
+    'body > div > div > div.ant-drawer-content-wrapper > div > div > div.ant-drawer-header > div > div > div',
   );
   await page.waitForSelector('body div .ant-modal .ant-modal-footer button');
   await page.waitForTimeout(1000);
