@@ -77,6 +77,58 @@ const get = require('lodash/get');
 //   },
 // };
 
+// 类型
+const typeEnum = {
+  default: 'default',
+  number: 'number',
+  price: 'price',
+  enum: 'enum',
+  date: 'date',
+};
+
+/**
+ * 判断类型
+ * @param {*} item
+ * @returns
+ */
+const checkFiledType = (item) => {
+  let label = '';
+  let fileType = 'default';
+  let enumObj = {};
+  if (item.title) {
+    label = '对象-' + item.title;
+  } else {
+    label = item.description;
+    let arr = label.match(/\d/g);
+    if (arr && arr.length > 1) {
+      // 包含多个枚举值
+      // 查找第一个位置
+      let arr1 = label.match(/\d/);
+      let str1 = label.substr(0, arr1.index);
+      let str2 = label.substr(arr1.index);
+      str2
+        .split(' ')
+        .filter(Boolean)
+        .forEach((item) => {
+          const [k, v] = item.split(/-:/);
+          enumObj[k] = v;
+        });
+      label = str1 ? str1.replace(/\s-,，（\(/g) : '--';
+      fileType = typeEnum['enum'];
+    } else if (['状态', '类型'].some((s) => label.indexOf(s) > -1)) {
+      fileType = typeEnum['enum'];
+    } else if (['时间', '日期'].some((s) => label.indexOf(s) > -1)) {
+      fileType = typeEnum['date'];
+    } else if (['次数', '数量', '小数'].some((s) => label.indexOf(s) > -1)) {
+      fileType = typeEnum['number'];
+    } else if (['款', '价', '金额'].some((s) => label.indexOf(s) > -1)) {
+      fileType = typeEnum['price'];
+    }
+    label = label.split(/\s/)[0];
+  }
+  return { label, fileType, enumObj };
+};
+
 /**
  * 转换data
  * @param {*} apiData
@@ -145,35 +197,16 @@ function transData(apiData, userInput = '') {
             search.pageSizeKey = k;
           } else {
             if (isObject(v)) {
-              const obj = { ...v };
-              const { description = '' } = obj;
-              if (
-                ['状态', '类型'].some((s) => description.indexOf(s) > -1) ||
-                ['(', ')'].every((s) => description.indexOf(s) > -1)
-              ) {
-                if (['(', ')'].every((s) => description.indexOf(s) > -1)) {
-                  const startIndex = description.indexOf('(');
-                  const endIndex = description.indexOf(')');
-                  const s = obj.description.substr(startIndex + 1, endIndex);
-                  const arr = s.split(' ');
-                  const keyVal = {};
-                  arr.filter(Boolean).forEach((item) => {
-                    const [k, v] = item.split('-');
-                    keyVal[k] = v;
-                  });
-                  obj.description = obj.description.substr(0, startIndex);
-                  obj.keyValueObj = keyVal;
-                }
-                obj.componentType = '选择器';
-              } else if (
-                ['时间', '日期'].some((s) => description.indexOf(s) > -1)
-              ) {
-                obj.componentType = '日期范围';
-              } else {
-                obj.componentType = '输入框';
-              }
+              const typeObj = {
+                default: '输入框',
+                number: '数字输入框',
+                price: '数字输入框',
+                enum: '选择器',
+                date: '日期范围',
+              };
+              const obj = checkFiledType(v);
+              obj['componentType'] = typeObj[obj.fileType] || '输入框';
               if (obj.componentType === '日期范围') {
-                let newDesc = description;
                 if (/Start$|End$/i.test(k)) {
                   k = k.replace(/Start$/i, '');
                   k = k.replace(/End$/i, '');
@@ -184,11 +217,6 @@ function transData(apiData, userInput = '') {
                   k = k.replace(/^lt/i, '');
                   k = k.replace(/^gt/i, '');
                 }
-                newDesc = newDesc.split('-')[0];
-                newDesc = newDesc.replace('起始', '');
-                newDesc = newDesc.replace('开始', '');
-                newDesc = newDesc.replace('结束', '');
-                obj.description = newDesc;
               }
               form[k] = obj;
             }
@@ -206,23 +234,14 @@ function transData(apiData, userInput = '') {
         const col = {};
         Object.entries(columnsObj).forEach(([k, v]) => {
           if (isObject(v)) {
-            const obj = { ...v };
-            const { description = '' } = obj;
-            if (
-              ['金额', '价', '付款'].some((s) => description.indexOf(s) > -1)
-            ) {
-              obj.componentType = '金额';
-            } else if (
-              ['状态', '类型'].some((s) => description.indexOf(s) > -1)
-            ) {
-              obj.componentType = '状态';
-            } else if (
-              ['时间', '日期'].some((s) => description.indexOf(s) > -1)
-            ) {
-              obj.componentType = '时间';
-            } else {
-              obj.componentType = '默认';
-            }
+            const typeObj = {
+              default: '默认',
+              price: '金额',
+              enum: '状态',
+              date: '时间',
+            };
+            const obj = checkFiledType(v);
+            obj.componentType = typeObj[obj.fileType] || '默认';
             col[k] = obj;
           } else {
             col[k] = v;
@@ -237,32 +256,14 @@ function transData(apiData, userInput = '') {
         const recordObj = {};
         Object.entries(response).forEach(([k, v]) => {
           if (isObject(v)) {
-            const obj = { ...v };
-            const { description = '' } = obj;
-            if (
-              ['金额', '价', '付款'].some((s) => description.indexOf(s) > -1)
-            ) {
-              obj.componentType = '金额';
-            } else if (
-              ['时间', '日期'].some((s) => description.indexOf(s) > -1)
-            ) {
-              obj.componentType = '时间';
-            } else if (['(', ')'].every((s) => description.indexOf(s) > -1)) {
-              const startIndex = description.indexOf('(');
-              const endIndex = description.indexOf(')');
-              const s = obj.description.substr(startIndex + 1, endIndex);
-              const arr = s.split(' ');
-              const keyVal = {};
-              arr.filter(Boolean).forEach((item) => {
-                const [k, v] = item.split('-');
-                keyVal[k] = v;
-              });
-              obj.description = obj.description.substr(0, startIndex);
-              obj.keyValueObj = keyVal;
-              obj.componentType = '状态';
-            } else {
-              obj.componentType = '默认';
-            }
+            const typeObj = {
+              default: '默认',
+              price: '金额',
+              enum: '状态',
+              date: '时间',
+            };
+            const obj = checkFiledType(v);
+            obj.componentType = typeObj[obj.fileType] || '默认';
             recordObj[k] = obj;
           } else {
             recordObj[k] = v;
@@ -276,36 +277,16 @@ function transData(apiData, userInput = '') {
         const form = {};
         Object.entries(request).forEach(([k, v]) => {
           if (isObject(v)) {
-            const obj = { ...v };
-            const { description = '' } = obj;
-            if (['(', ')'].every((s) => description.indexOf(s) > -1)) {
-              const startIndex = description.indexOf('(');
-              const endIndex = description.indexOf(')');
-              const s = obj.description.substr(startIndex + 1, endIndex);
-              const arr = s.split(' ');
-              const keyVal = {};
-              arr.filter(Boolean).forEach((item) => {
-                const [k, v] = item.split('-');
-                keyVal[k] = v;
-              });
-              obj.description = obj.description.substr(0, startIndex);
-              obj.keyValueObj = keyVal;
-              obj.componentType = '选择器';
-            } else if (
-              ['售价', '价', '金额', '次数', '数量', '付款', '百分比'].some(
-                (s) => description.indexOf(s) > -1,
-              )
-            ) {
-              obj.componentType = '数字输入框';
-            } else if (
-              ['时间', '日期'].some((s) => description.indexOf(s) > -1)
-            ) {
-              obj.componentType = '日期范围';
-            } else {
-              obj.componentType = '输入框';
-            }
+            const typeObj = {
+              default: '输入框',
+              number: '数字输入框',
+              price: '数字输入框',
+              enum: '选择器',
+              date: '日期范围',
+            };
+            const obj = checkFiledType(v);
+            obj['componentType'] = typeObj[obj.fileType] || '输入框';
             if (obj.componentType === '日期范围') {
-              let newDesc = description;
               if (/Start$|End$/i.test(k)) {
                 k = k.replace(/Start$/i, '');
                 k = k.replace(/End$/i, '');
@@ -316,11 +297,6 @@ function transData(apiData, userInput = '') {
                 k = k.replace(/^lt/i, '');
                 k = k.replace(/^gt/i, '');
               }
-              newDesc = newDesc.split('-')[0];
-              newDesc = newDesc.replace('起始', '');
-              newDesc = newDesc.replace('开始', '');
-              newDesc = newDesc.replace('结束', '');
-              obj.description = newDesc;
             }
             form[k] = obj;
           }

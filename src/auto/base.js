@@ -13,7 +13,7 @@
  * @param {*} val 值
  * @param {*} index 第几个下拉框
  */
-async function setSelect(page, ele, classPath, val, index = 0) {
+async function setSelect(page, ele, classPath, val, index = 1) {
   let el = null,
     els = null;
   els2 = null;
@@ -25,20 +25,23 @@ async function setSelect(page, ele, classPath, val, index = 0) {
   el && (await el.click());
 
   await page.waitForSelector(
-    `body div.ant-select-dropdown div div.rc-virtual-list div div div div.ant-select-item`,
+    `body > div[style="position: absolute; top: 0px; left: 0px; width: 100%;"] .ant-select-dropdown`,
+    { timeout: 10000 },
   );
-  els = await page.$$(`body div div div.ant-select-dropdown`);
-  el = els[index];
+  els = await page.$$(
+    `body > div[style="position: absolute; top: 0px; left: 0px; width: 100%;"]`,
+  );
+  el = els[index - 1];
 
-  els2 = await el.$$('div.rc-virtual-list div div div div.ant-select-item');
+  els2 = await el.$$('.rc-virtual-list > div > div > div .ant-select-item');
   // 查找对应的内容
   const texts = await el.$$eval(
-    'div.rc-virtual-list div div div div.ant-select-item div',
+    '.rc-virtual-list > div > div > div .ant-select-item > div',
     (node) => node.map((n) => n.innerText),
   );
   const i = texts.findIndex((k) => k === val);
 
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(300);
   await els2[i].click();
 }
 
@@ -57,7 +60,7 @@ async function setInput(page, ele, classPath, val = '') {
     suf = await (ele || page).$(`${classPath} .ant-input-suffix`);
     suf && (await suf.click());
     icon = await (ele || page).$(
-      `${classPath} .ant-input-suffix .ant-input-clear-icon-hidden`,
+      `${classPath} > .ant-input-suffix > .ant-input-clear-icon-hidden`,
     );
     await input.focus();
     await input.type(val);
@@ -79,7 +82,7 @@ async function clickButton(page, ele, classPath, btnText) {
   const index = texts.findIndex((k) => k === btnText);
 
   const els = await (ele || page).$$(`${classPath} button`);
-  els[index] && (await els[index].click());
+  await els[index].click();
 }
 
 /**
@@ -113,7 +116,7 @@ async function clickDom(page, ele, classPath, text = '') {
   } else {
     el = await (ele || page).$(`${classPath}`);
   }
-  (await el) && el.click();
+  await el.click();
 }
 
 /**

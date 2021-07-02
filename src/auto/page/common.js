@@ -4,12 +4,12 @@ const base = require('../base.js');
 const tmplChange = async ({ page, text }) => {
   let ele = null;
   // 打开请求tab
-  await page.waitForSelector('#root #rc-tabs-0-tab-template');
-  ele = await page.$('#root #rc-tabs-0-tab-template');
+  await page.waitForSelector('#rc-tabs-0-tab-template');
+  ele = await page.$('#rc-tabs-0-tab-template');
   ele.click();
 
-  await page.waitForSelector('#root #rc-tabs-0-panel-template div div img');
-  ele = await page.$('#root #rc-tabs-0-panel-template');
+  await page.waitForSelector('#rc-tabs-0-panel-template div div img');
+  ele = await page.$('#rc-tabs-0-panel-template');
   // 选择框
   await base.clickDom(page, ele, 'div div', text);
   await page.waitForTimeout(1000);
@@ -19,14 +19,12 @@ const tmplChange = async ({ page, text }) => {
 const apiChange = async ({ page, apiData }) => {
   let ele = null;
   // 打开请求tab
-  await page.waitForSelector('#root #rc-tabs-0-tab-request');
-  ele = await page.$('#root #rc-tabs-0-tab-request');
+  await page.waitForSelector('#rc-tabs-0-tab-request');
+  ele = await page.$('#rc-tabs-0-tab-request');
   ele.click();
 
-  await page.waitForSelector(
-    '#root #rc-tabs-0-panel-request form div span input',
-  );
-  ele = await page.$('#root #rc-tabs-0-panel-request');
+  await page.waitForSelector('#rc-tabs-0-panel-request form div span input');
+  ele = await page.$('#rc-tabs-0-panel-request');
   // 选择框
   await base.setSelect(
     page,
@@ -50,13 +48,11 @@ const apiChange = async ({ page, apiData }) => {
 const modalTitleChange = async ({ page, text, apiData }) => {
   await page.waitForSelector("#root div[class^='modal']");
   await base.clickDom(page, null, "#root div[class^='modal'] div span", text);
-  await page.waitForSelector(
-    '#root #rc-tabs-0-panel-setting form div span input',
-  );
+  await page.waitForSelector('#rc-tabs-0-panel-setting form div span input');
 
-  ele = await page.$('#root #rc-tabs-0-panel-setting');
+  ele = await page.$('#rc-tabs-0-panel-setting');
   await page.waitForTimeout(500);
-  ele = await page.$('#root #rc-tabs-0-panel-setting form');
+  ele = await page.$('#rc-tabs-0-panel-setting form');
   await base.setInput(page, ele, `div`, apiData.title);
 
   await base.clickButton(page, ele, 'div div div div', '提交');

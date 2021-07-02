@@ -15,50 +15,44 @@ const generatePage = async ({ page, apiData }) => {
       "#root div[class^='page-container'] form",
       '重置',
     );
-    await page.waitForSelector(
-      '#root #rc-tabs-0-panel-setting form div span input',
-    );
+    await page.waitForSelector('#rc-tabs-0-panel-setting form div span input');
 
-    ele = await page.$('#root #rc-tabs-0-panel-setting');
+    ele = await page.$('#rc-tabs-0-panel-setting');
     // 先清空所有数据
     await base.clickAllDom(
       page,
       ele,
-      'form div div div div div div button span.anticon-delete',
+      'form > div > div > div > div > div div button span.anticon-delete',
     );
     await page.waitForTimeout(500);
     const form = get(apiData, 'search.form');
     console.log('form', form);
-    let i = 0;
+    let i = 1;
+    let plusEl = await ele.$(
+      `form > div > div > div > div button .anticon-plus`,
+    );
     for (let k in form) {
-      await base.clickDom(
-        page,
-        ele,
-        'form div div div div button span.anticon-plus',
-      );
-      await page.waitForTimeout(500);
-      await base.setInput(
-        page,
-        ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
-        form[k].description || form[k].title,
+      await plusEl.click();
+      await page.waitForSelector(
+        `#dynamic_form_nest_item div:nth-child(${i}) input`,
+        { timeout: 10000 },
       );
       await base.setInput(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
+        `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
+        form[k].label,
+      );
+      await base.setInput(
+        page,
+        ele,
+        `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
       await base.setSelect(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
+        `form div:nth-child(${i}) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
         form[k].componentType,
         i,
       );
@@ -84,11 +78,9 @@ const generatePage = async ({ page, apiData }) => {
       "#root div div div[class^='page-container'] div[class^='df'] button",
     );
 
-    await page.waitForSelector(
-      '#root #rc-tabs-0-panel-setting form div span input',
-    );
+    await page.waitForSelector('#rc-tabs-0-panel-setting form div span input');
     await page.waitForTimeout(500);
-    ele = await page.$('#root #rc-tabs-0-panel-setting form');
+    ele = await page.$('#rc-tabs-0-panel-setting form');
     await base.setInput(page, ele, `div`, apiData.title);
 
     await base.clickButton(page, ele, 'div div div div', '提交');
@@ -104,13 +96,11 @@ const generatePage = async ({ page, apiData }) => {
       null,
       "#root div[class^='page-container'] div table",
     );
-    await page.waitForSelector(
-      '#root #rc-tabs-0-panel-setting form div span input',
-    );
+    await page.waitForSelector('#rc-tabs-0-panel-setting form div span input');
     await page.waitForTimeout(1000);
 
     // 先清空所有数据
-    ele = await page.$('#root #rc-tabs-0-panel-setting');
+    ele = await page.$('#rc-tabs-0-panel-setting');
     // 先清空所有数据
     await base.clickAllDom(
       page,
@@ -121,37 +111,37 @@ const generatePage = async ({ page, apiData }) => {
     let columnsObj = get(apiData, 'columnsObj');
     columnsObj = Object.assign(columnsObj, {
       '-': {
-        description: '操作',
+        label: '操作',
         componentType: '操作',
       },
     });
-    let i = 0;
+    let i = 1;
     console.log('columnsObj', columnsObj);
+    let plusEl = await ele.$(
+      `form > div > div > div > div button .anticon-plus`,
+    );
     for (let k in columnsObj) {
-      await base.clickDom(page, ele, 'form div div button span.anticon-plus');
-      await page.waitForTimeout(500);
-      await base.setInput(
-        page,
-        ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
-        columnsObj[k].description || columnsObj[k].title,
+      await plusEl.click();
+      await page.waitForSelector(
+        `#dynamic_form_nest_item div:nth-child(${i}) input`,
+        { timeout: 10000 },
       );
       await base.setInput(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
+        `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
+        columnsObj[k].label,
+      );
+      await base.setInput(
+        page,
+        ele,
+        `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
       await base.setSelect(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
+        `form div:nth-child(${i}) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
         columnsObj[k].componentType,
         i,
       );

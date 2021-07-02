@@ -9,51 +9,46 @@ const generatePage = async ({ page, apiData }) => {
   const formChange = async () => {
     await page.waitForSelector("#root div[class^='modal'] form");
     await base.clickDom(page, null, "#root div[class^='modal'] form .ant-row");
-    await page.waitForSelector(
-      '#root #rc-tabs-0-panel-setting form div button',
-    );
+    await page.waitForSelector('#rc-tabs-0-panel-setting form div button');
     await page.waitForTimeout(1000);
 
-    // 先清空所有数据
-    ele = await page.$('#root #rc-tabs-0-panel-setting');
+    ele = await page.$('#rc-tabs-0-panel-setting');
     // 先清空所有数据
     await base.clickAllDom(
       page,
       ele,
-      'form div div div div div div button span.anticon-delete',
+      'form > div > div > div > div > div div button span.anticon-delete',
     );
     await page.waitForTimeout(500);
     let formObj = get(apiData, 'formObj');
-    let i = 0;
+    let i = 1;
+    let plusEl = await ele.$(
+      `form > div > div > div > div button .anticon-plus`,
+    );
     for (let k in formObj) {
-      await base.clickDom(
-        page,
-        ele,
-        'form div div div div button span.anticon-plus',
+      await plusEl.click();
+      await page.waitForSelector(
+        `#dynamic_form_nest_item div:nth-child(${i}) input`,
+        { timeout: 10000 },
       );
-      await page.waitForTimeout(500);
+      // console.log("i", i, k)
       await base.setInput(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
-        formObj[k].description || formObj[k].title,
+        `#dynamic_form_nest_item div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
+        formObj[k].label,
       );
       await base.setInput(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
+        `#dynamic_form_nest_item div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
+      console.log('label', formObj[k].label);
       await base.setSelect(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
+        `#dynamic_form_nest_item div:nth-child(${i}) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
         formObj[k].componentType,
         i,
       );
@@ -70,8 +65,8 @@ const generatePage = async ({ page, apiData }) => {
 
   // 处理
   await common.tmplChange({ page, text: '弹窗编辑' });
-  await common.apiChange({ page, apiData });
-  await common.modalTitleChange({ page, apiData, text: 'XX编辑' });
+  // await common.apiChange({ page, apiData });
+  // await common.modalTitleChange({ page, apiData, text: 'XX编辑' });
   await formChange();
   await common.generateCode({ page });
 };

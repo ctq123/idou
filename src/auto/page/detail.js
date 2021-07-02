@@ -13,13 +13,11 @@ const generatePage = async ({ page, apiData }) => {
       null,
       "#root div[class^='modal'] section .ant-row",
     );
-    await page.waitForSelector(
-      '#root #rc-tabs-0-panel-setting form div button',
-    );
+    await page.waitForSelector('#rc-tabs-0-panel-setting form div button');
     await page.waitForTimeout(1000);
 
     // 先清空所有数据
-    ele = await page.$('#root #rc-tabs-0-panel-setting');
+    ele = await page.$('#rc-tabs-0-panel-setting');
     // 先清空所有数据
     await base.clickAllDom(
       page,
@@ -28,32 +26,32 @@ const generatePage = async ({ page, apiData }) => {
     );
     await page.waitForTimeout(500);
     let recordObj = get(apiData, 'recordObj');
-    let i = 0;
+    let i = 1;
+    let plusEl = await ele.$(
+      `form > div > div > div > div button .anticon-plus`,
+    );
     for (let k in recordObj) {
-      await base.clickDom(page, ele, 'form div div button span.anticon-plus');
-      await page.waitForTimeout(500);
-      await base.setInput(
-        page,
-        ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
-        recordObj[k].description || recordObj[k].title,
+      await plusEl.click();
+      await page.waitForSelector(
+        `#dynamic_form_nest_item div:nth-child(${i}) input`,
+        { timeout: 10000 },
       );
       await base.setInput(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
+        `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
+        recordObj[k].label,
+      );
+      await base.setInput(
+        page,
+        ele,
+        `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
       await base.setSelect(
         page,
         ele,
-        `form div:nth-child(${
-          i + 1
-        }) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
+        `form div:nth-child(${i}) .ant-space:nth-child(2) .ant-space-item:nth-child(1)`,
         recordObj[k].componentType,
         i,
       );
