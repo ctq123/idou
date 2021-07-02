@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Tabs } from 'antd';
+import { Tabs, message } from 'antd';
 import { templates, tabs } from '../../const';
 import { Context } from '@/pages/setting/model';
 import { ModuleComponents } from '../../const/componentDSL';
@@ -69,6 +69,7 @@ const Left = () => {
   const addComponent = (com: any) => {
     // const { index, parentUuid, item } = selectedComponent || {}
     // TODO 处理点击事件
+    message.warn('功能尚在开发中……');
   };
 
   const generateTabPane = () => {
