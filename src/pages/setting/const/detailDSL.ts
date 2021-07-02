@@ -52,7 +52,6 @@ const DSL = {
       componentName: 'SECTION',
       componentType: 'native',
       props: {},
-      isEdit: true,
       children: [
         {
           componentName: 'DIV',

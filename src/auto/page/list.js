@@ -43,7 +43,7 @@ const generatePage = async ({ page, apiData }) => {
         `form div:nth-child(${
           i + 1
         }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
-        form[k].description,
+        form[k].description || form[k].title,
       );
       await base.setInput(
         page,
@@ -136,7 +136,7 @@ const generatePage = async ({ page, apiData }) => {
         `form div:nth-child(${
           i + 1
         }) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
-        columnsObj[k].description,
+        columnsObj[k].description || columnsObj[k].title,
       );
       await base.setInput(
         page,

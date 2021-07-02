@@ -11,6 +11,7 @@ const cloneDeep = require('lodash/cloneDeep');
 const transform = require('./transform.js');
 const pageList = require('./page/list.js');
 const pageDetail = require('./page/detail.js');
+const mockApiData = require('./mockApiData.js');
 const domain = 'shizhuang-inc.com';
 const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;
 // const mockUrl = `https://mock.shizhuang-inc.com/project/781/interface/api/41375`;
@@ -128,6 +129,7 @@ const handleApiData = async () => {
 };
 
 // handleApiData();
-apiData = cloneDeep(transform.mockApiData);
+apiData = cloneDeep(mockApiData.detailData);
 apiData = transform.transData(apiData);
+console.log('apiData', apiData);
 autoEditPage();

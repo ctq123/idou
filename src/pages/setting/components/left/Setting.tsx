@@ -291,6 +291,11 @@ const Setting = (props: IProps) => {
               if (obj.objKey) {
                 delete obj.objKey;
               }
+              if (componentName === 'Row') {
+                if (obj.span === undefined) {
+                  obj.span = 8;
+                }
+              }
               return obj;
             });
           }

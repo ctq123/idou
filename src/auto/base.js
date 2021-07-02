@@ -49,7 +49,7 @@ async function setSelect(page, ele, classPath, val, index = 0) {
  * @param {*} classPath 路径
  * @param {*} val 值
  */
-async function setInput(page, ele, classPath, val) {
+async function setInput(page, ele, classPath, val = '') {
   const input = await (ele || page).$(`${classPath} input`);
   if (input) {
     let suf = null,
