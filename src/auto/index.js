@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 00:58:07
- * @LastEditTime: 2021-06-14 12:01:29
+ * @LastEditTime: 2021-07-03 01:13:10
  * @LastEditors: chengtianqing
  */
 
@@ -122,7 +122,7 @@ const handleApiData = async () => {
       await autoEditPage();
     }
     // await page.waitForTimeout(1 * 1000);
-    // const resp2 = await page.goto("https://www.poizon.com/zh-hk/");
+    // const resp2 = await page.goto("https://www.google.com");
     // const html = await page.content();
     // console.log("html", html);
 
@@ -132,7 +132,10 @@ const handleApiData = async () => {
   }
 };
 
+// 真实爬接口
 // handleApiData();
+
+// 测试mock接口
 apiData = cloneDeep(mockApiData.detailData);
 apiData = transform.transData(apiData);
 console.log('apiData', apiData);

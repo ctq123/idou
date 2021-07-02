@@ -49,7 +49,7 @@ const generatePage = async ({ page, apiData }) => {
         `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
-      console.log('label', form[k].label);
+      console.log(i, k, form[k].label);
       await base.setSelect(
         page,
         ele,
@@ -139,7 +139,7 @@ const generatePage = async ({ page, apiData }) => {
         `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
-      console.log('label', columnsObj[k].label);
+      console.log(i, k, columnsObj[k].label);
       await base.setSelect(
         page,
         ele,

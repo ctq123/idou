@@ -1,3 +1,10 @@
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-07-03 00:31:18
+ * @LastEditTime: 2021-07-03 00:54:53
+ * @LastEditors: chengtianqing
+ * @Description:
+ */
 const get = require('lodash/get');
 const base = require('../base.js');
 const common = require('./common.js');
@@ -48,7 +55,7 @@ const generatePage = async ({ page, apiData }) => {
         `form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
-      console.log('label', recordObj[k].label);
+      console.log(i, k, recordObj[k].label);
       await base.setSelect(
         page,
         ele,

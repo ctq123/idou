@@ -1,3 +1,10 @@
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-07-03 00:31:18
+ * @LastEditTime: 2021-07-03 01:06:15
+ * @LastEditors: chengtianqing
+ * @Description:
+ */
 const get = require('lodash/get');
 const base = require('../base.js');
 const common = require('./common.js');
@@ -31,7 +38,6 @@ const generatePage = async ({ page, apiData }) => {
         `#dynamic_form_nest_item div:nth-child(${i}) input`,
         { timeout: 10000 },
       );
-      // console.log("i", i, k)
       await base.setInput(
         page,
         ele,
@@ -44,7 +50,7 @@ const generatePage = async ({ page, apiData }) => {
         `#dynamic_form_nest_item div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
-      console.log('label', formObj[k].label);
+      console.log(i, k, formObj[k].label);
       await base.setSelect(
         page,
         ele,

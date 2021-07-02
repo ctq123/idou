@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 16:43:10
- * @LastEditTime: 2021-06-14 04:35:28
+ * @LastEditTime: 2021-07-03 01:12:00
  * @LastEditors: chengtianqing
  * @Description: 转换api数据，映射对应的编辑内容
  */
@@ -110,10 +110,10 @@ const checkFiledType = (item) => {
         .split(' ')
         .filter(Boolean)
         .forEach((item) => {
-          const [k, v] = item.split(/-:/);
+          const [k, v] = item.split(/[-:]/);
           enumObj[k] = v;
         });
-      label = str1 ? str1.replace(/[\s-,，（(]/g) : '--';
+      label = str1 ? str1.replace(/[\s-,，（\(]/g, '') : '--';
       fileType = typeEnum['enum'];
     } else if (['状态', '类型'].some((s) => label.indexOf(s) > -1)) {
       fileType = typeEnum['enum'];
@@ -124,7 +124,7 @@ const checkFiledType = (item) => {
     } else if (['款', '价', '金额'].some((s) => label.indexOf(s) > -1)) {
       fileType = typeEnum['price'];
     }
-    label = label.split(/\s/)[0];
+    label = label.split(/[\s\-\(，,]/)[0];
   }
   return { label, fileType, enumObj };
 };
