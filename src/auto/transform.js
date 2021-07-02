@@ -113,7 +113,7 @@ const checkFiledType = (item) => {
           const [k, v] = item.split(/-:/);
           enumObj[k] = v;
         });
-      label = str1 ? str1.replace(/\s-,，（\(/g) : '--';
+      label = str1 ? str1.replace(/[\s-,，（(]/g) : '--';
       fileType = typeEnum['enum'];
     } else if (['状态', '类型'].some((s) => label.indexOf(s) > -1)) {
       fileType = typeEnum['enum'];

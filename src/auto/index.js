@@ -41,7 +41,9 @@ const autoEditPage = async () => {
     return;
   }
   await page.setViewport({ width: 1440, height: 900 });
+  const navigationPromise = page.waitForNavigation();
   await page.goto(platformUrl);
+  await navigationPromise;
   switch (apiData.componentType) {
     case 'list':
       await pageList.generatePage({ page, apiData });

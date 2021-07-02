@@ -80,6 +80,7 @@ const generateCode = async ({ page }) => {
     "#root div[class^='c-header'] div",
     '生成源码',
   );
+  await page.waitForTimeout(3000);
   await page.waitForSelector(
     'body div .ant-drawer .ant-drawer-body .ant-tabs-content .monaco-editor .view-lines',
   );
@@ -89,7 +90,7 @@ const generateCode = async ({ page }) => {
   await base.clickDom(
     page,
     null,
-    'body > div > div > div.ant-drawer-content-wrapper > div > div > div.ant-drawer-header > div > div > div',
+    'body > div > div > div.ant-drawer-content-wrapper > div > div > div.ant-drawer-header > div > div > div button .anticon-download',
   );
   await page.waitForSelector('body div .ant-modal .ant-modal-footer button');
   await page.waitForTimeout(1000);

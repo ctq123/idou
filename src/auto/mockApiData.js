@@ -75,7 +75,6 @@ const detailData = {
   response: {
     endTime: { type: 'string', format: 'date-time', description: '结束时间' },
     grayValue: { type: 'integer', format: 'int32', description: '灰度值' },
-    id: { type: 'integer', format: 'int64', description: '弹窗id' },
     limitPopUpNumberFlag: {
       type: 'integer',
       format: 'int32',
@@ -88,14 +87,12 @@ const detailData = {
       format: 'int32',
       description: '上线平台1-android 2-ios 3-android和ios',
     },
-    platformName: { type: 'string', description: '上线平台类型' },
     popImageViewDto: {
       type: 'object',
       properties: [Object],
       title: '图片信息',
       $$ref: '#/definitions/图片信息',
     },
-    popName: { type: 'string', description: '弹窗名称' },
     popType: {
       type: 'integer',
       format: 'int32',
