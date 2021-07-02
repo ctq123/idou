@@ -46,6 +46,23 @@ const apiChange = async ({ page, apiData }) => {
   await page.waitForTimeout(1000);
 };
 
+// 修改弹窗标题
+const modalTitleChange = async ({ page, text, apiData }) => {
+  await page.waitForSelector("#root div[class^='modal']");
+  await base.clickDom(page, null, "#root div[class^='modal'] div span", text);
+  await page.waitForSelector(
+    '#root #rc-tabs-0-panel-setting form div span input',
+  );
+
+  ele = await page.$('#root #rc-tabs-0-panel-setting');
+  await page.waitForTimeout(500);
+  ele = await page.$('#root #rc-tabs-0-panel-setting form');
+  await base.setInput(page, ele, `div`, apiData.title);
+
+  await base.clickButton(page, ele, 'div div div div', '提交');
+  await page.waitForTimeout(1000);
+};
+
 // 关闭配置窗口
 const closeConfigModal = async ({ page }) => {
   await page.waitForSelector(
@@ -91,5 +108,6 @@ module.exports = {
   apiChange,
   tmplChange,
   closeConfigModal,
+  modalTitleChange,
   generateCode,
 };

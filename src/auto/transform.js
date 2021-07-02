@@ -105,7 +105,9 @@ function transData(apiData, userInput = '') {
       } else if ((title || '').indexOf('详情') > -1) {
         apiData.componentType = 'detail';
       } else if (
-        ['新增', '编辑', '更新'].some((s) => (title || '').indexOf(s) > -1)
+        ['新增', '创建', '编辑', '更新'].some(
+          (s) => (title || '').indexOf(s) > -1,
+        )
       ) {
         apiData.componentType = 'editModal';
       } else {

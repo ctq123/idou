@@ -11,10 +11,12 @@ const cloneDeep = require('lodash/cloneDeep');
 const transform = require('./transform.js');
 const pageList = require('./page/list.js');
 const pageDetail = require('./page/detail.js');
+const pageEditModal = require('./page/editModal.js');
 const mockApiData = require('./mockApiData.js');
 const domain = 'shizhuang-inc.com';
-const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;
-// const mockUrl = `https://mock.shizhuang-inc.com/project/781/interface/api/41375`;
+// const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;// 列表
+// const mockUrl = `https://mock.${domain}/project/781/interface/api/41375`;// 详情
+const mockUrl = `https://mock.${domain}/project/781/interface/api/90252`; // 编辑
 const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
 let browser = null;
@@ -48,7 +50,7 @@ const autoEditPage = async () => {
       await pageDetail.generatePage({ page, apiData });
       break;
     case 'editModal':
-      // await list.generatePage({ page, apiData });
+      await pageEditModal.generatePage({ page, apiData });
       break;
     case 'edit':
       // await list.generatePage({ page, apiData });
@@ -129,7 +131,7 @@ const handleApiData = async () => {
 };
 
 // handleApiData();
-apiData = cloneDeep(mockApiData.detailData);
+apiData = cloneDeep(mockApiData.editModalData);
 apiData = transform.transData(apiData);
 console.log('apiData', apiData);
 autoEditPage();
