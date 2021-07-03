@@ -22,12 +22,11 @@ export const VueXML: any = {
           renderData.computed.length
             ? '\ncomputed: {' + renderData.computed.join(',\n') + '},'
             : ''
-        }
-        ${
-          renderData.lifecycles.length
-            ? renderData.lifecycles.join(',\n') + ','
-            : ''
-        }
+        }${
+      renderData.lifecycles.length
+        ? renderData.lifecycles.join(',\n') + ','
+        : ''
+    }
         methods: {
           ${renderData.methods.join(',\n')}
         }
