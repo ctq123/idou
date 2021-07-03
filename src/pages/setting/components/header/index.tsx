@@ -45,7 +45,7 @@ const Header = () => {
           alt="logo"
           src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg"
         />
-        <div className={styles['title']}>爱逗</div>
+        <div className={styles['title']}>idou</div>
       </div>
       <div className={styles['h-center']}>
         <Button
