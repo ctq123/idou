@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 00:58:07
- * @LastEditTime: 2021-07-03 01:13:10
+ * @LastEditTime: 2021-07-04 00:44:25
  * @LastEditors: chengtianqing
  */
 
@@ -136,7 +136,7 @@ const handleApiData = async () => {
 // handleApiData();
 
 // 测试mock接口
-apiData = cloneDeep(mockApiData.detailData);
+apiData = cloneDeep(mockApiData.listData);
 apiData = transform.transData(apiData);
 console.log('apiData', apiData);
 autoEditPage();

@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 01:50:35
- * @LastEditTime: 2021-06-14 04:44:49
+ * @LastEditTime: 2021-07-04 01:05:57
  * @LastEditors: chengtianqing
  */
 
@@ -28,10 +28,14 @@ async function setSelect(page, ele, classPath, val, index = 1) {
     `body > div[style="position: absolute; top: 0px; left: 0px; width: 100%;"] .ant-select-dropdown`,
     { timeout: 10000 },
   );
+
   els = await page.$$(
     `body > div[style="position: absolute; top: 0px; left: 0px; width: 100%;"]`,
   );
-  el = els[index - 1];
+  // el = await page.evaluate((els, index) => {
+  //   return els[index - 1];
+  // }, els, index);
+  el = await els[index - 1];
 
   els2 = await el.$$('.rc-virtual-list > div > div > div .ant-select-item');
   // 查找对应的内容
@@ -62,6 +66,7 @@ async function setInput(page, ele, classPath, val = '') {
     icon = await (ele || page).$(
       `${classPath} > .ant-input-suffix > .ant-input-clear-icon-hidden`,
     );
+    // await page.waitForSelector(`${classPath} > .ant-input-suffix > .ant-input-clear-icon-hidden`)
     await input.focus();
     await input.type(val);
   }

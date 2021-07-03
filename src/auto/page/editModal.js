@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-07-03 00:31:18
- * @LastEditTime: 2021-07-03 01:06:15
+ * @LastEditTime: 2021-07-04 00:41:59
  * @LastEditors: chengtianqing
  * @Description:
  */
@@ -33,7 +33,10 @@ const generatePage = async ({ page, apiData }) => {
       `form > div > div > div > div button .anticon-plus`,
     );
     for (let k in formObj) {
-      await plusEl.click();
+      // await plusEl.click();// 诡异有时候不会触发
+      await page.evaluate((el) => {
+        return el.click();
+      }, plusEl);
       await page.waitForSelector(
         `#dynamic_form_nest_item div:nth-child(${i}) input`,
         { timeout: 10000 },
@@ -50,7 +53,7 @@ const generatePage = async ({ page, apiData }) => {
         `#dynamic_form_nest_item div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
         k,
       );
-      console.log(i, k, formObj[k].label);
+      console.log(i, k, formObj[k].label, formObj[k].enumObj);
       await base.setSelect(
         page,
         ele,

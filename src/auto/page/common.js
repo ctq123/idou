@@ -29,18 +29,17 @@ const apiChange = async ({ page, apiData }) => {
   await base.setSelect(
     page,
     ele,
-    'form div div div .ant-select',
+    'form > div > div > div .ant-select',
     apiData.method || 'POST',
   );
-
   await base.setInput(
     page,
     ele,
-    'form div div div div',
+    'form > div > div > div .ant-input-affix-wrapper',
     `/api/v1/h5/oversea${apiData.url || ''}`,
   );
 
-  await base.clickButton(page, ele, 'form div div div div', '提交');
+  await base.clickButton(page, ele, 'form > div > div > div > div', '提交');
   await page.waitForTimeout(1000);
 };
 
@@ -80,7 +79,7 @@ const generateCode = async ({ page }) => {
     "#root div[class^='c-header'] div",
     '生成源码',
   );
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(2000);
   await page.waitForSelector(
     'body div .ant-drawer .ant-drawer-body .ant-tabs-content .monaco-editor .view-lines',
   );

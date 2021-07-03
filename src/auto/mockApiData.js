@@ -108,7 +108,6 @@ const detailData = {
     },
     startTime: { type: 'string', format: 'date-time', description: '开始时间' },
   },
-  componentType: 'detail',
 };
 
 const editModalData = {
@@ -133,11 +132,6 @@ const editModalData = {
     carouselType: {
       type: 'number',
       description: 'icon图轮播类型1-单图 2-- 3-轮播多图',
-      mock: [Object],
-    },
-    coverBidType: {
-      type: 'number',
-      description: '0-人工配置 1-业务自定义',
       mock: [Object],
     },
     covers: {
@@ -165,51 +159,6 @@ const editModalData = {
     editorName: { type: 'string', description: '编辑者名称', mock: [Object] },
   },
   response: {},
-  componentType: 'editModal',
-  formObj: {
-    code: {
-      type: 'string',
-      description: '频道code',
-      mock: [Object],
-      componentType: '输入框',
-    },
-    name: {
-      type: 'string',
-      description: '频道名称',
-      mock: [Object],
-      componentType: '输入框',
-    },
-    category: {
-      type: 'number',
-      description: '频道种类 1-单个 2-复合',
-      mock: [Object],
-      componentType: '输入框',
-    },
-    titleLogo: {
-      type: 'string',
-      description: '频道标题图片',
-      mock: [Object],
-      componentType: '输入框',
-    },
-    subtitleBidType: {
-      type: 'number',
-      description: '频道副标题绑定类型0-人工配置 1-绑定业务',
-      mock: [Object],
-      componentType: '输入框',
-    },
-    subtitle: {
-      type: 'string',
-      description: '频道副标题内容',
-      mock: [Object],
-      componentType: '输入框',
-    },
-    bubbleIconAspectRatio: {
-      type: 'number',
-      description: '气泡图标宽高比 精确度小数点后2位',
-      mock: [Object],
-      componentType: '输入框',
-    },
-  },
 };
 
 module.exports = {

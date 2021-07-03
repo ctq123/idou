@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-07-03 00:31:18
- * @LastEditTime: 2021-07-03 00:54:53
+ * @LastEditTime: 2021-07-04 00:43:56
  * @LastEditors: chengtianqing
  * @Description:
  */
@@ -38,7 +38,10 @@ const generatePage = async ({ page, apiData }) => {
       `form > div > div > div > div button .anticon-plus`,
     );
     for (let k in recordObj) {
-      await plusEl.click();
+      // await plusEl.click();// 诡异有时候不会触发
+      await page.evaluate((el) => {
+        return el.click();
+      }, plusEl);
       await page.waitForSelector(
         `#dynamic_form_nest_item div:nth-child(${i}) input`,
         { timeout: 10000 },
