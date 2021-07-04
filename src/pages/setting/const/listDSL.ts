@@ -14,7 +14,7 @@ const DSL = {
         {
           componentName: 'Form',
           props: {
-            'label-width': '80px',
+            'label-width': '100px',
           },
           dataKey: 'form',
           type: 'search',
@@ -28,6 +28,7 @@ const DSL = {
                   props: {
                     placeholder: '请输入',
                     clearable: true,
+                    className: 'w-100',
                   },
                 },
               ],
@@ -41,6 +42,7 @@ const DSL = {
                   props: {
                     placeholder: '请选择',
                     clearable: true,
+                    className: 'w-100',
                   },
                   options: [
                     { value: '0', label: '审批中' },
@@ -56,7 +58,9 @@ const DSL = {
               children: [
                 {
                   componentName: 'RangePicker',
-                  props: {},
+                  props: {
+                    className: 'w-100',
+                  },
                 },
               ],
             },
@@ -69,6 +73,7 @@ const DSL = {
                   props: {
                     placeholder: '请选择',
                     clearable: true,
+                    className: 'w-100',
                   },
                   options: [
                     {
@@ -100,6 +105,7 @@ const DSL = {
                   props: {
                     placeholder: '请输入',
                     clearable: true,
+                    className: 'w-100',
                   },
                   options: [],
                   onSearch: `function handleSearchText(searchText) {

@@ -16,7 +16,8 @@ const mockApiData = require('./mockApiData.js');
 const domain = 'shizhuang-inc.com';
 // const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;// 列表
 // const mockUrl = `https://mock.${domain}/project/781/interface/api/41375`;// 详情
-const mockUrl = `https://mock.${domain}/project/781/interface/api/90252`; // 编辑
+// const mockUrl = `https://mock.${domain}/project/781/interface/api/90252`; // 编辑
+const mockUrl = `https://mock.shizhuang-inc.com/project/2492/interface/api/140494`;
 const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
 let browser = null;
@@ -133,10 +134,10 @@ const handleApiData = async () => {
 };
 
 // 真实爬接口
-// handleApiData();
+handleApiData();
 
-// 测试mock接口
-apiData = cloneDeep(mockApiData.listData);
-apiData = transform.transData(apiData);
-console.log('apiData', apiData);
-autoEditPage();
+// // 测试mock接口
+// apiData = cloneDeep(mockApiData.listData);
+// apiData = transform.transData(apiData);
+// console.log('apiData', apiData);
+// autoEditPage();

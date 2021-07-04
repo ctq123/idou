@@ -12,6 +12,7 @@ const componentList: any = [
       props: {
         placeholder: '请输入',
         clearable: true,
+        className: 'w-100',
       },
     },
   },
@@ -23,6 +24,7 @@ const componentList: any = [
       props: {
         placeholder: '请输入',
         clearable: true,
+        className: 'w-100',
       },
     },
   },
@@ -34,6 +36,7 @@ const componentList: any = [
       props: {
         placeholder: '请选择',
         clearable: true,
+        className: 'w-100',
       },
       options: [
         { value: '0', label: '审批中' },
@@ -47,7 +50,9 @@ const componentList: any = [
     name: '日期范围',
     componentDSL: {
       componentName: 'RangePicker',
-      props: {},
+      props: {
+        className: 'w-100',
+      },
     },
   },
   {
@@ -58,6 +63,7 @@ const componentList: any = [
       props: {
         placeholder: '请选择',
         clearable: true,
+        className: 'w-100',
       },
       options: [
         { value: '选项1', label: '选项1' },
@@ -73,6 +79,7 @@ const componentList: any = [
       props: {
         placeholder: '请选择',
         clearable: true,
+        className: 'w-100',
       },
       options: [
         {
@@ -102,6 +109,7 @@ const componentList: any = [
       props: {
         placeholder: '请输入',
         clearable: true,
+        className: 'w-100',
       },
       options: [],
       onSearch: `function handleSearchText(searchText) {}`,
@@ -152,7 +160,7 @@ const componentList: any = [
     componentDSL: {
       componentName: 'Form',
       props: {
-        'label-width': '80px',
+        'label-width': '100px',
       },
       dataKey: 'form',
       type: 'search',
@@ -166,6 +174,7 @@ const componentList: any = [
               props: {
                 placeholder: '请输入',
                 clearable: true,
+                className: 'w-100',
               },
             },
           ],

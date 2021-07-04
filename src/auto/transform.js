@@ -96,9 +96,9 @@ const checkFiledType = (item) => {
   let fileType = 'default';
   let enumObj = {};
   if (item.title) {
-    label = '对象-' + item.title;
+    label = 'object-' + item.title;
   } else {
-    label = item.description;
+    label = item.description || 'null';
     let arr = label.match(/\d/g);
     if (arr && arr.length > 1) {
       // 包含多个枚举值

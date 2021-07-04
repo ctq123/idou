@@ -189,6 +189,9 @@ export const styleXML: any = {
       .aic {
         align-items: center;
       }
+      .w-100 {
+        width: 100%;
+      }
       button {
         i {
           margin-right: 8px;

@@ -208,13 +208,14 @@ const Parser = () => {
     const {
       componentName,
       children,
-      props,
+      props: oprops,
       uuid,
       options = [],
       isEdit,
       dataKey,
       componentType,
     } = componentDSL;
+    const props = cloneDeep(oprops);
     const recursionParser = () => {
       switch (componentName) {
         case 'Form':
