@@ -271,8 +271,22 @@ const DSL = {
                   props: {
                     type: 'primary',
                   },
-                  children: '新增',
                   onClick: 'function handleCreate() {}',
+                  children: [
+                    {
+                      componentName: 'i',
+                      componentType: 'native',
+                      props: {
+                        className: 'el-icon-plus',
+                      },
+                    },
+                    {
+                      componentName: 'span',
+                      componentType: 'native',
+                      props: {},
+                      children: '新增',
+                    },
+                  ],
                 },
               ],
             },

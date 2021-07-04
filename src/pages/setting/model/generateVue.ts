@@ -15,7 +15,7 @@ import isFunction from 'lodash/isFunction';
 /**
  * element-ui的前缀
  */
-const elementUI = 'el-';
+const elementUI = 'el';
 
 let renderData: any = {
   vueCode: '',

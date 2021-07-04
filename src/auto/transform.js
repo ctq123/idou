@@ -110,7 +110,7 @@ const checkFiledType = (item) => {
         .split(' ')
         .filter(Boolean)
         .forEach((item) => {
-          const [k, v] = item.split(/[-:]/);
+          const [k, v] = item.split(/[-:：\.]/);
           enumObj[k] = v;
         });
       label = str1 ? str1.replace(/[\s-,，（\(]/g, '') : '--';
