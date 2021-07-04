@@ -64,6 +64,9 @@ export function getMockListAsync(data = {}) {
 export function getMockListSync(data = {}) {
   const keys = Object.keys(data).join('-');
   const list: any = [];
+  if (!keys) {
+    return [];
+  }
   if (lastDataCache[keys]) {
     return lastDataCache[keys];
   }
@@ -78,6 +81,9 @@ export function getMockListSync(data = {}) {
     Object.keys(data).forEach((k) => {
       item[k] = createMockData(k, i);
     });
+    if (item.id === undefined) {
+      item.id = createMockData('id', i);
+    }
     list.push(item);
   }
   lastDataCache[keys] = list;

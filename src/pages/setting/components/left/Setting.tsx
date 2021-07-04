@@ -93,7 +93,7 @@ const Setting = (props: IProps) => {
               return null;
             })
             .filter(Boolean);
-        case 'DIV':
+        case 'div':
         case 'CrumbBack':
           return Array.isArray(children)
             ? children
@@ -325,7 +325,7 @@ const Setting = (props: IProps) => {
           }
           component.children = [].concat(formChild, optItem);
           break;
-        case 'DIV':
+        case 'div':
         case 'CrumbBack':
           if (configs.length) {
             configs.forEach((item: any) => {
@@ -550,7 +550,7 @@ const Setting = (props: IProps) => {
             </Form.Item>
           </>
         );
-      case 'DIV':
+      case 'div':
       case 'CrumbBack':
         return (
           <>

@@ -186,8 +186,8 @@ const Parser = () => {
   };
 
   const getDomName = (componentType: any, componentName: string) => {
-    // TODO 特殊处理div
-    if (['modal', 'div'].includes(componentName.toLowerCase())) {
+    // 特殊处理
+    if (['modal'].includes(componentName.toLowerCase())) {
       return 'div';
     }
     switch (componentType) {
@@ -216,6 +216,10 @@ const Parser = () => {
       componentType,
     } = componentDSL;
     const props = cloneDeep(oprops);
+    if (props && props.clearable !== undefined) {
+      props.allowClear = props.clearable;
+      delete props.clearable;
+    }
     const recursionParser = () => {
       switch (componentName) {
         case 'Form':
@@ -235,6 +239,9 @@ const Parser = () => {
               itemProps['labelCol'] = { span: 8 };
               if (!label) {
                 itemProps['wrapperCol'] = { offset: 8 };
+              }
+              if (Array.isArray(item.children)) {
+                delete itemProps.name;
               }
               const colProps: any = dataSource.colProps || {};
               // if (key) {
@@ -294,7 +301,7 @@ const Parser = () => {
           });
           // 动态生成mock数据
           const mockList = getMockListSync(colKeys);
-          // console.log('colKeys', colKeys);
+          // console.log('mockList', mockList);
           return (
             <div
               onClick={(e: any) =>
@@ -303,6 +310,7 @@ const Parser = () => {
             >
               <Table
                 columns={columns}
+                rowKey="id"
                 dataSource={mockList}
                 pagination={false}
               ></Table>
@@ -313,8 +321,10 @@ const Parser = () => {
           const { Option } = Select;
           return (
             <Select {...props}>
-              {options.map((item: any) => (
-                <Option value={item.value}>{item.label}</Option>
+              {options.map((item: any, i: number) => (
+                <Option key={i} value={item.value}>
+                  {item.label}
+                </Option>
               ))}
             </Select>
           );
@@ -355,7 +365,7 @@ const Parser = () => {
               } else {
                 if (item) {
                   return (
-                    <Col2 span={item.span}>
+                    <Col2 key={i} span={item.span}>
                       <span>{item.label}：</span>
                       {item.key}
                     </Col2>
@@ -399,7 +409,16 @@ const Parser = () => {
             props.type = props.direction;
           }
         default:
-          const defaultProps = { ...props };
+          let defaultProps = { ...props };
+          const eleName = getDomName(componentType, componentName);
+          if (componentType === 'native' || eleName === 'div') {
+            // 特殊处理属性
+            Object.entries(defaultProps).forEach(([k, v]) => {
+              if (typeof v === 'number' || typeof v === 'boolean') {
+                defaultProps[k] = v.toString();
+              }
+            });
+          }
           const className = getClassNameStr(defaultProps);
           if (className) {
             defaultProps.className = className;
@@ -413,7 +432,6 @@ const Parser = () => {
                 .filter(Boolean)
                 .map((item: any, i: number) => generateComponent(item, uuid, i))
             : children;
-          const eleName = getDomName(componentType, componentName);
           return React.createElement(eleName, defaultProps, defaultChildren);
       }
     };

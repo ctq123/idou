@@ -70,17 +70,13 @@ const initData = () => {
 
 // 转换componentName成对应的源码名称
 const getDomName = (componentType: any, componentName: string) => {
-  // TODO 特殊处理div
-  if (componentName.toLowerCase() === 'div') {
-    return 'div';
-  }
   switch (componentType) {
     case 'native':
       return componentName.toLowerCase();
     case 'custom':
       return componentName;
     default:
-      return elementUI + componentName.toLowerCase();
+      return elementUI + componentName.replace(/([A-Z])/g, '-$1').toLowerCase();
   }
 };
 
@@ -232,19 +228,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           schemaDSL,
         )}`;
         xml = VueXML.CreateDom('el-select', selectAttr, `\n${selectOptions}\n`);
-        break;
-      case 'InputNumber':
-        const inputNumberProps = {
-          ...props,
-          type: 'number',
-        };
-        if (vModel) {
-          inputNumberProps['v-model'] = vModel;
-        }
-        const inputNumberAttr = `${getPropsStr(inputNumberProps)} ${getEventStr(
-          schemaDSL,
-        )}`;
-        xml = VueXML.CreateDom('el-input', inputNumberAttr, '');
         break;
       case 'RangePicker':
         const rangepickerProps: any = {

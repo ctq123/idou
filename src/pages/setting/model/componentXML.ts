@@ -55,29 +55,6 @@ export const VueXML: any = {
     </el-tag>
     `;
   },
-  ProductInfo: (productImg: any, productNo: any, productName: any) => {
-    return `
-    <div class="goods-info df aic">
-      <div class="pro-img df aic oh bc_fff mr12">
-        <el-popover
-          placement="right"
-          trigger="hover"
-        >
-          <div class="imgBox">
-            <img :src="${productImg}" class="h200">
-          </div>
-          <img slot="reference" :src="${productImg}" class="aic">
-        </el-popover>
-      </div>
-      <div>
-        <div>
-          <span>货号：</span><strong class="fw600">{{ ${productNo} }}</strong>
-        </div>
-        <ellipsis-popover class="f1" :content="${productName}"></ellipsis-popover>
-      </div>
-    </div>
-    `;
-  },
   CreateDom: (name: any, attrStr: any, childStr: any) => {
     return `<${name} ${attrStr}>
     ${childStr}
@@ -95,19 +72,19 @@ export const VueTableRenderXML: any = {
   renderAmount: (key: string, obj = 'row') => {
     return `{{ ${obj}.${key} ? Number(${obj}.${key}) / 100 : '-' }}`;
   },
-  renderOperate: () => {
+  renderOperate: (key: string, obj = 'row') => {
     return `
     <el-button
       type="text"
       size="small"
-      @click="handleView(row)"
+      @click="handleView(${obj})"
     >
       查看
     </el-button>
     <el-button
       type="text"
       size="small"
-      @click="handleEdit(row)"
+      @click="handleEdit(${obj})"
     >
       编辑
     </el-button>       
@@ -299,6 +276,9 @@ export const styleXML: any = {
       .aic {
         align-items: center;
       }
+      .w-100 {
+        width: 100%;
+      }
       .info-list {
         color: #2b2c3c;
         .title,
@@ -405,7 +385,7 @@ export const styleXML: any = {
       .w90 {
         width: 90px;
       }
-      .w100 {
+      .w-100 {
         width: 100%;
       }
       .h32 {
@@ -525,7 +505,7 @@ export const styleXML: any = {
       .w90 {
         width: 90px;
       }
-      .w100 {
+      .w-100 {
         width: 100%;
       }
       .h32 {

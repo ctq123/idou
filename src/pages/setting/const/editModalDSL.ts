@@ -11,6 +11,7 @@ const DSL = {
   props: {
     className: 'detail-container',
     size: 'large',
+    // TODO
     'close-on-click-modal': false,
     // TODO
     ':visible.sync': 'detailModalShow',
@@ -65,6 +66,7 @@ const DSL = {
                   props: {
                     placeholder: '请输入货号',
                     clearable: true,
+                    className: 'w-100',
                   },
                 },
               ],
@@ -77,7 +79,7 @@ const DSL = {
                   componentName: 'InputNumber',
                   props: {
                     placeholder: '请输入数量',
-                    clearable: true,
+                    className: 'w-100',
                   },
                 },
               ],
@@ -91,6 +93,7 @@ const DSL = {
                   props: {
                     placeholder: '请选择状态',
                     clearable: true,
+                    className: 'w-100',
                   },
                   options: [
                     { value: '0', label: '审批中' },
@@ -109,6 +112,7 @@ const DSL = {
                   props: {
                     placeholder: '请选择',
                     clearable: true,
+                    className: 'w-100',
                   },
                   // type: 'button',
                   options: [
@@ -124,7 +128,9 @@ const DSL = {
               children: [
                 {
                   componentName: 'RangePicker',
-                  props: {},
+                  props: {
+                    className: 'w-100',
+                  },
                 },
               ],
             },

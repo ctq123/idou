@@ -23,7 +23,6 @@ const componentList: any = [
       componentName: 'InputNumber',
       props: {
         placeholder: '请输入',
-        clearable: true,
         className: 'w-100',
       },
     },

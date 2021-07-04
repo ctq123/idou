@@ -215,7 +215,21 @@ const DSL = {
                   props: {
                     type: 'text',
                   },
-                  children: '批量导入',
+                  children: [
+                    {
+                      componentName: 'i',
+                      componentType: 'native',
+                      props: {
+                        className: 'el-extra-icon-import',
+                      },
+                    },
+                    {
+                      componentName: 'span',
+                      componentType: 'native',
+                      props: {},
+                      children: '批量导入',
+                    },
+                  ],
                   onClick: 'function handleUpload() {}',
                 },
                 {
@@ -229,7 +243,21 @@ const DSL = {
                   props: {
                     type: 'text',
                   },
-                  children: '下载模版',
+                  children: [
+                    {
+                      componentName: 'i',
+                      componentType: 'native',
+                      props: {
+                        className: 'el-icon-download',
+                      },
+                    },
+                    {
+                      componentName: 'span',
+                      componentType: 'native',
+                      props: {},
+                      children: '下载模版',
+                    },
+                  ],
                   onClick: 'function downloadTemplate() {}',
                 },
                 {

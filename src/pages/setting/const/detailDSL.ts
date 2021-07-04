@@ -4,6 +4,7 @@ const DSL = {
   props: {
     className: 'detail-container',
     size: 'large',
+    // TODO
     'close-on-click-modal': false,
     // TODO
     ':visible.sync': 'detailModalShow',
