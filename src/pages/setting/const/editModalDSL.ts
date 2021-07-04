@@ -37,7 +37,7 @@ const DSL = {
               componentName: 'span',
               componentType: 'native',
               props: {
-                className: 'fs18 fw600',
+                className: 'fs18 fw600 mr8',
               },
               children: 'XX编辑',
             },
@@ -165,6 +165,10 @@ const DSL = {
           },
           children: '确定',
           onClick: `async function handleSubmit() {
+            const valid = await this.$refs['form'].validate()
+            if (!valid) {
+              return
+            }
             const params = { ...this.form }
             deleteEmptyParam(params)
             await API.updateRecord(params, this)
@@ -204,7 +208,7 @@ const DSL = {
   methods: {
     getRecordDetail: `async function getRecordDetail() {
       const params = { id: this.recordId }
-      const { code, data } = await API.getRecordDetail(params, this)
+      const { code, data } = await API.getRecordDetail(params)
       if (code === 200 && data) {
         this.record = data
       }
@@ -232,8 +236,6 @@ const DSL = {
         method: 'POST',
         url: '/api/v1/h5/oversea/backend/product/detail',
         data: params,
-        vm,
-        loading: 'loading'
       })
     }`,
   },

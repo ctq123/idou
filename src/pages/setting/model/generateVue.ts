@@ -456,10 +456,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         break;
       case 'StatusTag':
         // TODO 这个自定义设计需要改进
-        const { statusKey, statusObj } = props;
+        const { statusKey, statusTagObj } = props;
         const key = statusKey.split('.').splice(-1)[0];
-        const dataKey1 = key + 'Obj';
-        renderData.data[dataKey1] = statusObj;
+        const dataKey1 = key + 'Tag';
+        renderData.data[dataKey1] = statusTagObj;
         xml = VueXML['StatusTag'](statusKey, dataKey1);
         break;
       default:

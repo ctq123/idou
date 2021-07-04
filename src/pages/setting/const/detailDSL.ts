@@ -30,7 +30,7 @@ const DSL = {
               componentName: 'span',
               componentType: 'native',
               props: {
-                className: 'fs18 fw600',
+                className: 'fs18 fw600 mr8',
               },
               children: 'XX详情',
             },
@@ -38,7 +38,7 @@ const DSL = {
               componentName: 'StatusTag',
               props: {
                 statusKey: 'record.status',
-                statusObj: {
+                statusTagObj: {
                   1: { value: '待提交', tag: 'warning' },
                   2: { value: '审核中', tag: 'info' },
                   3: { value: '已通过', tag: 'success' },
@@ -303,7 +303,7 @@ const DSL = {
   methods: {
     getRecordDetail: `async function getRecordDetail() {
       const params = { id: this.recordId }
-      const { code, data } = await API.getRecordDetail(params, this)
+      const { code, data } = await API.getRecordDetail(params)
       if (code === 200 && data) {
         this.record = data
       }
@@ -322,8 +322,6 @@ const DSL = {
         method: 'POST',
         url: '/api/v1/h5/oversea/backend/product/detail',
         data: params,
-        vm,
-        loading: 'loading'
       })
     }`,
   },

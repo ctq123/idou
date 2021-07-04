@@ -295,13 +295,6 @@ export const styleXML: any = {
   editModal: () => {
     return `
     .detail-container {
-      box-sizing: border-box;
-      background-color: #fff;
-      padding: 16px 24px;
-      border-radius: 5px;
-      .left {
-        min-width: 400px;
-      }
       .info-list {
         color: #2b2c3c;
         .title,
@@ -377,6 +370,9 @@ export const styleXML: any = {
       .ml8 {
         margin-left: 8px;
       }
+      .mr8 {
+        margin-right: 8px;
+      }
       .w90 {
         width: 90px;
       }
@@ -410,13 +406,6 @@ export const styleXML: any = {
   detail: () => {
     return `
     .detail-container {
-      box-sizing: border-box;
-      background-color: #fff;
-      padding: 16px 24px;
-      border-radius: 5px;
-      .left {
-        min-width: 400px;
-      }
       .info-list {
         color: #2b2c3c;
         .title,
@@ -496,6 +485,9 @@ export const styleXML: any = {
       }
       .mr12 {
         margin-right: 12px;
+      }
+      .mr8 {
+        margin-right: 8px;
       }
       .w90 {
         width: 90px;

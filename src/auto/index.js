@@ -14,9 +14,8 @@ const pageDetail = require('./page/detail.js');
 const pageEditModal = require('./page/editModal.js');
 const mockApiData = require('./mockApiData.js');
 const domain = 'shizhuang-inc.com';
-// const mockUrl = `https://mock.${domain}/project/574/interface/api/111276`;// 列表
-// const mockUrl = `https://mock.${domain}/project/781/interface/api/41375`;// 详情
-// const mockUrl = `https://mock.${domain}/project/781/interface/api/90252`; // 编辑
+// const mockUrl = `https://mock.shizhuang-inc.com/project/2492/interface/api/140446`;// 详情
+const mockUrl = `https://mock.shizhuang-inc.com/project/2492/interface/api/140456`; // 编辑
 // const mockUrl = `https://mock.shizhuang-inc.com/project/2492/interface/api/140494`;// 列表
 const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
@@ -95,10 +94,16 @@ const handleApiData = async () => {
         console.log('XHR resp received');
         const respData = await resp.json();
         console.log(respData);
-        const { title, method, path, req_body_other, res_body } =
-          (respData && respData.data) || {};
-        console.log('req_body_other', req_body_other);
-        const paramsObj = JSON.parse(req_body_other);
+        const {
+          title,
+          method,
+          path,
+          req_body_other,
+          req_params,
+          res_body = {},
+        } = (respData && respData.data) || {};
+        console.log('req_params', req_params);
+        const paramsObj = req_body_other ? JSON.parse(req_body_other) : {};
         const respObj = JSON.parse(res_body);
         const requestObj = get(paramsObj, 'properties')
           ? { ...get(paramsObj, 'properties') }
@@ -133,11 +138,11 @@ const handleApiData = async () => {
   }
 };
 
-// 真实爬接口
-handleApiData();
+// // 真实爬接口
+// handleApiData();
 
-// // 测试mock接口
-// apiData = cloneDeep(mockApiData.listData);
-// apiData = transform.transData(apiData);
-// console.log('apiData', apiData);
-// autoEditPage();
+// 测试mock接口
+apiData = cloneDeep(mockApiData.listData);
+apiData = transform.transData(apiData);
+console.log('apiData', apiData);
+autoEditPage();

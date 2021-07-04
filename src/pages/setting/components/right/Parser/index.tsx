@@ -394,9 +394,9 @@ const Parser = () => {
           );
         case 'StatusTag':
           const Tag = antd['Tag'];
-          const { statusObj = {} } = props;
-          const k = Object.keys(statusObj).find((_, i) => i === 0);
-          const target = statusObj[k];
+          const { statusTagObj = {} } = props;
+          const k = Object.keys(statusTagObj).find((_, i) => i === 0);
+          const target = statusTagObj[k];
           return target ? <Tag color={target.tag}>{target.value}</Tag> : null;
         case 'Button':
           // 转换属性
