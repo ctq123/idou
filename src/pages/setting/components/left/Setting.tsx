@@ -296,6 +296,11 @@ const Setting = (props: IProps) => {
                   obj.span = 8;
                 }
               }
+              if (componentName === 'Table') {
+                if (obj.minWidth === undefined) {
+                  obj.minWidth = 100;
+                }
+              }
               return obj;
             });
           }

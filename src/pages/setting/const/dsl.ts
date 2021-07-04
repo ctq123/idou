@@ -1,12 +1,14 @@
 const DSL = {
-  componentName: 'DIV',
+  componentName: 'div',
+  componentType: 'native',
   type: 'list',
   props: {
     className: 'page-container',
   },
   children: [
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         className: 'bc_fff bshadow pl24 pb6 pr24 pt24',
       },
@@ -145,27 +147,31 @@ const DSL = {
       ],
     },
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         className: 'pl24 pr24 pb24 mt24 bc_fff bshadow',
       },
       children: [
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'flex-between',
           },
           isEdit: true,
           children: [
             {
-              componentName: 'DIV',
+              componentName: 'div',
+              componentType: 'native',
               props: {
                 className: 'title',
               },
               children: '商品管理列表',
             },
             {
-              componentName: 'DIV',
+              componentName: 'div',
+              componentType: 'native',
               props: {
                 className: 'flex-center',
               },

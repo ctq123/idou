@@ -350,6 +350,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               delete newProps.render;
               childStr = item.render;
             }
+            if (item.enumObj) {
+              renderData.data[`${item.key}Obj`] = item.enumObj;
+              delete newProps.enumObj;
+            }
             if (Array.isArray(item.children)) {
               // 编辑类型
               delete newProps.children;
@@ -410,7 +414,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               if (item.key && dataKey) {
                 renderData.data[dataKey][item.key] = '';
               }
-              if (item.renderKey === 'renderEnum' && item.enumObj) {
+              if (item.enumObj) {
                 renderData.data[`${item.key}Obj`] = item.enumObj;
               }
 

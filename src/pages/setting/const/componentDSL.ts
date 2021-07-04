@@ -221,6 +221,7 @@ const componentList: any = [
         {
           key: 'id',
           label: '序号',
+          minWidth: 100,
           renderKey: `renderDefault`,
         },
       ],
@@ -244,6 +245,7 @@ const componentList: any = [
         {
           key: 'id',
           label: '序号',
+          minWidth: 100,
         },
         {
           label: '名称',
@@ -265,7 +267,8 @@ const componentList: any = [
     key: 'du-pagination',
     name: '分页',
     componentDSL: {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {},
       isEdit: true,
       children: [
@@ -300,14 +303,16 @@ const componentList: any = [
     key: 'du-baseInfo',
     name: '基本信息模块',
     componentDSL: {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         className: 'info-list bb mb24 pb12',
       },
       isEdit: true,
       children: [
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'mb12 fs16 fw700',
           },

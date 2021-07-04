@@ -1,12 +1,14 @@
 const DSL = {
-  componentName: 'DIV',
+  componentName: 'div',
+  componentType: 'native',
   type: 'list',
   props: {
     className: 'page-container',
   },
   children: [
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         className: 'bc_fff bshadow pl24 pb6 pr24 pt24',
       },
@@ -151,27 +153,31 @@ const DSL = {
       ],
     },
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         className: 'pl24 pr24 pb24 mt24 bc_fff bshadow',
       },
       children: [
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'df aic jcsb lh50',
           },
           isEdit: true,
           children: [
             {
-              componentName: 'DIV',
+              componentName: 'div',
+              componentType: 'native',
               props: {
                 className: 'mb12 fs16 fw700',
               },
               children: '商品管理列表',
             },
             {
-              componentName: 'DIV',
+              componentName: 'div',
+              componentType: 'native',
               props: {
                 className: 'df aic',
               },
@@ -181,7 +187,21 @@ const DSL = {
                   props: {
                     type: 'text',
                   },
-                  children: '导出结果',
+                  children: [
+                    {
+                      componentName: 'i',
+                      componentType: 'native',
+                      props: {
+                        className: 'el-extra-icon-export',
+                      },
+                    },
+                    {
+                      componentName: 'span',
+                      componentType: 'native',
+                      props: {},
+                      children: '导出结果',
+                    },
+                  ],
                   onClick: 'function handleExport() {}',
                 },
                 {
@@ -244,38 +264,45 @@ const DSL = {
             {
               key: 'orderNo',
               label: '订单号',
+              minWidth: 120,
               renderKey: `renderDefault`,
             },
             {
               key: 'trueName',
               label: '姓名',
+              minWidth: 100,
               renderKey: `renderDefault`,
             },
             {
               key: 'amount',
               label: '订单金额',
+              minWidth: 100,
               renderKey: `renderAmount`,
             },
             {
               key: 'status',
               label: '校验状态',
+              minWidth: 100,
               renderKey: `renderDefault`,
             },
             {
               key: 'createTime',
               label: '创建时间',
+              minWidth: 180,
               renderKey: 'renderTime',
             },
             {
               key: '-',
               label: '操作',
+              minWidth: 100,
               fixed: 'right',
               renderKey: `renderOperate`,
             },
           ],
         },
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {},
           isEdit: true,
           children: [

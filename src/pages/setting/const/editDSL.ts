@@ -1,5 +1,6 @@
 const DSL = {
-  componentName: 'DIV',
+  componentName: 'div',
+  componentType: 'native',
   type: 'edit',
   props: {
     className: 'edit-container',
@@ -15,20 +16,23 @@ const DSL = {
       }`,
     },
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         className: 'pl24 pr24 pb24 pt24 mt24 bc_fff bshadow edit-content',
       },
       children: [
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'info-list bb mb24 pb12',
           },
           isEdit: true,
           children: [
             {
-              componentName: 'DIV',
+              componentName: 'div',
+              componentType: 'native',
               props: {
                 className: 'mb12 fs16 fw700',
               },
@@ -66,14 +70,16 @@ const DSL = {
           ],
         },
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'info-list bb mb24 pb12',
           },
           isEdit: true,
           children: [
             {
-              componentName: 'DIV',
+              componentName: 'div',
+              componentType: 'native',
               props: {
                 className: 'mb12 fs16 fw700',
               },
@@ -146,14 +152,16 @@ const DSL = {
           ],
         },
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'info-list bb mb24 pb12',
           },
           isEdit: true,
           children: [
             {
-              componentName: 'DIV',
+              componentName: 'div',
+              componentType: 'native',
               props: {
                 className: 'mb12 fs16 fw700',
               },
@@ -227,14 +235,16 @@ const DSL = {
       ],
     },
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         className: 'footer-block',
       },
       isEdit: true,
       children: [
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'footer-con',
           },

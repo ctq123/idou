@@ -17,21 +17,23 @@ const DSL = {
   },
   children: [
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         slot: 'title',
         className: 'df aic jcsb pr24',
       },
       children: [
         {
-          componentName: 'DIV',
+          componentName: 'div',
+          componentType: 'native',
           props: {
             className: 'df aic left',
           },
           isEdit: true,
           children: [
             {
-              componentName: 'SPAN',
+              componentName: 'span',
               componentType: 'native',
               props: {
                 className: 'fs18 fw600',
@@ -43,7 +45,7 @@ const DSL = {
       ],
     },
     {
-      componentName: 'SECTION',
+      componentName: 'section',
       componentType: 'native',
       props: {},
       children: [
@@ -131,7 +133,8 @@ const DSL = {
       ],
     },
     {
-      componentName: 'DIV',
+      componentName: 'div',
+      componentType: 'native',
       props: {
         slot: 'footer',
         className: 'df aic fe right',
