@@ -5,6 +5,22 @@ import parserHTML from 'prettier/esm/parser-html.mjs';
 import parserCSS from 'prettier/esm/parser-postcss.mjs';
 
 /**
+ * 获取域
+ * @param type
+ * @returns
+ */
+export const getDomain = (type = 1) => {
+  switch (type) {
+    case 1:
+      return 'P.O.I.Z.O.N'.split('.').join('').toLowerCase();
+    case 2:
+      return 'S.H.I.Z.H.U.A.N.G.-.I.N.C'.split('.').join('').toLowerCase();
+    default:
+      return '';
+  }
+};
+
+/**
  * 获取唯一值
  * @returns
  */

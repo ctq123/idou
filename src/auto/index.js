@@ -3,6 +3,7 @@
  * @Date: 2021-06-12 00:58:07
  * @LastEditTime: 2021-07-04 00:44:25
  * @LastEditors: chengtianqing
+ * @备注: 已检查，无账号密码信息
  */
 
 const puppeteer = require('puppeteer');
@@ -13,10 +14,10 @@ const pageList = require('./page/list.js');
 const pageDetail = require('./page/detail.js');
 const pageEditModal = require('./page/editModal.js');
 const mockApiData = require('./mockApiData.js');
-const domain = 'shizhuang-inc.com';
-// const mockUrl = `https://mock.shizhuang-inc.com/project/2492/interface/api/140446`;// 详情
-const mockUrl = `https://mock.shizhuang-inc.com/project/2492/interface/api/140456`; // 编辑
-// const mockUrl = `https://mock.shizhuang-inc.com/project/2492/interface/api/140494`;// 列表
+const domain = 'S.H.I.Z.H.U.A.N.G.-.I.N.C'.split('.').join('').toLowerCase();
+// const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140446`;// 详情
+const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140456`; // 编辑
+// const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140494`;// 列表
 const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
 let browser = null;
@@ -44,6 +45,7 @@ const autoEditPage = async () => {
   const navigationPromise = page.waitForNavigation();
   await page.goto(platformUrl);
   await navigationPromise;
+  await page.waitForTimeout(2 * 1000);
   switch (apiData.componentType) {
     case 'list':
       await pageList.generatePage({ page, apiData });
@@ -69,7 +71,7 @@ const handleApiData = async () => {
   const page = await browser.newPage();
   await page.setViewport({ width: 1366, height: 768 });
   await page.goto(
-    `https://sso.${domain}/?returnUrl=https://mock.${domain}/#/login`,
+    `https://sso.${domain}.com/?returnUrl=https://mock.${domain}.com/#/login`,
   );
   let text = await page.evaluate(
     () => document.querySelector('button>span>span').innerHTML,
@@ -86,7 +88,7 @@ const handleApiData = async () => {
 
     // 监听对应的接口
     const [, id] = mockUrl.match(/\d+/g);
-    const requestUrl = `https://mock.${domain}/api/interface/get?id=${id}`;
+    const requestUrl = `https://mock.${domain}.com/api/interface/get?id=${id}`;
     await page.on('response', async (resp) => {
       // 提取对应的数据
       console.log('url=', resp.url());

@@ -161,7 +161,7 @@ const Request = (props: any) => {
           <Input placeholder="请输入url" allowClear />
         </Form.Item>
 
-        <Form.Item>
+        <Form.Item style={{ marginTop: 8 }}>
           <Button type="primary" htmlType="submit">
             提交
           </Button>

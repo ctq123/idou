@@ -10,7 +10,7 @@ const DSL = {
   type: 'editModal',
   props: {
     className: 'detail-container',
-    size: 'large',
+    size: 'medium',
     // TODO
     'close-on-click-modal': false,
     // TODO
@@ -58,13 +58,32 @@ const DSL = {
           dataKey: 'form',
           children: [
             {
-              label: '货号',
-              key: 'articleNumber',
+              label: '类型',
+              key: 'productType',
+              children: [
+                {
+                  componentName: 'RadioGroup',
+                  props: {
+                    placeholder: '请选择',
+                    clearable: true,
+                    className: 'w-100',
+                  },
+                  // type: 'button',
+                  options: [
+                    { value: '进口', label: '进口' },
+                    { value: '非进口', label: '非进口' },
+                  ],
+                },
+              ],
+            },
+            {
+              label: '名称',
+              key: 'name',
               children: [
                 {
                   componentName: 'Input',
                   props: {
-                    placeholder: '请输入货号',
+                    placeholder: '请输入名称',
                     clearable: true,
                     className: 'w-100',
                   },
@@ -80,6 +99,7 @@ const DSL = {
                   props: {
                     placeholder: '请输入数量',
                     className: 'w-100',
+                    ':style': "{width: '100%'}",
                   },
                 },
               ],
@@ -104,31 +124,54 @@ const DSL = {
               ],
             },
             {
-              label: '商品类型',
-              key: 'productType',
-              children: [
-                {
-                  componentName: 'RadioGroup',
-                  props: {
-                    placeholder: '请选择',
-                    clearable: true,
-                    className: 'w-100',
-                  },
-                  // type: 'button',
-                  options: [
-                    { value: '进口', label: '进口' },
-                    { value: '非进口', label: '非进口' },
-                  ],
-                },
-              ],
-            },
-            {
-              label: '截止时间',
+              label: '预约时间',
               key: 'limitTime',
               children: [
                 {
                   componentName: 'RangePicker',
                   props: {
+                    className: 'w-100',
+                  },
+                },
+              ],
+            },
+            {
+              label: '联系人',
+              key: 'name',
+              children: [
+                {
+                  componentName: 'Input',
+                  props: {
+                    placeholder: '请输入联系人',
+                    clearable: true,
+                    className: 'w-100',
+                  },
+                },
+              ],
+            },
+            {
+              label: '手机号',
+              key: 'phone',
+              children: [
+                {
+                  componentName: 'Input',
+                  props: {
+                    placeholder: '请输入手机号',
+                    clearable: true,
+                    className: 'w-100',
+                  },
+                },
+              ],
+            },
+            {
+              label: '联系地址',
+              key: 'address',
+              children: [
+                {
+                  componentName: 'Input',
+                  props: {
+                    placeholder: '请输入联系地址',
+                    clearable: true,
                     className: 'w-100',
                   },
                 },
