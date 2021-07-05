@@ -1,22 +1,18 @@
+
 # 中后台自动化低代码的搭建与探索
 
-## Getting Started
+## 低代码
+低代码其实何以分为两类
 
-Install dependencies,
+## 中后台开发的痛点
 
-```bash
-$ yarn
-```
 
-Start the dev server,
+## 如何做？
 
-```bash
-$ yarn start
-```
-```bash
-// 自动化生成代码
-$ yarn auto
-```
+
+## 未来规划
+
+
 #### 待解决
 1）预览功能，打通codesandbox，实现项目的在线预览
 
