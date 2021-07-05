@@ -356,6 +356,11 @@ const Setting = (props: IProps) => {
 
   const generateFormItem = (fields: any, remove: any, move: any, add: any) => {
     // console.log('fields', fields);
+    const prefix = dataKey
+      ? componentName === 'Table'
+        ? `row.`
+        : `${dataKey}.`
+      : undefined;
     switch (componentName) {
       case 'Row':
       case 'Table':
@@ -366,6 +371,7 @@ const Setting = (props: IProps) => {
                 <Space align="baseline">
                   <Form.Item
                     {...field}
+                    style={{ width: 140 }}
                     name={[field.name, 'label']}
                     fieldKey={[field.fieldKey, 'label']}
                     rules={[{ required: true, message: '请输入label' }]}
@@ -379,7 +385,7 @@ const Setting = (props: IProps) => {
                     fieldKey={[field.fieldKey, 'key']}
                     rules={[{ required: true, message: '请输入key' }]}
                   >
-                    <Input placeholder="key" allowClear />
+                    <Input addonBefore={prefix} placeholder="key" allowClear />
                   </Form.Item>
                 </Space>
                 <Space align="baseline">
@@ -391,7 +397,7 @@ const Setting = (props: IProps) => {
                       rules={[{ required: false, message: '请选择渲染类型' }]}
                     >
                       <Select
-                        style={{ width: 163 }}
+                        style={{ width: 140 }}
                         placeholder="渲染类型"
                         allowClear
                         onChange={(val) => handleTypeChange(val, i)}
@@ -411,7 +417,7 @@ const Setting = (props: IProps) => {
                       rules={[{ required: true, message: '请选择渲染类型' }]}
                     >
                       <Select
-                        style={{ width: 163 }}
+                        style={{ width: 140 }}
                         placeholder="渲染类型"
                         allowClear
                         onChange={(val) => handleRenderChange(val, i)}
@@ -444,7 +450,7 @@ const Setting = (props: IProps) => {
                       onClick={() => remove(field.name)}
                     />
                     {type === 'editTable' ? null : (
-                      <Tooltip title="自定义渲染">
+                      <Tooltip title="自定义源码渲染">
                         <Button
                           type="link"
                           icon={<FormOutlined />}
@@ -475,6 +481,7 @@ const Setting = (props: IProps) => {
                 <Space align="baseline">
                   <Form.Item
                     {...field}
+                    style={{ width: 140 }}
                     name={[field.name, 'label']}
                     fieldKey={[field.fieldKey, 'label']}
                     rules={[{ required: true, message: '请输入label' }]}
@@ -488,7 +495,7 @@ const Setting = (props: IProps) => {
                     fieldKey={[field.fieldKey, 'key']}
                     rules={[{ required: true, message: '请输入key' }]}
                   >
-                    <Input placeholder="key" allowClear />
+                    <Input addonBefore={prefix} placeholder="key" allowClear />
                   </Form.Item>
                 </Space>
                 <Space align="baseline">
@@ -499,7 +506,7 @@ const Setting = (props: IProps) => {
                     rules={[{ required: true, message: '请选择类型' }]}
                   >
                     <Select
-                      style={{ width: 163 }}
+                      style={{ width: 140 }}
                       placeholder="类型"
                       allowClear
                       onChange={(val) => handleTypeChange(val, i)}
@@ -575,6 +582,7 @@ const Setting = (props: IProps) => {
               <Space key={field.key} align="baseline">
                 <Form.Item
                   {...field}
+                  style={{ width: 140 }}
                   name={[field.name, 'label']}
                   fieldKey={[field.fieldKey, 'label']}
                   rules={[{ required: true, message: '请输入label' }]}
@@ -588,7 +596,7 @@ const Setting = (props: IProps) => {
                   fieldKey={[field.fieldKey, 'key']}
                   rules={[{ required: true, message: '请输入key' }]}
                 >
-                  <Input placeholder="key" allowClear />
+                  <Input addonBefore={prefix} placeholder="key" allowClear />
                 </Form.Item>
 
                 <Form.Item
@@ -605,7 +613,7 @@ const Setting = (props: IProps) => {
                       rules={[{ required: true, message: '请选择类型' }]}
                     >
                       <Select
-                        style={{ width: 130 }}
+                        style={{ width: 140 }}
                         placeholder="类型"
                         allowClear
                         onChange={(val) => handleTypeChange(val, i)}
