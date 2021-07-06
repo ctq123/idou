@@ -1,3 +1,10 @@
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-06-14 01:33:29
+ * @LastEditTime: 2021-06-27 02:49:10
+ * @LastEditors: chengtianqing
+ * @备注: 图片中无敏感信息
+ */
 import { getDomain } from '@/utils';
 /**
  * 左侧内容tab
@@ -23,7 +30,7 @@ export const templates = [
   {
     code: 'detail',
     label: '弹窗详情',
-    img: `${baseUrl}/19c23cb0870e583a3f10fcee4e5686c6.png`,
+    img: `${baseUrl}/cbd6486d427d9f7fd9a8119fb3d11b0f.png`,
   },
   {
     code: 'editModal',
