@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-12 00:58:07
- * @LastEditTime: 2021-07-04 00:44:25
+ * @LastEditTime: 2021-07-06 23:54:25
  * @LastEditors: chengtianqing
  * @备注: 已检查，无账号密码信息
  */
@@ -18,7 +18,7 @@ const domain = 'S.H.I.Z.H.U.A.N.G.-.I.N.C'.split('.').join('').toLowerCase();
 // const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140446`;// 详情
 const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140456`; // 编辑
 // const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140494`;// 列表
-const platformUrl = `http://localhost:8000/setting`;
+const platformUrl = `https://idou100.netlify.app`;
 let apiData = {};
 let browser = null;
 
