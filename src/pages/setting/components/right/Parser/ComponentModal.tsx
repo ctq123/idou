@@ -1,3 +1,10 @@
+/*
+ * @Author: chengtianqing
+ * @Date: 2021-07-03 01:17:49
+ * @LastEditTime: 2021-07-07 00:06:16
+ * @LastEditors: chengtianqing
+ * @Description:
+ */
 import { useState } from 'react';
 import { Modal, Button, Input, message } from 'antd';
 import { ModuleComponents } from '../../../const/componentDSL';
@@ -29,8 +36,8 @@ const ComponentModal = (props: IProps) => {
 
   const handleOnSearch = (val: any) => {
     if (val) {
-      const arr = ModuleComponents.filter(({ key, name, componentName }: any) =>
-        [key, name, componentName].some((t) => t.indexOf(val) > -1),
+      const arr = ModuleComponents.filter(({ key, name }: any) =>
+        [key, name].some((t) => t.indexOf(val) > -1),
       );
       setList(arr);
     } else {
