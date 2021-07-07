@@ -19,6 +19,7 @@ const domain = 'S.H.I.Z.H.U.A.N.G.-.I.N.C'.split('.').join('').toLowerCase();
 const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140456`; // 编辑
 // const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140494`;// 列表
 const platformUrl = `https://idou100.netlify.app`;
+// const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
 let browser = null;
 
@@ -45,7 +46,7 @@ const autoEditPage = async () => {
   const navigationPromise = page.waitForNavigation();
   await page.goto(platformUrl);
   await navigationPromise;
-  await page.waitForTimeout(2 * 1000);
+  await page.waitForTimeout(1 * 1000);
   switch (apiData.componentType) {
     case 'list':
       await pageList.generatePage({ page, apiData });

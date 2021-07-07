@@ -23,7 +23,6 @@ const generatePage = async ({ page, apiData }) => {
     await page.waitForSelector('#rc-tabs-0-panel-setting form div button');
     await page.waitForTimeout(1000);
 
-    // 先清空所有数据
     ele = await page.$('#rc-tabs-0-panel-setting');
     // 先清空所有数据
     await base.clickAllDom(
@@ -67,7 +66,7 @@ const generatePage = async ({ page, apiData }) => {
         i,
       );
       if (['状态'].includes(recordObj[k].componentType)) {
-        await common.closeConfigModal({ page });
+        await common.setOptionModal({ page, enumObj: recordObj[k].enumObj });
       }
       i++;
     }

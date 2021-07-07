@@ -20,7 +20,8 @@ import isEmpty from 'lodash/isEmpty';
 import isObject from 'lodash/isObject';
 import isEqual from 'lodash/isEqual';
 import CodeDrawer from '../codeEditor/CodeDrawer';
-import CodeModal from '../codeEditor/CodeModal';
+// import CodeModal from '../codeEditor/CodeModal';
+import OptionModal from './OptionModal';
 import { getUid } from '@/utils';
 import {
   FormComponents,
@@ -45,7 +46,7 @@ const colRenderObj: any = {
   renderDefault: '默认',
 };
 
-const defaultSelectOptions: any = { '1': '待审批', '2': '审批通过' };
+const defaultSelectOptions: any = { '1': '成功', '2': '失败' };
 
 const Setting = (props: IProps) => {
   // console.log('props', props);
@@ -57,7 +58,7 @@ const Setting = (props: IProps) => {
   const [codeKey, setCodeKey] = useState(-1);
   const [initValues, setInitValues] = useState({});
   const [modalProps, setModalProps] = useState({
-    value: '' as any,
+    value: [] as any,
     visible: false,
     contentType: '',
   });
@@ -205,8 +206,8 @@ const Setting = (props: IProps) => {
   };
 
   const handleModalCB = (obj: any) => {
-    const { visible, code } = obj;
-    let newCode = code;
+    const { visible, list } = obj;
+    console.log('list', list);
     setModalProps({
       visible: visible,
       value: {},
@@ -214,18 +215,18 @@ const Setting = (props: IProps) => {
     });
     const configs = form.getFieldValue('configs');
     if (modalProps.contentType === 'changeOptions') {
-      if (isEmpty(newCode)) {
-        newCode = [];
-      }
       if (codeKey > -1) {
-        configs[codeKey].children[0].options = newCode;
+        configs[codeKey].children[0].options = (list || []).map(
+          ({ key = '', label = '' }: any) => ({ value: key, label: label }),
+        );
       }
     } else {
-      if (isEmpty(newCode)) {
-        newCode = {};
-      }
+      const enumObj: any = {};
+      (list || []).forEach(({ key = '', label = '' }: any) => {
+        enumObj[key] = label;
+      });
       if (codeKey > -1) {
-        configs[codeKey].enumObj = newCode;
+        configs[codeKey].enumObj = enumObj;
         form.setFieldsValue(configs);
       }
     }
@@ -243,7 +244,9 @@ const Setting = (props: IProps) => {
         setModalProps({
           visible: true,
           // @ts-ignore
-          value: [].concat(obj.options),
+          value: []
+            .concat(obj.options)
+            .map(({ value, label }) => ({ key: value, label })),
           contentType: 'changeOptions',
         });
       }
@@ -261,7 +264,7 @@ const Setting = (props: IProps) => {
       setCodeKey(i);
       setModalProps({
         visible: true,
-        value,
+        value: Object.entries(value).map(([k, v]) => ({ key: k, label: v })),
         contentType: 'renderEnum',
       });
     }
@@ -670,7 +673,7 @@ const Setting = (props: IProps) => {
         type={codeType}
         handleCB={(val: any) => handleCodeCB(val)}
       />
-      <CodeModal {...modalProps} handleCB={(v: any) => handleModalCB(v)} />
+      <OptionModal {...modalProps} handleCB={(v: any) => handleModalCB(v)} />
     </>
   );
 };

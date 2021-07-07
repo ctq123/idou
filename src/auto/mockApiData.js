@@ -4,7 +4,11 @@ const listData = {
   url: '/cross/mhk/pageList',
   request: {
     applicationNo: { type: 'string', description: '预约单号', mock: [Object] },
-    status: { type: 'string', description: '预约单状态', mock: [Object] },
+    status: {
+      type: 'string',
+      description: '预约单状态 0-审核中 1-成功 2-失败',
+      mock: [Object],
+    },
     warehouseCode: { type: 'string', description: '收货地址', mock: [Object] },
     createTimeStart: {
       type: 'string',
@@ -45,7 +49,11 @@ const listData = {
             description: '预约单号',
             mock: [Object],
           },
-          status: { type: 'string', description: '预约单状态', mock: [Object] },
+          status: {
+            type: 'string',
+            description: '预约单状态 0-审核中 1-成功 2-失败',
+            mock: [Object],
+          },
           avgPrice: {
             type: 'string',
             description: '均价',

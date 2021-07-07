@@ -72,6 +72,49 @@ const closeConfigModal = async ({ page }) => {
   await page.waitForTimeout(300);
 };
 
+// 选项设置
+const setOptionModal = async ({ page, enumObj }) => {
+  await page.waitForSelector('#option_modal_form input');
+  // 先清空所有数据
+  await base.clickAllDom(
+    page,
+    null,
+    '#option_modal_form button .anticon-delete',
+  );
+  let plusEl = await page.$(`#option_modal_form button .anticon-plus`);
+  let i = 1;
+  for (let k in enumObj) {
+    await page.evaluate(async (el) => {
+      await el.click();
+    }, plusEl);
+
+    await page.waitForSelector(`#option_modal_form div:nth-child(${i}) input`, {
+      timeout: 10000,
+    });
+    await base.setInput(
+      page,
+      null,
+      `#option_modal_form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(1)`,
+      k,
+    );
+    await base.setInput(
+      page,
+      null,
+      `#option_modal_form div:nth-child(${i}) .ant-space:nth-child(1) .ant-space-item:nth-child(2)`,
+      enumObj[k],
+    );
+    i++;
+    await page.waitForTimeout(100);
+  }
+  await base.clickButton(
+    page,
+    null,
+    'body div .ant-modal .ant-modal-footer',
+    '确定',
+  );
+  await page.waitForTimeout(1000);
+};
+
 const generateCode = async ({ page }) => {
   await base.clickButton(
     page,
@@ -108,4 +151,5 @@ module.exports = {
   closeConfigModal,
   modalTitleChange,
   generateCode,
+  setOptionModal,
 };

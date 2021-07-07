@@ -60,7 +60,7 @@ const generatePage = async ({ page, apiData }) => {
         i,
       );
       if (['选择器', '单选框'].includes(form[k].componentType)) {
-        await common.closeConfigModal({ page });
+        await common.setOptionModal({ page, enumObj: form[k].enumObj });
       }
       i++;
     }
@@ -152,7 +152,7 @@ const generatePage = async ({ page, apiData }) => {
         i,
       );
       if (['状态'].includes(columnsObj[k].componentType)) {
-        await common.closeConfigModal({ page });
+        await common.setOptionModal({ page, enumObj: columnsObj[k].enumObj });
       }
       i++;
     }

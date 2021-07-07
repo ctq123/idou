@@ -62,7 +62,7 @@ const generatePage = async ({ page, apiData }) => {
         i,
       );
       if (['选择器', '单选框'].includes(formObj[k].componentType)) {
-        await common.closeConfigModal({ page });
+        await common.setOptionModal({ page, enumObj: formObj[k].enumObj });
       }
       i++;
     }

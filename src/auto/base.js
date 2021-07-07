@@ -134,7 +134,11 @@ async function clickAllDom(page, ele, classPath) {
   const els = await (ele || page).$$(`${classPath}`);
   // console.log("classPath", els.length)
   for (let i = 0; i < els.length; i++) {
-    await els[i].click();
+    await page.evaluate(async (el) => {
+      await el.click();
+    }, els[i]);
+    // await els[i].click();
+    await page.waitForTimeout(50);
   }
 }
 
