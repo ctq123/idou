@@ -9,7 +9,12 @@ import { message } from 'antd';
 // import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
 
 import { VueXML, styleXML, VueTableRenderXML } from './componentXML';
-import { prettierFormat, transformFunc, replaceObjKey } from '@/utils';
+import {
+  prettierFormat,
+  transformFunc,
+  replaceObjKey,
+  generateClassStyle,
+} from '@/utils';
 import isFunction from 'lodash/isFunction';
 
 /**
@@ -27,6 +32,7 @@ let renderData: any = {
   methods: [],
   lifecycles: [],
   styles: [],
+  asyncStyle: {},
   apiImports: [],
   apis: [],
 };
@@ -63,6 +69,7 @@ const initData = () => {
     methods: [],
     lifecycles: [],
     styles: [],
+    asyncStyle: {},
     apiImports: [],
     apis: [],
   };
@@ -92,21 +99,18 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
   } = schemaDSL || {};
   let xml = '';
   if (componentName) {
+    setAsyncStyles(props.className);
     replaceObjKey(props, 'className', 'class');
 
     switch (componentName) {
       case 'Form':
         const formDataKey = dataKey || 'form';
-        const rulesKey = type === 'search' ? '' : formDataKey + 'Rules';
+        const rulesKey = formDataKey + 'Rules';
+        const rulesObj: any = {};
         // 解决多个form公用数据问题
         renderData.data[formDataKey] = renderData.data[formDataKey]
           ? { ...renderData.data[formDataKey] }
           : {};
-        if (rulesKey) {
-          renderData.data[rulesKey] = renderData.data[rulesKey]
-            ? { ...renderData.data[rulesKey] }
-            : {};
-        }
 
         const childs = children || [];
         const buttonItems = (list: any) =>
@@ -121,7 +125,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const formItems = (list: any[]) =>
           list
             .map((item: any) => {
-              const { key, label, initValue } = item || {};
+              const { key, label, initValue, rules } = item || {};
               const vmodel = key && formDataKey ? `${formDataKey}.${key}` : '';
               const itemProps: any = {
                 label,
@@ -132,23 +136,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                   renderData.data[formDataKey][key] =
                     initValue !== undefined ? initValue : '';
                 }
+                console.log('rules', rules);
                 // 生成rules
-                if (rulesKey) {
-                  let message = `请输入${label}`;
-                  if (item.children && item.children.length) {
-                    if (
-                      ['Input', 'InputNumber'].includes(
-                        item.children[0].componentName,
-                      )
-                    ) {
-                      message = `请输入${label}`;
-                    } else {
-                      message = `请选择${label}`;
-                    }
-                  }
-                  renderData.data[rulesKey][key] = [
-                    { required: true, message },
-                  ];
+                if (Array.isArray(rules)) {
+                  rulesObj[key] = rules;
                 }
               }
               let itemChildren = (item.children || [])
@@ -171,16 +162,23 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const formProps = {
           ...props,
           ':model': formDataKey,
+          ref: formDataKey,
         };
-        if (rulesKey) {
-          formProps[':rules'] = rulesKey;
-          formProps['ref'] = formDataKey;
-        }
+
         let buttonItemsStr = !childs[childs.length - 1].key
           ? buttonItems(childs.splice(-1))
           : '';
         let formItemsStr = formItems(childs);
         let formChildStr = null;
+
+        console.log('rulesObj', rulesObj);
+        // 生成rules
+        if (Object.keys(rulesObj).length) {
+          formProps[':rules'] = rulesKey;
+          renderData.data[rulesKey] = renderData.data[rulesKey]
+            ? { ...renderData.data[rulesKey], ...rulesObj }
+            : rulesObj;
+        }
         if (type === 'search') {
           // 搜索组件
           // 搜索的处理，添加特定的组件
@@ -543,7 +541,26 @@ const getStyles = (type: string) => {
   const slist: any = [];
   const css = styleXML[type]();
   slist.push(css);
+  Object.entries(renderData.asyncStyle).forEach(([_, v]) => {
+    slist.push(v);
+  });
   return slist;
+};
+
+const setAsyncStyles = (cls: any) => {
+  (cls || '')
+    .toString()
+    .split(' ')
+    .filter(Boolean)
+    .forEach((c: any) => {
+      let css = generateClassStyle(c);
+      if (css) {
+        const style = `.${c} {
+          ${css};
+        }`;
+        renderData.asyncStyle[c] = style;
+      }
+    });
 };
 
 const getApis = (item: object = {}) => {
@@ -650,10 +667,11 @@ const getSourceCode = (DSL: any) => {
     renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
     renderData.methods = getMethods(DSL.methods);
     renderData.imports = getImports(DSL.imports);
-    renderData.styles = getStyles(DSL.type);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;
     renderData.template = generateTemplate(DSL);
+    // 动态生成class，有顺序要求
+    renderData.styles = getStyles(DSL.type);
     renderData.vueCode = generateVue();
     renderData.apiCode = generateApi();
     return renderData;

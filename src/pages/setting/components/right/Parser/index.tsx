@@ -1,11 +1,12 @@
 // @ts-nocheck
 import React, { Fragment, useContext, useState, useEffect } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
+import isEmpty from 'lodash/isEmpty';
 import SelectBox from '../SelectBox';
 import { Context } from '@/pages/setting/model';
-import { getUid } from '@/utils';
+import { getUid, generateClassStyle, toHump } from '@/utils';
 import { getMockListSync } from '@/utils/mock';
-import { Button, Divider } from 'antd';
+import { Button, Divider, Input } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import ComponentModal from './ComponentModal';
 import styles from './index.less';
@@ -176,13 +177,33 @@ const Parser = () => {
     }
   };
 
-  const getClassNameStr = (props: any) => {
-    const { className } = props || {};
+  const getClassNameStr = (className: any) => {
     const classStr = (className || '')
       .split(' ')
       .filter(Boolean)
-      .reduce((pre, c) => (pre ? `${pre} ${styles[c]}` : styles[c]), '');
+      .reduce(
+        (pre, c) =>
+          styles[c] ? (pre ? `${pre} ${styles[c]}` : styles[c]) : '',
+        '',
+      );
     return classStr;
+  };
+
+  const getCssInJS = (className: any) => {
+    return (className || '')
+      .split(' ')
+      .filter(Boolean)
+      .reduce((pre, c) => {
+        let css = generateClassStyle(c);
+        let k = '';
+        // console.log("css", css)
+        if (css) {
+          css = css.split(':');
+          k = toHump(css[0]);
+          pre[k] = css[1].trim();
+        }
+        return pre;
+      }, {});
   };
 
   const getDomName = (componentType: any, componentName: string) => {
@@ -220,6 +241,18 @@ const Parser = () => {
       props.allowClear = props.clearable;
       delete props.clearable;
     }
+    if (props && props.className) {
+      // 根据class名称，动态生成style
+      let style = getCssInJS(props.className);
+      if (!isEmpty(style)) {
+        props.style = style;
+      }
+      // 转换成less中已定义的class
+      let className = getClassNameStr(props.className);
+      if (className) {
+        props.className = className;
+      }
+    }
     const recursionParser = () => {
       switch (componentName) {
         case 'Form':
@@ -229,18 +262,19 @@ const Parser = () => {
           const formNodes = (children || [])
             .filter(Boolean)
             .map((item: any, i: number) => {
-              const { key, label, initialValue } = item || {};
+              const { key, label, initialValue, rules } = item || {};
               // console.log('Form item', item);
               const itemProps = {
                 name: key,
                 label,
                 initialValue: initialValue,
+                rules,
               };
               itemProps['labelCol'] = { span: 8 };
               if (!label) {
                 itemProps['wrapperCol'] = { offset: 8 };
               }
-              if (Array.isArray(item.children)) {
+              if (Array.isArray(item.children) && item.children.length > 1) {
                 delete itemProps.name;
               }
               const colProps: any = dataSource.colProps || {};
@@ -248,7 +282,6 @@ const Parser = () => {
               //   colProps.onClick = (e: any) =>
               //     handleComponentClick(e, item, uuid, i);
               // }
-
               return (
                 <Col key={i} {...colProps}>
                   <Form.Item {...itemProps}>
@@ -419,10 +452,7 @@ const Parser = () => {
               }
             });
           }
-          const className = getClassNameStr(defaultProps);
-          if (className) {
-            defaultProps.className = className;
-          }
+
           if (isEdit) {
             defaultProps.onClick = (e: any) =>
               handleComponentClick(e, componentDSL, parentUuid, index);

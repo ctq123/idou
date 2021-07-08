@@ -60,6 +60,7 @@ const DSL = {
             {
               label: '类型',
               key: 'productType',
+              rules: [{ required: true, message: '请选择类型' }],
               children: [
                 {
                   componentName: 'RadioGroup',
@@ -79,6 +80,10 @@ const DSL = {
             {
               label: '名称',
               key: 'name',
+              rules: [
+                { required: true, message: '请输入名称' },
+                { max: 10, message: '长度最大10个字符' },
+              ],
               children: [
                 {
                   componentName: 'Input',
@@ -137,7 +142,7 @@ const DSL = {
             },
             {
               label: '联系人',
-              key: 'name',
+              key: 'contactName',
               children: [
                 {
                   componentName: 'Input',
@@ -186,7 +191,7 @@ const DSL = {
       componentType: 'native',
       props: {
         slot: 'footer',
-        className: 'df aic fe right',
+        className: 'df aic jcfe right',
       },
       isEdit: true,
       children: [

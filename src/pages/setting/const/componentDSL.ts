@@ -140,13 +140,32 @@ const componentList: any = [
         {
           label: '名称',
           key: 'name',
+          rules: [{ required: true, message: '请输入名称' }],
           children: [
             {
               componentName: 'Input',
               props: {
-                placeholder: '请输入',
+                placeholder: '请输入名称',
                 clearable: true,
               },
+            },
+          ],
+        },
+        {
+          label: '状态',
+          key: 'status',
+          children: [
+            {
+              componentName: 'Select',
+              props: {
+                placeholder: '请选择状态',
+                clearable: true,
+                className: 'w-100',
+              },
+              options: [
+                { value: '1', label: '选项1' },
+                { value: '2', label: '选项2' },
+              ],
             },
           ],
         },

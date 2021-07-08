@@ -122,6 +122,7 @@ const Setting = (props: IProps) => {
                 const obj: any = {
                   key: item.key,
                   label: item.label,
+                  rules: item.rules,
                 };
                 if (Array.isArray(item.children) && item.children.length) {
                   const name = item.children[0].componentName || '';
@@ -318,8 +319,11 @@ const Setting = (props: IProps) => {
           let formChild = [];
           if (configs.length) {
             formChild = configs.map((item: any, i: number) => {
-              const { key, label, children: child } = item;
+              const { key, label, children: child, rules } = item;
               const obj: any = { key, label };
+              if (rules) {
+                obj['rules'] = rules;
+              }
               if (child) {
                 obj['children'] = child;
               }
