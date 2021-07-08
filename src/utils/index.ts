@@ -115,19 +115,19 @@ export const generateClassStyle = (cls: string) => {
   let style = '';
   cls = cls.trim();
   if (cls) {
-    const preS: any = {
+    const spacePre: any = {
       p: 'padding',
       m: 'margin',
       h: 'height',
       w: 'width',
     };
-    const fixD: any = {
+    const spaceFix: any = {
       t: '-top',
       b: '-bottom',
       l: '-left',
       r: '-right',
     };
-    const preF: any = {
+    const fontPre: any = {
       fs: 'font-size',
       fw: 'font-weight',
     };
@@ -136,6 +136,10 @@ export const generateClassStyle = (cls: string) => {
       jcsb: 'justify-content: space-between',
       aic: 'align-items: center',
       jcfe: 'justify-content: flex-end',
+    };
+    const colorPre: any = {
+      c: 'color',
+      bgc: 'background-color',
     };
 
     const getStyle = (reg: any, str: any, pre: any, fix: any) => {
@@ -158,23 +162,39 @@ export const generateClassStyle = (cls: string) => {
       }
       return '';
     };
+    const getColorStyle = (reg: any, str: any, pre: any) => {
+      const ex = reg.exec(str);
+      if (ex) {
+        if (ex.length === 3) {
+          if (/^([0-9]|[A-F]|[0-9A-F])+$/gi.test(ex[2])) {
+            return `${pre[ex[1]]}: #${ex[2]}`;
+          }
+          return `${pre[ex[1]]}: ${ex[2]}`;
+        }
+      }
+      return '';
+    };
     // 处理flex布局
     if (flex[cls]) return flex[cls];
 
     // 处理内外间距宽高值，w100表示width: 100px
-    style = getStyle(/^(p|m|h|w)(\d+)$/, cls, preS, fixD);
+    style = getStyle(/^(p|m|h|w)(\d+)$/, cls, spacePre, spaceFix);
     if (style) return style;
 
     // 处理百分比，w-100表示width: 100%
-    style = getStyle(/^(p|m|h|w)(-)(\d+)$/, cls, preS, fixD);
+    style = getStyle(/^(p|m|h|w)(-)(\d+)$/, cls, spacePre, spaceFix);
     if (style) return style;
 
     // 处理单一内外间距，pr100表示padding-right: 100px
-    style = getStyle(/^(p|m)(r|l|t|b)(\d+)$/, cls, preS, fixD);
+    style = getStyle(/^(p|m)(r|l|t|b)(\d+)$/, cls, spacePre, spaceFix);
     if (style) return style;
 
-    // 处理单一内外间距，pr100表示padding-right: 100px
-    style = getStyle(/^(fw|fs)(\d+)$/, cls, preF, fixD);
+    // 处理字体，fs16表示font-size: 16px
+    style = getStyle(/^(fw|fs)(\d+)$/, cls, fontPre, spaceFix);
+    if (style) return style;
+
+    // 处理颜色，c-fff表示color: #fff
+    style = getColorStyle(/^(c|bgc)-(\w+)$/, cls, colorPre);
     if (style) return style;
   }
   return style;
