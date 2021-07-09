@@ -30,6 +30,7 @@ let renderData: any = {
   data: {},
   computed: [],
   methods: [],
+  asyncMethod: {},
   lifecycles: [],
   styles: [],
   asyncStyle: {},
@@ -44,8 +45,6 @@ const lifeCycleMap: any = {
   componentDidUpdate: 'updated',
   componentWillUnmount: 'beforeDestroy',
 };
-
-const allMethodKeys: any = [];
 
 // 通用事件
 const commonFunc = [
@@ -67,6 +66,7 @@ const initData = () => {
     data: {},
     computed: [],
     methods: [],
+    asyncMethod: {},
     lifecycles: [],
     styles: [],
     asyncStyle: {},
@@ -136,7 +136,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                   renderData.data[formDataKey][key] =
                     initValue !== undefined ? initValue : '';
                 }
-                console.log('rules', rules);
+                // console.log('rules', rules);
                 // 生成rules
                 if (Array.isArray(rules)) {
                   rulesObj[key] = rules;
@@ -171,7 +171,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         let formItemsStr = formItems(childs);
         let formChildStr = null;
 
-        console.log('rulesObj', rulesObj);
         // 生成rules
         if (Object.keys(rulesObj).length) {
           formProps[':rules'] = rulesKey;
@@ -534,6 +533,9 @@ const getMethods = (item: object = {}) => {
     const { newFunc } = transformFunc(v);
     mlist.push(newFunc);
   });
+  Object.entries(renderData.asyncMethod).forEach(([_, v]) => {
+    mlist.push(v);
+  });
   return mlist;
 };
 
@@ -593,10 +595,7 @@ const getEventStr = (item: object, extraMap: any = {}) => {
         // 特定的函数事件
         funcStr += `${extraMap[k]}="${newFuncName}"`;
       }
-      if (!allMethodKeys.includes(newFuncName)) {
-        renderData.methods.push(newFunc);
-        allMethodKeys.push(newFuncName);
-      }
+      renderData.asyncMethod[newFuncName] = newFunc;
     }
   });
   return funcStr;
@@ -623,10 +622,7 @@ const checkFuncStr = (str: string) => {
       } else {
         func += '() { }';
       }
-      if (!allMethodKeys.includes(funcName)) {
-        renderData.methods.push(func);
-        allMethodKeys.push(funcName);
-      }
+      renderData.asyncMethod[funcName] = func;
       checkFuncStr(s);
     }
   }
@@ -665,13 +661,13 @@ const getSourceCode = (DSL: any) => {
     renderData.componentProps = getPageProps(DSL.componentProps);
     renderData.computed = getComputed(DSL.computed);
     renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
-    renderData.methods = getMethods(DSL.methods);
     renderData.imports = getImports(DSL.imports);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;
     renderData.template = generateTemplate(DSL);
     // 动态生成class，有顺序要求
     renderData.styles = getStyles(DSL.type);
+    renderData.methods = getMethods(DSL.methods);
     renderData.vueCode = generateVue();
     renderData.apiCode = generateApi();
     return renderData;
