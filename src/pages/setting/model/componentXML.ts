@@ -121,6 +121,9 @@ export const styleXML: any = {
         flex: 1;
         min-width: 0;
       }
+      .tar {
+        text-align: right;
+      }
     }
     `;
   },
