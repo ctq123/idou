@@ -214,7 +214,7 @@ const DSL = {
                   label: '商品信息',
                   minWidth: 250,
                   render: `<div class="goods-info df aic">
-                  <div class="pro-img df aic oh bc_fff mr12">
+                  <div class="pro-img df aic oh bgc-fff mr12">
                     <el-popover
                       placement="right"
                       trigger="hover"

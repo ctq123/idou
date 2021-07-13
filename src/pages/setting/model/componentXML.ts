@@ -110,9 +110,6 @@ export const styleXML: any = {
     .page-container {
       box-sizing: border-box;
       font-family: PingFangSC-Regular;
-      .bc_fff {
-        background-color: #ffffff;
-      }
       .bshadow {
         border-radius: 2px;
         box-shadow: 0px 2px 4px 0px #0000001a;
@@ -174,9 +171,6 @@ export const styleXML: any = {
         flex: 1;
         min-width: 0;
       }
-      .bc_fff {
-        background-color: #ffffff;
-      }
       .bshadow {
         border-radius: 2px;
         box-shadow: 0px 2px 4px 0px #0000001a;
@@ -225,9 +219,6 @@ export const styleXML: any = {
         flex: 1;
         min-width: 0;
       }
-      .bc_fff {
-        background-color: #ffffff;
-      }
       .bshadow {
         border-radius: 2px;
         box-shadow: 0px 2px 4px 0px #0000001a;
@@ -274,9 +265,6 @@ export const styleXML: any = {
       .f1 {
         flex: 1;
         min-width: 0;
-      }
-      .bc_fff {
-        background-color: #ffffff;
       }
       .bshadow {
         border-radius: 2px;

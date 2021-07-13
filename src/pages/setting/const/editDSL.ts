@@ -19,7 +19,7 @@ const DSL = {
       componentName: 'div',
       componentType: 'native',
       props: {
-        className: 'pl24 pr24 pb24 pt24 mt24 bc_fff bshadow edit-content',
+        className: 'pl24 pr24 pb24 pt24 mt24 bgc-fff bshadow edit-content',
       },
       children: [
         {

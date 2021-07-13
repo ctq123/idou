@@ -10,7 +10,7 @@ const DSL = {
       componentName: 'div',
       componentType: 'native',
       props: {
-        className: 'bc_fff bshadow pl24 pb6 pr24 pt24',
+        className: 'bgc-fff bshadow pl24 pb6 pr24 pt24',
       },
       children: [
         {
@@ -150,7 +150,7 @@ const DSL = {
       componentName: 'div',
       componentType: 'native',
       props: {
-        className: 'pl24 pr24 pb24 mt24 bc_fff bshadow',
+        className: 'pl24 pr24 pb24 mt24 bgc-fff bshadow',
       },
       children: [
         {
