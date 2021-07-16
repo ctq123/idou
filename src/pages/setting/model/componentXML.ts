@@ -118,6 +118,9 @@ export const styleXML: any = {
         flex: 1;
         min-width: 0;
       }
+      .lh50 {
+        line-height: 50px;
+      }
       .tar {
         text-align: right;
       }
