@@ -179,23 +179,31 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             : rulesObj;
         }
         if (type === 'search') {
-          // 搜索组件
-          // 搜索的处理，添加特定的组件
+          // // 搜索组件
+          // // 搜索的处理，添加特定的组件
+          // buttonItemsStr = VueXML.CreateDom(
+          //   'template',
+          //   `v-slot:doBox`,
+          //   buttonItemsStr,
+          // );
+          // formItemsStr = VueXML.CreateDom(
+          //   'template',
+          //   `v-slot:content`,
+          //   formItemsStr,
+          // );
+          // formChildStr = VueXML.CreateDom(
+          //   'flex-search',
+          //   '',
+          //   `${formItemsStr}\n${buttonItemsStr}`,
+          // );
+
+          buttonItemsStr = VueXML.CreateDom('el-form-item', '', buttonItemsStr);
           buttonItemsStr = VueXML.CreateDom(
-            'template',
-            `v-slot:doBox`,
+            'el-col',
+            `v-bind="colProps"`,
             buttonItemsStr,
           );
-          formItemsStr = VueXML.CreateDom(
-            'template',
-            `v-slot:content`,
-            formItemsStr,
-          );
-          formChildStr = VueXML.CreateDom(
-            'flex-search',
-            '',
-            `${formItemsStr}\n${buttonItemsStr}`,
-          );
+          formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
         } else {
           // 普通输入组件
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
