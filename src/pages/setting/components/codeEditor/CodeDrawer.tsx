@@ -18,12 +18,22 @@ const CodeDrawer = (props: IProps) => {
 
   const onClose = () => {
     handleCB && handleCB({ visible: false });
+    gtag('event', 'onClose', {
+      event_category: 'CodeDrawer',
+      event_label: '关闭',
+      value: 1,
+    });
   };
 
   const handleSave = () => {
     const code = codeRef.current.getEditorValue();
     console.log('code', code);
     handleCB && handleCB({ visible: false, code });
+    gtag('event', 'handleSave', {
+      event_category: 'CodeDrawer',
+      event_label: '保存',
+      value: 1,
+    });
   };
   const titleNode = () => (
     <div className={styles['title-con']}>
@@ -31,6 +41,7 @@ const CodeDrawer = (props: IProps) => {
       <div>
         <Tooltip title="保存">
           <Button
+            id={'btn-code-drawer-save'}
             type="link"
             icon={<SaveOutlined />}
             onClick={() => handleSave()}

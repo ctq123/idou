@@ -30,6 +30,11 @@ const CodeModal = (props: IProps) => {
         handleHideCB(configs);
       })
       .catch(() => {});
+    gtag('event', 'handleSave', {
+      event_category: 'CodeModal',
+      event_label: '确定',
+      value: 1,
+    });
   };
 
   const handleHideCB = (configs = null) => {
@@ -38,6 +43,11 @@ const CodeModal = (props: IProps) => {
     }
     const list = (configs || []).filter(Boolean);
     handleCB && handleCB({ visible: false, list });
+    gtag('event', 'handleHideCB', {
+      event_category: 'CodeModal',
+      event_label: '关闭',
+      value: 1,
+    });
   };
 
   return (

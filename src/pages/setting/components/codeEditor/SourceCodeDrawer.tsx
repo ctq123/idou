@@ -91,6 +91,7 @@ const SourceCodeDrawer = (props: IProps) => {
       <div>
         <Tooltip title="复制">
           <Button
+            id={'btn-copy-code'}
             type="link"
             icon={<CopyOutlined />}
             onClick={() => handleCopy()}
@@ -98,6 +99,7 @@ const SourceCodeDrawer = (props: IProps) => {
         </Tooltip>
         <Tooltip title="下载">
           <Button
+            id={'btn-download-code'}
             type="link"
             icon={<DownloadOutlined />}
             onClick={() => handleDown()}
@@ -135,6 +137,7 @@ const SourceCodeDrawer = (props: IProps) => {
         onCancel={() => setModalVisible(false)}
         footer={[
           <Button
+            id={'btn-download-zip'}
             key="submit"
             type="primary"
             htmlType="submit"
@@ -143,6 +146,7 @@ const SourceCodeDrawer = (props: IProps) => {
             下载
           </Button>,
           <Button
+            id={'btn-download-zip-cancel'}
             key="cancel"
             type="default"
             htmlType="submit"
@@ -165,6 +169,7 @@ const SourceCodeDrawer = (props: IProps) => {
             ]}
           >
             <Input
+              id={'input-folder-name'}
               placeholder="请输入文件夹名称，子文件夹使用/分隔"
               allowClear
             />

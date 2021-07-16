@@ -87,6 +87,12 @@ const Parser = () => {
           },
         },
       });
+      gtag('event', 'handleComponentClick', {
+        event_category: 'Parser',
+        event_action: `点击组件`,
+        event_label: `${item.componentName}`,
+        value: 1,
+      });
     } catch (e) {}
   };
 

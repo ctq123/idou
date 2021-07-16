@@ -35,10 +35,19 @@ const CodeModal = (props: IProps) => {
         // <Button key="back" onClick={() => handleClear()}>
         //   清空
         // </Button>,
-        <Button key="back" onClick={() => handleSave()}>
+        <Button
+          id={'btn-code-modal-cancel'}
+          key="back"
+          onClick={() => handleSave()}
+        >
           取消
         </Button>,
-        <Button key="submit" type="primary" onClick={() => handleSave()}>
+        <Button
+          id={'btn-code-modal-save'}
+          key="submit"
+          type="primary"
+          onClick={() => handleSave()}
+        >
           确定
         </Button>,
       ]}
