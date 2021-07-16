@@ -46,12 +46,17 @@ const Left = () => {
     }
   };
 
-  const selectTemplate = (code: any) => {
+  const selectTemplate = (item: any) => {
     appContext.dispatch({
       type: 'dsl/type/update',
       data: {
-        dslType: code,
+        dslType: item.code,
       },
+    });
+    gtag('event', 'selectTemplate', {
+      event_category: 'Left',
+      event_label: `${item.label}`,
+      value: 1,
     });
   };
 
@@ -66,10 +71,15 @@ const Left = () => {
     }
   };
 
-  const addComponent = (com: any) => {
+  const addComponent = (item: any) => {
     // const { index, parentUuid, item } = selectedComponent || {}
     // TODO 处理点击事件
     message.warn('功能尚在开发中……');
+    gtag('event', 'addComponent', {
+      event_category: 'Left',
+      event_label: `${item.name}`,
+      value: 1,
+    });
   };
 
   const generateTabPane = () => {
@@ -79,13 +89,14 @@ const Left = () => {
           <div className={styles['template']}>
             {(templates || []).map((item, i) => (
               <div
+                id={'tab-template-' + item.code}
                 key={i}
                 className={
                   tmpl === item.code
                     ? `${styles['active-item']} ${styles['item']}`
                     : styles['item']
                 }
-                onClick={() => selectTemplate(item.code)}
+                onClick={() => selectTemplate(item)}
               >
                 <img alt="图片" src={item.img} />
                 <div className={styles['title']}>{item.label}</div>
@@ -98,6 +109,7 @@ const Left = () => {
           <div className={styles['component']}>
             {(ModuleComponents || []).map((item: any, i: number) => (
               <div
+                id={'tab-component-' + item.key}
                 key={i}
                 className={styles['item']}
                 onClick={() => addComponent(item)}
@@ -143,7 +155,7 @@ const Left = () => {
       <div className={styles['content-box']}>
         <Tabs activeKey={tab} onChange={(k) => setTab(k)}>
           {(tabs || []).map((item, i) => (
-            <TabPane tab={item.label} key={item.code}>
+            <TabPane id={'tab-' + item.code} tab={item.label} key={item.code}>
               {generateTabPane()}
             </TabPane>
           ))}

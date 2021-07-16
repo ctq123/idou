@@ -36,7 +36,11 @@ const CodePopover = (props: IProps) => {
       }}
     >
       <div>{props.title || '编辑'}</div>
-      <Button type="link" onClick={() => handleSave()}>
+      <Button
+        id={'btn-code-popover-save'}
+        type="link"
+        onClick={() => handleSave()}
+      >
         保存
       </Button>
     </div>

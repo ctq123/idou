@@ -162,10 +162,11 @@ const Request = (props: any) => {
         </Form.Item>
 
         <Form.Item style={{ marginTop: 8 }}>
-          <Button type="primary" htmlType="submit">
+          <Button id={'btn-request-submit'} type="primary" htmlType="submit">
             提交
           </Button>
           <Button
+            id={'btn-request-edit'}
             style={{ marginLeft: 8 }}
             type="primary"
             danger

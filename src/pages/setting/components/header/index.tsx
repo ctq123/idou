@@ -3,7 +3,6 @@ import { Button, message, Tooltip } from 'antd';
 import { MobileOutlined, LaptopOutlined, EyeOutlined } from '@ant-design/icons';
 import { Context } from '@/pages/setting/model';
 import SourceCodeDrawer from '../codeEditor/SourceCodeDrawer';
-import { deserialize } from '@/utils';
 import styles from './index.less';
 
 const Header = () => {
@@ -27,6 +26,11 @@ const Header = () => {
       type: 'generate/vue',
       data: {},
     });
+    gtag('event', 'handleGenerate', {
+      event_category: 'Header',
+      event_label: '生成源码',
+      value: 1,
+    });
   };
 
   const handleCodeCB = (obj: any) => {
@@ -36,6 +40,29 @@ const Header = () => {
 
   const handleMobile = () => {
     message.warn('功能尚在开发中……');
+    gtag('event', 'handleMobile', {
+      event_category: 'Header',
+      event_action: '点击切换',
+      event_label: '移动端',
+      value: 1,
+    });
+  };
+  const handleLaptop = () => {
+    message.warn('功能尚在开发中……');
+    gtag('event', 'handleLaptop', {
+      event_category: 'Header',
+      event_action: '点击切换',
+      event_label: 'pc',
+      value: 1,
+    });
+  };
+  const handleView = () => {
+    message.warn('功能尚在开发中……');
+    gtag('event', 'handleView', {
+      event_category: 'Header',
+      event_label: '预览',
+      value: 1,
+    });
   };
 
   return (
@@ -56,18 +83,23 @@ const Header = () => {
         <Button
           type="link"
           icon={<LaptopOutlined />}
-          onClick={() => handleMobile()}
+          onClick={() => handleLaptop()}
         ></Button>
       </div>
       <div className={styles['h-right']}>
         <Tooltip title="预览">
           <Button
+            id={'btn-view'}
             type="link"
             icon={<EyeOutlined />}
-            onClick={() => handleMobile()}
+            onClick={() => handleView()}
           ></Button>
         </Tooltip>
-        <Button type="primary" onClick={() => handleGenerate()}>
+        <Button
+          type="primary"
+          id={'btn-generate-code'}
+          onClick={() => handleGenerate()}
+        >
           生成源码
         </Button>
         <SourceCodeDrawer

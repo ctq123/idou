@@ -156,7 +156,7 @@ const Setting = (props: IProps) => {
         setCodeValue(props.component);
       } else {
         const configs = form.getFieldValue('configs');
-        const { label, key, type, children: child } = configs[index];
+        const { label, key, type, children: child } = configs[index] || {};
         if (!type) return;
         const target = {
           ...children[index],
@@ -170,7 +170,8 @@ const Setting = (props: IProps) => {
       // 自定义渲染函数
       const configs = form.getFieldValue('configs');
       const target = configs[index];
-      const { renderKey, key, objKey } = target;
+      const { renderKey, key, objKey } = target || {};
+      if (!key) return;
       let rkey = renderKey;
       let value = '';
       if (rkey === 'renderCustom' && target.render) {
@@ -184,6 +185,20 @@ const Setting = (props: IProps) => {
     setCodeKey(index);
     setCodeType(codeType);
     setVisible(true);
+    if (index === -1) {
+      gtag('event', 'handleShowCode', {
+        event_category: 'Setting',
+        event_action: `编辑`,
+        event_label: `${componentName}`,
+        value: 1,
+      });
+    } else {
+      gtag('event', 'handleShowCode', {
+        event_category: 'Setting',
+        event_label: `${codeType}`,
+        value: index,
+      });
+    }
   };
 
   const handleCodeCB = (obj: any) => {
@@ -254,6 +269,12 @@ const Setting = (props: IProps) => {
     } else {
       configs[i].children = undefined;
     }
+    gtag('event', 'handleTypeChange', {
+      event_category: 'Setting',
+      event_action: `类型变更`,
+      event_label: `${comType}`,
+      value: i,
+    });
   };
 
   const handleRenderChange = (comType: any, i: number) => {
@@ -269,6 +290,12 @@ const Setting = (props: IProps) => {
         contentType: 'renderEnum',
       });
     }
+    gtag('event', 'handleRenderChange', {
+      event_category: 'Setting',
+      event_action: `类型变更`,
+      event_label: `${comType}`,
+      value: i,
+    });
   };
 
   const onFinish = (values: any) => {
@@ -358,6 +385,12 @@ const Setting = (props: IProps) => {
       component['uuid'] = getUid(); // 更新uuid，让监听uuid变化的组件都能同步更新
       props.handleCB && props.handleCB(component);
       message.success('更新成功！');
+      gtag('event', 'onFinish', {
+        event_category: 'Setting',
+        event_action: `提交`,
+        event_label: `${componentName}`,
+        value: 1,
+      });
     }
   };
 
@@ -657,10 +690,11 @@ const Setting = (props: IProps) => {
         </Form.List>
         {props.component && (
           <Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button id={'btn-setting-submit'} type="primary" htmlType="submit">
               提交
             </Button>
             <Button
+              id={'btn-setting-edit'}
               style={{ marginLeft: 8 }}
               type="primary"
               danger
