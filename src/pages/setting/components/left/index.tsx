@@ -96,7 +96,7 @@ const Left = () => {
                     ? `${styles['active-item']} ${styles['item']}`
                     : styles['item']
                 }
-                onClick={() => selectTemplate(item.code)}
+                onClick={() => selectTemplate(item)}
               >
                 <img alt="图片" src={item.img} />
                 <div className={styles['title']}>{item.label}</div>
