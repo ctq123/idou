@@ -18,6 +18,11 @@ const CodeModal = (props: IProps) => {
     const code = codeRef.current.getEditorValue();
     console.log('code', code);
     handleCB && handleCB({ visible: false, code });
+    gtag('event', 'handleSave', {
+      event_category: 'CodeModal',
+      event_label: `确定`,
+      value: 1,
+    });
   };
 
   const handleClear = () => {

@@ -37,6 +37,11 @@ const SourceCodeDrawer = (props: IProps) => {
 
   const onClose = () => {
     handleCB && handleCB({ visible: false });
+    gtag('event', 'onClose', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `关闭源码`,
+      value: 1,
+    });
   };
 
   const handleCopy = () => {
@@ -50,10 +55,20 @@ const SourceCodeDrawer = (props: IProps) => {
       message.error('复制异常');
       console.error(e);
     }
+    gtag('event', 'handleCopy', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `复制源码`,
+      value: 1,
+    });
   };
   const handleDown = () => {
     form.resetFields();
     setModalVisible(true);
+    gtag('event', 'handleDown', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `显示源码文件夹设置`,
+      value: 1,
+    });
   };
   const handleDownloadCode = (folderName: string, cb: any) => {
     try {
@@ -79,6 +94,11 @@ const SourceCodeDrawer = (props: IProps) => {
       message.error('下载异常');
       console.error(e);
     }
+    gtag('event', 'onFinish', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `下载源码`,
+      value: 1,
+    });
   };
   const onFinish = async () => {
     const values = await form.validateFields();
