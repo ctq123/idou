@@ -18,19 +18,39 @@ const SelectBox = (props: IProps) => {
   return (
     <div className={styles['select-box']} style={style}>
       <div className={styles['top']}>
-        <span title="上移" onClick={() => handleCB('up')}>
+        <span
+          title="上移"
+          id={'select-action-up'}
+          onClick={() => handleCB('up')}
+        >
           <ArrowUpOutlined />
         </span>
-        <span title="下移" onClick={() => handleCB('down')}>
+        <span
+          title="下移"
+          id={'select-action-down'}
+          onClick={() => handleCB('down')}
+        >
           <ArrowDownOutlined />
         </span>
-        <span title="添加" onClick={() => handleCB('add')}>
+        <span
+          title="添加"
+          id={'select-action-add'}
+          onClick={() => handleCB('add')}
+        >
           <PlusOutlined />
         </span>
-        <span title="复制" onClick={() => handleCB('copy')}>
+        <span
+          title="复制"
+          id={'select-action-copy'}
+          onClick={() => handleCB('copy')}
+        >
           <CopyOutlined />
         </span>
-        <span title="删除" onClick={() => handleCB('delete')}>
+        <span
+          title="删除"
+          id={'select-action-delete'}
+          onClick={() => handleCB('delete')}
+        >
           <DeleteOutlined />
         </span>
       </div>

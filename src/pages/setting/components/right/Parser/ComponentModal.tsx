@@ -62,6 +62,7 @@ const ComponentModal = (props: IProps) => {
     >
       <div className={styles['modal-content']}>
         <Search
+          id={'search-component-modal'}
           placeholder="请输入搜索"
           allowClear
           enterButton="搜索"
@@ -72,6 +73,7 @@ const ComponentModal = (props: IProps) => {
         <div className={styles['component']}>
           {(list || []).map((item: any) => (
             <div
+              id={'component-modal-item-' + item.key}
               key={item.key}
               className={
                 selectedItem && item.key === selectedItem.key

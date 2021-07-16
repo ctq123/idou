@@ -18,6 +18,11 @@ const CodeModal = (props: IProps) => {
     const code = codeRef.current.getEditorValue();
     console.log('code', code);
     handleCB && handleCB({ visible: false, code });
+    gtag('event', 'handleSave', {
+      event_category: 'CodeModal',
+      event_label: `确定`,
+      value: 1,
+    });
   };
 
   const handleClear = () => {
@@ -35,10 +40,19 @@ const CodeModal = (props: IProps) => {
         // <Button key="back" onClick={() => handleClear()}>
         //   清空
         // </Button>,
-        <Button key="back" onClick={() => handleSave()}>
+        <Button
+          id={'btn-code-modal-cancel'}
+          key="back"
+          onClick={() => handleSave()}
+        >
           取消
         </Button>,
-        <Button key="submit" type="primary" onClick={() => handleSave()}>
+        <Button
+          id={'btn-code-modal-save'}
+          key="submit"
+          type="primary"
+          onClick={() => handleSave()}
+        >
           确定
         </Button>,
       ]}

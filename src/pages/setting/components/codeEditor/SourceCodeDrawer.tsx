@@ -37,6 +37,11 @@ const SourceCodeDrawer = (props: IProps) => {
 
   const onClose = () => {
     handleCB && handleCB({ visible: false });
+    gtag('event', 'onClose', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `关闭源码`,
+      value: 1,
+    });
   };
 
   const handleCopy = () => {
@@ -50,10 +55,20 @@ const SourceCodeDrawer = (props: IProps) => {
       message.error('复制异常');
       console.error(e);
     }
+    gtag('event', 'handleCopy', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `复制源码`,
+      value: 1,
+    });
   };
   const handleDown = () => {
     form.resetFields();
     setModalVisible(true);
+    gtag('event', 'handleDown', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `显示源码文件夹设置`,
+      value: 1,
+    });
   };
   const handleDownloadCode = (folderName: string, cb: any) => {
     try {
@@ -79,6 +94,11 @@ const SourceCodeDrawer = (props: IProps) => {
       message.error('下载异常');
       console.error(e);
     }
+    gtag('event', 'onFinish', {
+      event_category: 'SourceCodeDrawer',
+      event_label: `下载源码`,
+      value: 1,
+    });
   };
   const onFinish = async () => {
     const values = await form.validateFields();
@@ -91,6 +111,7 @@ const SourceCodeDrawer = (props: IProps) => {
       <div>
         <Tooltip title="复制">
           <Button
+            id={'btn-copy-code'}
             type="link"
             icon={<CopyOutlined />}
             onClick={() => handleCopy()}
@@ -98,6 +119,7 @@ const SourceCodeDrawer = (props: IProps) => {
         </Tooltip>
         <Tooltip title="下载">
           <Button
+            id={'btn-download-code'}
             type="link"
             icon={<DownloadOutlined />}
             onClick={() => handleDown()}
@@ -135,6 +157,7 @@ const SourceCodeDrawer = (props: IProps) => {
         onCancel={() => setModalVisible(false)}
         footer={[
           <Button
+            id={'btn-download-zip'}
             key="submit"
             type="primary"
             htmlType="submit"
@@ -143,6 +166,7 @@ const SourceCodeDrawer = (props: IProps) => {
             下载
           </Button>,
           <Button
+            id={'btn-download-zip-cancel'}
             key="cancel"
             type="default"
             htmlType="submit"
@@ -165,6 +189,7 @@ const SourceCodeDrawer = (props: IProps) => {
             ]}
           >
             <Input
+              id={'input-folder-name'}
               placeholder="请输入文件夹名称，子文件夹使用/分隔"
               allowClear
             />
