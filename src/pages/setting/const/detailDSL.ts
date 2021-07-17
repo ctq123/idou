@@ -296,7 +296,7 @@ const DSL = {
     }`,
   },
   lifeCycle: {
-    componentDidMount: `function componentDidMount() {
+    mounted: `function mounted() {
       this.getRecordDetail();
     }`,
   },

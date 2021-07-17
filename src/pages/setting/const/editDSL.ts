@@ -304,7 +304,7 @@ const DSL = {
     submitLoading: false,
   },
   lifeCycle: {
-    componentDidMount: `function componentDidMount() {
+    mounted: `function mounted() {
       this.getRecordDetail();
     }`,
     beforeRouteLeave: `function beforeRouteLeave(to, from, next) {

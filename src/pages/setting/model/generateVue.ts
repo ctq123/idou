@@ -39,11 +39,10 @@ let renderData: any = {
 };
 
 const lifeCycleMap: any = {
-  constructor: 'created',
-  getDerivedStateFromProps: 'beforeUpdate',
-  componentDidMount: 'mounted',
-  componentDidUpdate: 'updated',
-  componentWillUnmount: 'beforeDestroy',
+  created: 'created',
+  mounted: 'mounted',
+  updated: 'updated',
+  beforeDestroy: 'beforeDestroy',
 };
 
 // 通用事件
