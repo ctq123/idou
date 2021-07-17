@@ -63,6 +63,49 @@ export const VueXML: any = {
 };
 
 /**
+ * react-组件源码片段
+ */
+export const ReactXML: any = {
+  ReactTemplate: (renderData: any) => {
+    return `
+    import React, { useEffect, useState } from 'react'
+    ${renderData.imports.join('\n')}
+
+    const Index = (props) => {
+      ${renderData.lifecycles.join('\n')}
+      ${renderData.methods.join('\n')}
+
+      return (
+        ${renderData.template}
+      )
+    }
+    `;
+  },
+  CrumbBack: (attrStr: any, childStr: any) => {
+    return `
+    <div class="go-back">
+      <i class="el-icon-back" ${attrStr}></i>
+      <span class="bread">${childStr}</span>
+    </div>
+    `;
+  },
+  StatusTag: (status: any, tagObj: any) => {
+    return `<el-tag
+      v-if="${tagObj}[${status}]"
+      :type="(${tagObj}[${status}] || {}).tag"
+    >
+      {{ (${tagObj}[${status}] || {}).value }}
+    </el-tag>
+    `;
+  },
+  CreateDom: (name: any, attrStr: any, childStr: any) => {
+    return `<${name} ${attrStr}>
+    ${childStr}
+    </${name}>`;
+  },
+};
+
+/**
  * 表格渲染函数-源码片段
  */
 export const VueTableRenderXML: any = {
