@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-06-14 01:33:29
- * @LastEditTime: 2021-06-27 02:49:10
+ * @LastEditTime: 2021-07-17 20:23:28
  * @LastEditors: chengtianqing
  * @Description:
  */
@@ -40,7 +40,7 @@ const colRenderObj: any = {
   renderTime: '时间',
   renderAmount: '金额',
   renderEnum: '状态',
-  renderEllipsis: '超长文本',
+  // renderEllipsis: '超长文本',
   renderCustom: '自定义',
   renderOperate: '操作',
   renderDefault: '默认',
