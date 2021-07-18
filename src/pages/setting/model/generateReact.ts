@@ -1,18 +1,23 @@
 import { message } from 'antd';
 
-import { VueXML, styleXML, VueTableRenderXML } from './componentXML';
+import { ReactXML, styleXML, VueTableRenderXML } from './componentXML';
 import { prettierFormat, transformFunc, generateClassStyle } from '@/utils';
 import isFunction from 'lodash/isFunction';
+import { render } from 'react-dom';
 
-/**
- * element-ui的前缀
- */
-const elementUI = 'el';
+// /**
+//  * element-ui的前缀
+//  */
+// const elementUI = '';
 
 let renderData: any = {
   vueCode: '',
   template: '',
   imports: [],
+  asyncImport: {},
+  constOptions: [],
+  constImport: {},
+  formRefMap: {},
   componentProps: [],
   data: {},
   computed: [],
@@ -48,6 +53,10 @@ const initData = () => {
     vueCode: '',
     template: '',
     imports: [],
+    asyncImport: {},
+    constOptions: [],
+    constImport: {},
+    formRefMap: {},
     componentProps: [],
     data: {},
     computed: [],
@@ -68,6 +77,7 @@ const getDomName = (componentType: any, componentName: string) => {
       return componentName.toLowerCase();
     case 'custom':
     default:
+      setAsyncImport(componentName);
       return componentName;
   }
 };
@@ -89,12 +99,16 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     switch (componentName) {
       case 'Form':
         const formDataKey = dataKey || 'form';
-        const rulesKey = formDataKey + 'Rules';
-        const rulesObj: any = {};
+        const formRefKey = formDataKey + 'Ref';
         // 解决多个form公用数据问题
         renderData.data[formDataKey] = renderData.data[formDataKey]
           ? { ...renderData.data[formDataKey] }
           : {};
+
+        setAsyncImport('Form');
+        setAsyncImport('Row');
+        setAsyncImport('Col');
+        renderData.formRefMap[formRefKey] = formRefKey;
 
         const childs = children || [];
         const buttonItems = (list: any) =>
@@ -123,30 +137,26 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 // console.log('rules', rules);
                 // 生成rules
                 if (Array.isArray(rules)) {
-                  rulesObj[key] = rules;
+                  itemProps['rules'] = rules;
                 }
               }
               let itemChildren = (item.children || [])
                 .map((child: any) => generateTemplate(child, vmodel))
                 .join('');
 
-              itemChildren = VueXML.CreateDom(
-                'el-form-item',
+              itemChildren = ReactXML.CreateDom(
+                'Form.Item',
                 getPropsStr(itemProps),
                 itemChildren,
               );
-              return VueXML.CreateDom(
-                'el-col',
-                `v-bind="colProps"`,
-                itemChildren,
-              );
+
+              return ReactXML.CreateDom('Col', `{ ...colProps }`, itemChildren);
             })
             .join('\n');
 
         const formProps = {
           ...props,
-          ':model': formDataKey,
-          ref: formDataKey,
+          form: `{${formRefKey}}`,
         };
 
         let buttonItemsStr = !childs[childs.length - 1].key
@@ -155,36 +165,12 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         let formItemsStr = formItems(childs);
         let formChildStr = null;
 
-        // 生成rules
-        if (Object.keys(rulesObj).length) {
-          formProps[':rules'] = rulesKey;
-          renderData.data[rulesKey] = renderData.data[rulesKey]
-            ? { ...renderData.data[rulesKey], ...rulesObj }
-            : rulesObj;
-        }
         if (type === 'search') {
-          // // 搜索组件
-          // // 搜索的处理，添加特定的组件
-          // buttonItemsStr = VueXML.CreateDom(
-          //   'template',
-          //   `v-slot:doBox`,
-          //   buttonItemsStr,
-          // );
-          // formItemsStr = VueXML.CreateDom(
-          //   'template',
-          //   `v-slot:content`,
-          //   formItemsStr,
-          // );
-          // formChildStr = VueXML.CreateDom(
-          //   'flex-search',
-          //   '',
-          //   `${formItemsStr}\n${buttonItemsStr}`,
-          // );
-
-          buttonItemsStr = VueXML.CreateDom('el-form-item', '', buttonItemsStr);
-          buttonItemsStr = VueXML.CreateDom(
-            'el-col',
-            `v-bind="colProps"`,
+          // 搜索组件
+          buttonItemsStr = ReactXML.CreateDom('Form.Item', '', buttonItemsStr);
+          buttonItemsStr = ReactXML.CreateDom(
+            'Col',
+            `{ ...colProps }`,
             buttonItemsStr,
           );
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
@@ -193,18 +179,19 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
         }
 
-        formChildStr = VueXML.CreateDom('el-row', `:gutter="20"`, formChildStr);
+        formChildStr = ReactXML.CreateDom('Row', `gutter={20}`, formChildStr);
 
-        xml = VueXML.CreateDom(
-          'el-form',
+        xml = ReactXML.CreateDom(
+          'Form',
           getPropsStr(formProps),
           `${formChildStr}`,
         );
         break;
       case 'Select':
+        setAsyncImport(componentName);
         const selectOptions = (options || [])
           .map((item: any) => {
-            return VueXML.CreateDom('el-option', getPropsStr(item), '');
+            return ReactXML.CreateDom('Select.Option', getPropsStr(item), '');
           })
           .join('\n');
         const selectProps = {
@@ -216,16 +203,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const selectAttr = `${getPropsStr(selectProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom('el-select', selectAttr, `\n${selectOptions}\n`);
+        xml = ReactXML.CreateDom('Select', selectAttr, `\n${selectOptions}\n`);
         break;
       case 'RangePicker':
+        setAsyncImport('DatePicker');
         const rangepickerProps: any = {
-          type: 'daterange',
-          'unlink-panels': true,
-          'default-time': ['00:00:00', '23:59:59'],
-          'range-separator': '至',
-          'start-placeholder': '开始日期',
-          'end-placeholder': '结束日期',
           style: 'width: 100%',
           ...props,
         };
@@ -235,16 +217,17 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const rangePickerAttr = `${getPropsStr(rangepickerProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom('el-date-picker', rangePickerAttr, '');
+        xml = ReactXML.CreateDom('DatePicker.RangePicker', rangePickerAttr, '');
         break;
       case 'RadioGroup':
+        setAsyncImport('Radio');
         const radioOptions = (options || [])
           .map((item: any) => {
-            let name = type === 'button' ? 'el-radio-button' : 'el-radio';
+            let name = type === 'button' ? 'Radio.Button' : 'Radio';
             const itemProps = { ...item };
             // 剔除value
             delete itemProps.value;
-            return VueXML.CreateDom(name, getPropsStr(itemProps), '');
+            return ReactXML.CreateDom(name, getPropsStr(itemProps), '');
           })
           .join('\n');
         const radioGroupProps: any = {
@@ -256,13 +239,12 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const radioGroupAttr = `${getPropsStr(radioGroupProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom('el-radio-group', radioGroupAttr, radioOptions);
+        xml = ReactXML.CreateDom('Radio.Group', radioGroupAttr, radioOptions);
         break;
       case 'Cascader':
+        setAsyncImport('Cascader');
         const cascaderProps: any = {
           options: options || [],
-          props: { multiple: true },
-          'collapse-tags': true,
           ...props,
         };
         if (vModel) {
@@ -270,18 +252,17 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           const dataKey1 = key + 'CategoryOptions';
           renderData.data[dataKey1] = options || [];
           delete cascaderProps.options;
-          cascaderProps[':options'] = dataKey1;
+          cascaderProps['options'] = `{ ${dataKey1} }`;
           cascaderProps['v-model'] = vModel;
         }
         const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom('el-cascader', cascaderAttr, '');
+        xml = ReactXML.CreateDom('Cascader', cascaderAttr, '');
         break;
       case 'AutoComplete':
-        const autoCompleteEventStr = getEventStr(schemaDSL, {
-          onSearch: ':fetch-suggestions',
-        });
+        setAsyncImport('AutoComplete');
+        const autoCompleteEventStr = getEventStr(schemaDSL);
         const autoCompleteProps: any = {
           ...props,
         };
@@ -291,35 +272,36 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const autoCompleteAttr = `${getPropsStr(
           autoCompleteProps,
         )} ${autoCompleteEventStr}`;
-        xml = VueXML.CreateDom('el-autocomplete', autoCompleteAttr, '');
+        xml = ReactXML.CreateDom('AutoComplete', autoCompleteAttr, '');
         break;
       case 'Table':
         const listKey = dataKey || 'list';
         renderData.data[listKey] = [];
+        setAsyncImport('Table');
 
         let columns = '';
         if (type === 'editTable') {
-          // 添加选择行
-          columns += VueXML.CreateDom(
-            'el-table-column',
-            `type="selection" width="50"`,
-            '',
-          );
+          // // 添加选择行
+          // columns += ReactXML.CreateDom(
+          //   'el-table-column',
+          //   `type="selection" width="50"`,
+          //   '',
+          // );
         }
         columns += (children || [])
           .map((item: any) => {
             const newProps = { ...item };
-            const renderMothod =
-              VueTableRenderXML[item.renderKey] ||
-              VueTableRenderXML['renderDefault'];
-            let childStr = renderMothod(item.key);
+            // const renderMothod =
+            //   VueTableRenderXML[item.renderKey] ||
+            //   VueTableRenderXML['renderDefault'];
+            // let childStr = renderMothod(item.key);
+            let childStr = '';
 
             if (item.key) {
               delete newProps.key;
               delete newProps.renderKey;
             }
             if (item.render) {
-              delete newProps.render;
               childStr = item.render;
             }
             if (item.enumObj) {
@@ -337,30 +319,26 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             }
             // 重新扫描是否包含函数
             checkFuncStr(childStr);
-
-            childStr = VueXML.CreateDom(
-              'template',
-              `slot-scope="{ row }"`,
-              childStr,
-            );
-            return VueXML.CreateDom(
-              'el-table-column',
-              getPropsStr(newProps),
-              childStr,
-            );
+            getPropsStr(newProps);
+            if (childStr) {
+              newProps.render = `(text, row) => (<>${childStr}</>)`;
+            }
+            return {
+              ...newProps,
+              title: item.label,
+              dataIndex: item.key,
+            };
           })
           .join('\n');
 
         const tableProps = {
           border: true,
           ...props,
-          ':data': listKey,
+          pagination: false,
+          columns: columns,
+          dataSource: `{${listKey}}`,
         };
-        xml = VueXML.CreateDom(
-          'el-table',
-          getPropsStr(tableProps),
-          `\n${columns}\n`,
-        );
+        xml = ReactXML.CreateDom('Table', getPropsStr(tableProps), ``);
         break;
       case 'Row':
         if (dataKey) {
@@ -368,6 +346,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             ? { ...renderData.data[dataKey] }
             : {};
         }
+        setAsyncImport('Row');
+        setAsyncImport('Col');
 
         const rowChilds = (children || [])
           .filter(Boolean)
@@ -393,9 +373,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               if (item.render) {
                 childStr = item.render;
               } else {
-                childStr = VueXML.CreateDom(
+                childStr = ReactXML.CreateDom(
                   'span',
-                  'class="title"',
+                  'className={"title"}',
                   `${item.label}：`,
                 );
                 childStr += '\n';
@@ -409,39 +389,35 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 span: item.span ? item.span : 8,
                 ...item.props,
               };
-              return VueXML.CreateDom(
-                'el-col',
-                getPropsStr(colProps),
-                childStr,
-              );
+              return ReactXML.CreateDom('Col', getPropsStr(colProps), childStr);
             }
           })
           .join('\n');
 
-        xml = VueXML.CreateDom('el-row', getPropsStr(props), rowChilds);
+        xml = ReactXML.CreateDom('Row', getPropsStr(props), rowChilds);
         break;
       case 'Pagination':
+        setAsyncImport('Pagination');
         const paginationDataKey = dataKey || 'pagination';
         renderData.data[paginationDataKey] = {
-          currentPage: 1,
+          current: 1,
           pageSize: 20,
           total: 0,
         };
         const paginationEventStr = getEventStr(schemaDSL, {
-          onPageChange: '@current-change',
+          onPageChange: 'onChange',
         });
         const paginationPorps = {
-          layout: 'total, prev, pager, next, jumper',
           ...props,
-          'v-bind': paginationDataKey,
+          showSizeChanger: false,
         };
-        const paginationAttr = `${getPropsStr(
+        const paginationAttr = `{...${paginationDataKey}} ${getPropsStr(
           paginationPorps,
         )} ${paginationEventStr}`;
-        xml = VueXML.CreateDom('el-pagination', paginationAttr, '');
+        xml = ReactXML.CreateDom('Pagination', paginationAttr, '');
         break;
       case 'CrumbBack':
-        xml = VueXML['CrumbBack'](getEventStr(schemaDSL), children);
+        xml = ReactXML['CrumbBack'](getEventStr(schemaDSL), children);
         break;
       case 'StatusTag':
         // TODO 这个自定义设计需要改进
@@ -449,7 +425,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const key = statusKey.split('.').splice(-1)[0];
         const dataKey1 = key + 'Tag';
         renderData.data[dataKey1] = statusTagObj;
-        xml = VueXML['StatusTag'](statusKey, dataKey1);
+        xml = ReactXML['StatusTag'](statusKey, dataKey1);
         break;
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {
@@ -470,7 +446,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               .join('')
           : children || '';
         const eleName = getDomName(componentType, componentName);
-        xml = VueXML.CreateDom(eleName, defaultAttr, defaultChildStr);
+        xml = ReactXML.CreateDom(eleName, defaultAttr, defaultChildStr);
         break;
     }
   }
@@ -516,7 +492,40 @@ const getImports = (item: object = {}) => {
     const importStr = `import ${k} from "${v}"`;
     ilist.push(importStr);
   });
+  Object.entries(renderData.asyncImport).forEach(([k, v]) => {
+    if (Array.isArray(v)) {
+      const importStr = `import { ${v.join(',')} } from "${k}"`;
+      ilist.push(importStr);
+    }
+  });
   return ilist;
+};
+
+const setAsyncImport = (component: string, lib: string = 'antd') => {
+  if (!renderData.asyncImport[lib]) {
+    renderData.asyncImport[lib] = [component];
+  } else if (!renderData.asyncImport[lib].includes(component)) {
+    renderData.asyncImport[lib].push(component);
+  }
+};
+
+const getConstOptions = () => {
+  const olist: any = [];
+  Object.entries(renderData.constImport).forEach(([k, v]) => {
+    if (Array.isArray(v)) {
+      const constStr = `const { ${v.join(',')} } = ${k}`;
+      olist.push(constStr);
+    }
+  });
+  return olist;
+};
+
+const setConstImport = (childCom: string, component: string) => {
+  if (!renderData.constImport[component]) {
+    renderData.constImport[component] = [childCom];
+  } else if (!renderData.constImport[component].includes(childCom)) {
+    renderData.constImport[component].push(childCom);
+  }
 };
 
 const getMethods = (item: object = {}) => {
@@ -624,7 +633,7 @@ const getPropsStr = (obj: any) => {
   return Object.entries(obj).reduce((pre, [k, v]) => {
     if (v === undefined || v === null) return pre;
     if (typeof v !== 'string') {
-      return `${pre} :${k}="${JSON.stringify(v).replace(/\"/g, "'")}"`;
+      return `${pre} ${k}={${JSON.stringify(v).replace(/\"/g, "'")}}`;
     } else {
       return `${pre} ${k}="${v}"`;
     }
@@ -632,7 +641,7 @@ const getPropsStr = (obj: any) => {
 };
 
 const generateVue = () => {
-  const vueCode = VueXML.VueTemplate(renderData);
+  const vueCode = ReactXML.VueTemplate(renderData);
   return prettierFormat(vueCode, 'vue');
 };
 
@@ -660,6 +669,7 @@ const getSourceCode = (DSL: any) => {
     // 动态生成class，有顺序要求
     renderData.styles = getStyles(DSL.type);
     renderData.methods = getMethods(DSL.methods);
+    renderData.constOptions = getConstOptions();
     renderData.vueCode = generateVue();
     renderData.apiCode = generateApi();
     return renderData;

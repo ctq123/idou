@@ -69,9 +69,12 @@ export const ReactXML: any = {
   ReactTemplate: (renderData: any) => {
     return `
     import React, { useEffect, useState } from 'react'
-    ${renderData.imports.join('\n')}
+    ${renderData.imports.join(';\n')};
+
+    ${renderData.constOptions.join(';\n')};
 
     const Index = (props) => {
+      ${renderData.data.join('\n')}
       ${renderData.lifecycles.join('\n')}
       ${renderData.methods.join('\n')}
 
