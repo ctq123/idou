@@ -68,15 +68,21 @@ export const VueXML: any = {
 export const ReactXML: any = {
   ReactTemplate: (renderData: any) => {
     return `
-    import React, { useEffect, useState } from 'react'
     ${renderData.imports.join(';\n')};
-
-    ${renderData.constOptions.join(';\n')};
-
+    ${
+      renderData.constOptions.length
+        ? renderData.constOptions.join(';\n') + ';'
+        : ''
+    }
     const Index = (props) => {
-      ${renderData.data.join('\n')}
-      ${renderData.lifecycles.join('\n')}
-      ${renderData.methods.join('\n')}
+      ${renderData.useStates.join(';\n')};
+      ${renderData.formRefs.length ? renderData.formRefs.join(';\n') + ';' : ''}
+      ${
+        renderData.lifecycles.length
+          ? renderData.lifecycles.join(';\n') + ';'
+          : ''
+      }
+      ${renderData.methods.join(';\n')};
 
       return (
         ${renderData.template}

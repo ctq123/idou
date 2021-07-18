@@ -6,6 +6,7 @@ import { DSL as DetailDSL } from '../const/detailDSL';
 import { DSL as EditModalDSL } from '../const/editModalDSL';
 import { DSL as EditDSL } from '../const/editDSL';
 import { getUid } from '@/utils';
+import { getSourceCode as generateReactCode } from './generateReact';
 import { getSourceCode } from './generateVue';
 import { VueTableRenderXML } from './componentXML';
 interface IObject {
@@ -125,9 +126,11 @@ const addUuid = (data: IObject) => {
 const initState = {
   dsl: addUuid(ListDSL),
   selectedComponent: null,
-  vueCode: null,
+  sourceCode: null,
   apiCode: null,
-  showVueCode: false,
+  styleCode: null,
+  codeType: 'vue2',
+  showSourceCode: false,
   dslType: 'list',
   VueTableRenderXML,
 };
@@ -178,12 +181,35 @@ const reducer = (state: any, action: any) => {
       return { ...state, dsl: moveDSL2 };
     case 'component/selected':
       return { ...state, selectedComponent: data };
-    case 'generate/vue':
-      const newDSL = cloneDeep(state.dsl);
-      const { vueCode, apiCode } = getSourceCode(newDSL) || {};
+    case 'generate/vue2':
+      const vue2DSL = cloneDeep(state.dsl);
+      const { vueCode, apiCode } = getSourceCode(vue2DSL) || {};
       // console.log('vueCode', vueCode);
       if (!vueCode) return { ...state };
-      return { ...state, vueCode, apiCode, showVueCode: !state.showVueCode };
+      return {
+        ...state,
+        sourceCode: vueCode,
+        apiCode,
+        showSourceCode: !state.showSourceCode,
+        codeType: 'vue2',
+      };
+    case 'generate/react':
+      const reactDSL = cloneDeep(state.dsl);
+      const {
+        reactCode,
+        apiCode: apiCode2,
+        styleCode,
+      } = generateReactCode(reactDSL) || {};
+      // console.log('reactCode', reactCode);
+      if (!reactCode) return { ...state };
+      return {
+        ...state,
+        sourceCode: reactCode,
+        apiCode: apiCode2,
+        styleCode,
+        showSourceCode: !state.showSourceCode,
+        codeType: 'react',
+      };
     case 'dsl/apis/update':
       const newDSL2 = cloneDeep(state.dsl);
       newDSL2.apis = apis;

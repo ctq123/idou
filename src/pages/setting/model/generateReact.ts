@@ -1,9 +1,13 @@
 import { message } from 'antd';
 
 import { ReactXML, styleXML, VueTableRenderXML } from './componentXML';
-import { prettierFormat, transformFunc, generateClassStyle } from '@/utils';
+import {
+  prettierFormat,
+  transformFunc,
+  replaceObjKey,
+  generateClassStyle,
+} from '@/utils';
 import isFunction from 'lodash/isFunction';
-import { render } from 'react-dom';
 
 // /**
 //  * element-ui的前缀
@@ -11,15 +15,17 @@ import { render } from 'react-dom';
 // const elementUI = '';
 
 let renderData: any = {
-  vueCode: '',
+  reactCode: '',
   template: '',
   imports: [],
   asyncImport: {},
   constOptions: [],
   constImport: {},
+  formRefs: [],
   formRefMap: {},
   componentProps: [],
   data: {},
+  useStates: [],
   computed: [],
   methods: [],
   asyncMethod: {},
@@ -31,9 +37,7 @@ let renderData: any = {
 };
 
 const lifeCycleMap: any = {
-  created: 'created',
   mounted: 'mounted',
-  updated: 'updated',
   beforeDestroy: 'beforeDestroy',
 };
 
@@ -50,13 +54,14 @@ const commonFunc = [
 
 const initData = () => {
   renderData = {
-    vueCode: '',
+    reactCode: '',
     template: '',
     imports: [],
     asyncImport: {},
     constOptions: [],
     constImport: {},
     formRefMap: {},
+    formRefs: [],
     componentProps: [],
     data: {},
     computed: [],
@@ -95,6 +100,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
   let xml = '';
   if (componentName) {
     setAsyncStyles(props.className);
+    replaceObjKey(props, 'clearable', 'allowClear');
 
     switch (componentName) {
       case 'Form':
@@ -197,9 +203,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const selectProps = {
           ...props,
         };
-        if (vModel) {
-          selectProps['v-model'] = vModel;
-        }
         const selectAttr = `${getPropsStr(selectProps)} ${getEventStr(
           schemaDSL,
         )}`;
@@ -211,9 +214,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           style: 'width: 100%',
           ...props,
         };
-        if (vModel) {
-          rangepickerProps['v-model'] = vModel;
-        }
         const rangePickerAttr = `${getPropsStr(rangepickerProps)} ${getEventStr(
           schemaDSL,
         )}`;
@@ -233,9 +233,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const radioGroupProps: any = {
           ...props,
         };
-        if (vModel) {
-          radioGroupProps['v-model'] = vModel;
-        }
         const radioGroupAttr = `${getPropsStr(radioGroupProps)} ${getEventStr(
           schemaDSL,
         )}`;
@@ -253,7 +250,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           renderData.data[dataKey1] = options || [];
           delete cascaderProps.options;
           cascaderProps['options'] = `{ ${dataKey1} }`;
-          cascaderProps['v-model'] = vModel;
         }
         const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
           schemaDSL,
@@ -266,9 +262,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const autoCompleteProps: any = {
           ...props,
         };
-        if (vModel) {
-          autoCompleteProps['v-model'] = vModel;
-        }
         const autoCompleteAttr = `${getPropsStr(
           autoCompleteProps,
         )} ${autoCompleteEventStr}`;
@@ -279,7 +272,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         renderData.data[listKey] = [];
         setAsyncImport('Table');
 
-        let columns = '';
+        let columns = [];
         if (type === 'editTable') {
           // // 添加选择行
           // columns += ReactXML.CreateDom(
@@ -288,55 +281,61 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           //   '',
           // );
         }
-        columns += (children || [])
-          .map((item: any) => {
-            const newProps = { ...item };
-            // const renderMothod =
-            //   VueTableRenderXML[item.renderKey] ||
-            //   VueTableRenderXML['renderDefault'];
-            // let childStr = renderMothod(item.key);
-            let childStr = '';
+        columns = (children || []).map((item: any) => {
+          const newProps = { ...item };
+          // const renderMothod =
+          //   VueTableRenderXML[item.renderKey] ||
+          //   VueTableRenderXML['renderDefault'];
+          // let childStr = renderMothod(item.key);
+          let childStr = '';
 
-            if (item.key) {
-              delete newProps.key;
-              delete newProps.renderKey;
-            }
-            if (item.render) {
-              childStr = item.render;
-            }
-            if (item.enumObj) {
-              renderData.data[`${item.key}Obj`] = item.enumObj;
-              delete newProps.enumObj;
-            }
-            if (Array.isArray(item.children)) {
-              // 编辑类型
-              delete newProps.children;
-              delete newProps.uuid;
-              const vmodel = listKey && item.key ? `row.${item.key}` : '';
-              childStr = (item.children || [])
-                .map((child: any) => generateTemplate(child, vmodel))
-                .join('');
-            }
-            // 重新扫描是否包含函数
-            checkFuncStr(childStr);
-            getPropsStr(newProps);
-            if (childStr) {
-              newProps.render = `(text, row) => (<>${childStr}</>)`;
-            }
-            return {
-              ...newProps,
-              title: item.label,
-              dataIndex: item.key,
-            };
-          })
-          .join('\n');
+          if (item.key) {
+            delete newProps.key;
+            delete newProps.renderKey;
+          }
+          if (item.label) {
+            delete newProps.label;
+          }
+          if (item.minWidth) {
+            delete newProps.minWidth;
+          }
+          if (item.render) {
+            childStr = item.render;
+          }
+          if (item.enumObj) {
+            renderData.data[`${item.key}Obj`] = item.enumObj;
+            delete newProps.enumObj;
+          }
+          if (Array.isArray(item.children)) {
+            // 编辑类型
+            delete newProps.children;
+            delete newProps.uuid;
+            const vmodel = listKey && item.key ? `row.${item.key}` : '';
+            childStr = (item.children || [])
+              .map((child: any) => generateTemplate(child, vmodel))
+              .join('');
+          }
+          // 重新扫描是否包含函数
+          checkFuncStr(childStr);
+          getPropsStr(newProps);
+          if (childStr) {
+            newProps.render = `(text, row) => (<>${childStr}</>)`;
+          }
+          return {
+            ...newProps,
+            title: item.label,
+            dataIndex: item.key,
+          };
+        });
+
+        renderData.data[`${listKey}Columns`] = columns;
 
         const tableProps = {
           border: true,
           ...props,
           pagination: false,
-          columns: columns,
-          dataSource: `{${listKey}}`,
+          ':columns': `${listKey}Columns`,
+          ':dataSource': `${listKey}`,
         };
         xml = ReactXML.CreateDom('Table', getPropsStr(tableProps), ``);
         break;
@@ -375,7 +374,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               } else {
                 childStr = ReactXML.CreateDom(
                   'span',
-                  'className={"title"}',
+                  'className="title"',
                   `${item.label}：`,
                 );
                 childStr += '\n';
@@ -431,7 +430,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         if (dataKey && renderData.data[dataKey] === undefined) {
           renderData.data[dataKey] = '';
         }
-        vModel && (props['v-model'] = vModel);
         const defaultAttr = `${getPropsStr(props)} ${getEventStr(schemaDSL)}`;
         const defaultChildStr = Array.isArray(children)
           ? children
@@ -461,7 +459,24 @@ const getLifeCycle = (item: object = {}) => {
     .forEach(([k, v]) => {
       const name = lifeCycleMap[k];
       const { newFunc } = transformFunc(v, name || k);
-      lifeList.push(newFunc);
+      let funcStr = newFunc.replace(name, '');
+      let i = funcStr.indexOf('{');
+      let effectStr = '';
+      switch (name) {
+        case 'mounted':
+          effectStr = `useEffect(${funcStr.substr(0, i)} => ${funcStr.substr(
+            i,
+          )}, [])`;
+          break;
+        case 'beforeDestroy':
+          effectStr = `useEffect(() => {
+            return ${funcStr.substr(0, i)} => ${funcStr.substr(i)}
+          , [])`;
+          break;
+      }
+      if (effectStr) {
+        lifeList.push(effectStr);
+      }
     });
   return lifeList;
 };
@@ -488,6 +503,17 @@ const getComputed = (item: object = {}) => {
 
 const getImports = (item: object = {}) => {
   const ilist: any = [];
+  const hooks: any = [];
+  if (Object.keys(renderData.data).length) {
+    hooks.push('useState');
+  }
+  if (renderData.lifecycles.length) {
+    hooks.push('useEffect');
+  }
+  if (hooks.length) {
+    const importStr = `import { ${hooks.join(', ')} } from "react"`;
+    ilist.push(importStr);
+  }
   Object.entries(item).forEach(([k, v]) => {
     const importStr = `import ${k} from "${v}"`;
     ilist.push(importStr);
@@ -498,9 +524,15 @@ const getImports = (item: object = {}) => {
       ilist.push(importStr);
     }
   });
+  ilist.push(`import "./index.less"`);
   return ilist;
 };
 
+/**
+ * 依赖包
+ * @param component
+ * @param lib
+ */
 const setAsyncImport = (component: string, lib: string = 'antd') => {
   if (!renderData.asyncImport[lib]) {
     renderData.asyncImport[lib] = [component];
@@ -509,6 +541,10 @@ const setAsyncImport = (component: string, lib: string = 'antd') => {
   }
 };
 
+/**
+ * 引入子依赖包
+ * @returns
+ */
 const getConstOptions = () => {
   const olist: any = [];
   Object.entries(renderData.constImport).forEach(([k, v]) => {
@@ -520,6 +556,11 @@ const getConstOptions = () => {
   return olist;
 };
 
+/**
+ * 子依赖包
+ * @param childCom
+ * @param component
+ */
 const setConstImport = (childCom: string, component: string) => {
   if (!renderData.constImport[component]) {
     renderData.constImport[component] = [childCom];
@@ -537,7 +578,47 @@ const getMethods = (item: object = {}) => {
   Object.entries(renderData.asyncMethod).forEach(([_, v]) => {
     mlist.push(v);
   });
-  return mlist;
+  // 将async fuc() {} 转换成 const func = async () => {}
+  return mlist
+    .map((str: any) => {
+      if (str) {
+        const paramStartIndex = str.indexOf('(');
+        const paramEndIndex = str.indexOf('{');
+        const nameStr = str.substr(0, paramStartIndex);
+        const funcName = nameStr.replace('async ', '');
+        const paramStr = str.substr(0, paramEndIndex);
+        return `const ${funcName} = ${paramStr.replace(
+          funcName,
+          '',
+        )} => ${str.substr(paramEndIndex)}`;
+      }
+      return null;
+    })
+    .filter(Boolean);
+};
+
+const getFormRefs = () => {
+  const refs: any = [];
+  Object.keys(renderData.formRefMap).forEach((k) => {
+    const formStr = `const [ ${k} ] = Form.useForm()`;
+    refs.push(formStr);
+  });
+  return refs;
+};
+
+const getUseStates = () => {
+  const list: any = [];
+  Object.entries(renderData.data).forEach(([k, v]) => {
+    if (k) {
+      // 将首写字母变大写
+      const key = k.replace(/^\w/g, (c) => c.toUpperCase());
+      const useStateStr = `const [${k}, set${key}] = useState(${JSON.stringify(
+        v,
+      )})`;
+      list.push(useStateStr);
+    }
+  });
+  return list;
 };
 
 const getStyles = (type: string) => {
@@ -590,11 +671,10 @@ const getEventStr = (item: object, extraMap: any = {}) => {
       funcStr = funcStr ? `${funcStr} ` : funcStr;
       if (commonFunc.includes(k)) {
         // 通用的函数事件
-        const name = k.replace(/on/, '@').toLowerCase();
-        funcStr += `${name}="${newFuncName}"`;
+        funcStr += `${k}={${newFuncName}}`;
       } else if (extraMap[k]) {
         // 特定的函数事件
-        funcStr += `${extraMap[k]}="${newFuncName}"`;
+        funcStr += `${extraMap[k]}={${newFuncName}}`;
       }
       renderData.asyncMethod[newFuncName] = newFunc;
     }
@@ -632,6 +712,9 @@ const checkFuncStr = (str: string) => {
 const getPropsStr = (obj: any) => {
   return Object.entries(obj).reduce((pre, [k, v]) => {
     if (v === undefined || v === null) return pre;
+    if (k && k.startsWith(':')) {
+      return `${pre} ${k.substr(1)}={${v}}`;
+    }
     if (typeof v !== 'string') {
       return `${pre} ${k}={${JSON.stringify(v).replace(/\"/g, "'")}}`;
     } else {
@@ -640,9 +723,9 @@ const getPropsStr = (obj: any) => {
   }, '');
 };
 
-const generateVue = () => {
-  const vueCode = ReactXML.VueTemplate(renderData);
-  return prettierFormat(vueCode, 'vue');
+const generateReact = () => {
+  const reactCode = ReactXML.ReactTemplate(renderData);
+  return prettierFormat(reactCode, 'babel');
 };
 
 const generateApi = () => {
@@ -654,6 +737,14 @@ const generateApi = () => {
   return prettierFormat(apiCode, 'babel');
 };
 
+const generateStyle = () => {
+  const styleCode = `
+    ${renderData.styles.join('\n')}
+  `;
+  return styleCode;
+  // return prettierFormat(styleCode, 'vue');
+};
+
 const getSourceCode = (DSL: any) => {
   try {
     initData();
@@ -662,15 +753,18 @@ const getSourceCode = (DSL: any) => {
     renderData.componentProps = getPageProps(DSL.componentProps);
     renderData.computed = getComputed(DSL.computed);
     renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
-    renderData.imports = getImports(DSL.imports);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;
     renderData.template = generateTemplate(DSL);
     // 动态生成class，有顺序要求
     renderData.styles = getStyles(DSL.type);
     renderData.methods = getMethods(DSL.methods);
+    renderData.imports = getImports(DSL.imports);
+    renderData.formRefs = getFormRefs();
+    renderData.useStates = getUseStates();
     renderData.constOptions = getConstOptions();
-    renderData.vueCode = generateVue();
+    renderData.reactCode = generateReact();
+    renderData.styleCode = generateStyle();
     renderData.apiCode = generateApi();
     return renderData;
   } catch (e) {

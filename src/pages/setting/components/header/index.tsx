@@ -10,25 +10,38 @@ const Header = () => {
   const [visible, setVisible] = useState(false);
   const [codeList, setCodeList] = useState([]);
   useEffect(() => {
-    const { vueCode, apiCode } = appContext.state;
-    const list: any = [
-      { fileName: 'index.vue', fileCode: vueCode },
-      { fileName: 'api/index.js', fileCode: apiCode },
-    ];
-    if (vueCode) {
+    const { sourceCode, apiCode, styleCode, codeType } = appContext.state;
+    let list: any = [];
+    switch (codeType) {
+      case 'vue2':
+        list = [
+          { fileName: 'index.vue', fileCode: sourceCode },
+          { fileName: 'api/index.js', fileCode: apiCode },
+        ];
+        break;
+      case 'react':
+        list = [
+          { fileName: 'index.js', fileCode: sourceCode },
+          { fileName: 'api/index.js', fileCode: apiCode },
+          { fileName: 'index.less', fileCode: styleCode },
+        ];
+        break;
+    }
+    if (sourceCode) {
       setCodeList(list);
       setVisible(true);
     }
-  }, [appContext.state.showVueCode]);
+  }, [appContext.state.showSourceCode]);
 
-  const handleGenerate = () => {
+  const handleGenerate = (type = 'vue2') => {
+    if (!['react', 'vue2'].includes(type)) return;
     appContext.dispatch({
-      type: 'generate/vue',
+      type: `generate/${type}`,
       data: {},
     });
     gtag('event', 'handleGenerate', {
       event_category: 'Header',
-      event_label: '生成源码',
+      event_label: `生成${type}源码`,
       value: 1,
     });
   };
@@ -97,10 +110,17 @@ const Header = () => {
         </Tooltip>
         <Button
           type="primary"
-          id={'btn-generate-code'}
-          onClick={() => handleGenerate()}
+          id={'btn-generate-code-vue2'}
+          onClick={() => handleGenerate('vue2')}
         >
-          生成源码
+          生成vue2源码
+        </Button>
+        <Button
+          type="primary"
+          id={'btn-generate-code-react'}
+          onClick={() => handleGenerate('react')}
+        >
+          生成react源码
         </Button>
         <SourceCodeDrawer
           valueList={codeList}
