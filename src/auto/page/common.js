@@ -120,7 +120,7 @@ const generateCode = async ({ page }) => {
     page,
     null,
     "#root div[class^='c-header'] div",
-    '生成源码',
+    '生成vue2源码',
   );
   await page.waitForTimeout(2000);
   await page.waitForSelector(
