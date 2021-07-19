@@ -2,7 +2,7 @@
 
 简体中文 | [English](./README-EN.md) 
 
-idou（爱豆）项目是一个低代码开发平台，通过配置化，最终输出的是vue2源码，也可以将它理解为代码生成器。
+idou（爱豆）项目是一个低代码开发平台，通过配置化，最终输出的是源码（vue2/react），也可以将它理解为代码生成器。
 https://idou100.netlify.app
 
 ![图片](./banner.png)
