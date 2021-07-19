@@ -125,7 +125,7 @@ const Header = () => {
         <SourceCodeDrawer
           valueList={codeList}
           visible={visible}
-          type="vue"
+          type={'vue'}
           handleCB={(val: any) => handleCodeCB(val)}
         />
       </div>

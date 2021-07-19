@@ -23,7 +23,7 @@ import styles from './CodeDrawer.less';
 interface IProps {
   valueList: any[];
   visible: boolean;
-  type?: 'vue';
+  type?: 'vue' | 'html' | 'javascript' | 'less';
   handleCB?: any;
 }
 

@@ -1,7 +1,7 @@
 /*
  * @Author: chengtianqing
  * @Date: 2021-05-21 01:19:08
- * @LastEditTime: 2021-07-19 01:43:54
+ * @LastEditTime: 2021-07-19 22:44:38
  * @LastEditors: chengtianqing
  * @Description:
  */
@@ -10,6 +10,7 @@ import prettier from 'prettier/esm/standalone.mjs';
 import parserBabel from 'prettier/esm/parser-babel.mjs';
 import parserHTML from 'prettier/esm/parser-html.mjs';
 import parserCSS from 'prettier/esm/parser-postcss.mjs';
+import parserFlow from 'prettier/esm/parser-flow.mjs';
 
 /**
  * 获取域
@@ -57,6 +58,9 @@ export const prettierFormat = (str: string | null, parser: string) => {
       break;
     case 'html':
       plugins = [parserHTML, parserBabel];
+      break;
+    case 'less':
+      plugins = [parserHTML, parserCSS];
       break;
     default:
       plugins = [parserBabel];

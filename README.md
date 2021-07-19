@@ -18,7 +18,6 @@ $ yarn
 ```bash
 $ yarn start
 ```
-
 ### 使用
 适用场景：中后台，传统开发模式，vue
 
