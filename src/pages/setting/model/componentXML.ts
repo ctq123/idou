@@ -75,6 +75,11 @@ export const ReactXML: any = {
         : ''
     }
     const Index = (props) => {
+      ${
+        renderData.componentProps.length
+          ? renderData.componentProps.join(';\n') + ';'
+          : ''
+      }
       ${renderData.useStates.join(';\n')};
       ${renderData.formRefs.length ? renderData.formRefs.join(';\n') + ';' : ''}
       ${

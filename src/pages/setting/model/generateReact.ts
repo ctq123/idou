@@ -432,7 +432,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         break;
       case 'Modal':
         delete props['close-on-click-modal'];
-        delete props[':visible.sync'];
+        if (props[':visible.sync']) {
+          delete props[':visible.sync'];
+          props[':visible'] = `visible`;
+        }
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {
           renderData.data[dataKey] = '';
@@ -490,11 +493,10 @@ const getLifeCycle = (item: object = {}) => {
 
 const getPageProps = (item: object = {}) => {
   const propsList: any = [];
-  Object.entries(item)
-    .filter(Boolean)
-    .forEach(([k, v]) => {
-      propsList.push(`${k}: ${v}`);
-    });
+  if (Object.keys(item).length) {
+    const str = `const { ${Object.keys(item).join(',')} } = props`;
+    propsList.push(str);
+  }
   return propsList;
 };
 
