@@ -1,6 +1,6 @@
 import { message } from 'antd';
 
-import { ReactXML, styleXML, VueTableRenderXML } from './componentXML';
+import { ReactXML, styleXML, ReactTableRenderXML } from './componentXML';
 import {
   prettierFormat,
   transformFunc,
@@ -312,11 +312,15 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         }
         columns = (children || []).map((item: any) => {
           const newProps = { ...item };
-          // const renderMothod =
-          //   VueTableRenderXML[item.renderKey] ||
-          //   VueTableRenderXML['renderDefault'];
-          // let childStr = renderMothod(item.key);
-          let childStr = '';
+          const renderMothod =
+            ReactTableRenderXML[item.renderKey] ||
+            ReactTableRenderXML['renderDefault'];
+          let childStr = renderMothod(item.key);
+          // let childStr = '';
+
+          if (item.renderKey === 'renderOperate') {
+            setAsyncImport('Button');
+          }
 
           if (item.key) {
             delete newProps.key;
@@ -347,13 +351,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           // 重新扫描是否包含函数
           checkFuncStr(childStr);
           getPropsStr(newProps);
-          if (childStr) {
-            newProps.render = `(text, row) => (<>${childStr}</>)`;
-          }
           return {
             ...newProps,
             title: item.label,
             dataIndex: item.key,
+            render: `(text, row) => (<div>${childStr}</div>)`,
           };
         });
 
@@ -385,8 +387,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               return generateTemplate(item, vmodel);
             } else {
               const renderMothod =
-                VueTableRenderXML[item.renderKey] ||
-                VueTableRenderXML['renderDefault'];
+                ReactTableRenderXML[item.renderKey] ||
+                ReactTableRenderXML['renderDefault'];
               // let childStr = renderMothod(item.key);
               let childStr = '';
 
@@ -397,21 +399,17 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 renderData.data[`${item.key}Obj`] = item.enumObj;
               }
 
+              childStr = ReactXML.CreateDom(
+                getDomName('span', 'native'),
+                'className="title"',
+                `${item.label}：`,
+              );
+              childStr += '\n';
+
               if (item.render) {
-                childStr = item.render;
+                childStr += item.render;
               } else {
-                childStr = ReactXML.CreateDom(
-                  getDomName('span', 'native'),
-                  'className="title"',
-                  `${item.label}：`,
-                );
-                childStr += '\n';
                 childStr += renderMothod(item.key, dataKey);
-                console.log(
-                  'renderMothod',
-                  renderMothod,
-                  renderMothod(item.key, dataKey),
-                );
               }
 
               // 重新扫描是否包含函数
@@ -456,6 +454,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         xml = ReactXML['CrumbBack'](getEventStr(schemaDSL), children);
         break;
       case 'StatusTag':
+        setAsyncImport('Tag');
         // TODO 这个自定义设计需要改进
         const { statusKey, statusTagObj } = props;
         const key = statusKey.split('.').splice(-1)[0];
@@ -463,6 +462,12 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         renderData.data[dataKey1] = statusTagObj;
         xml = ReactXML['StatusTag'](statusKey, dataKey1);
         break;
+      case 'Modal':
+        delete props['close-on-click-modal'];
+        if (props[':visible.sync']) {
+          delete props[':visible.sync'];
+          props[':visible'] = `visible`;
+        }
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {
           renderData.data[dataKey] = '';
@@ -519,11 +524,10 @@ const getLifeCycle = (item: object = {}) => {
 
 const getPageProps = (item: object = {}) => {
   const propsList: any = [];
-  Object.entries(item)
-    .filter(Boolean)
-    .forEach(([k, v]) => {
-      propsList.push(`${k}: ${v}`);
-    });
+  if (Object.keys(item).length) {
+    const str = `const { ${Object.keys(item).join(',')} } = props`;
+    propsList.push(str);
+  }
   return propsList;
 };
 
@@ -723,18 +727,17 @@ const getEventStr = (item: object, extraMap: any = {}) => {
  * @param str
  */
 const checkFuncStr = (str: string) => {
-  const funcs = commonFunc
-    .map((item) => '@' + item.substr(2).toLowerCase())
-    .join('|');
+  const funcs = commonFunc.join('|');
   const reg = new RegExp(`${funcs}`, 'g');
   if (str) {
     const ex = reg.exec(str);
     if (ex) {
       const s = str.substr(ex.index + ex[0].length);
       // console.log('s', s);
-      let funcName = s.split(/["']/g)[1];
+      let funcName = s.split(/\{/g)[1];
+      funcName = funcName.split(/\}/g)[0];
       let func = funcName;
-      if (funcName.endsWith(')')) {
+      if (funcName && funcName.endsWith(')')) {
         func += '{ }';
       } else {
         func += '() { }';
@@ -777,8 +780,7 @@ const generateStyle = () => {
   const styleCode = `
     ${renderData.styles.join('\n')}
   `;
-  return styleCode;
-  // return prettierFormat(styleCode, 'vue');
+  return prettierFormat(styleCode, 'less');
 };
 
 const getSourceCode = (DSL: any) => {
@@ -791,7 +793,9 @@ const getSourceCode = (DSL: any) => {
     renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;
+    // console.time("generateTemplate")
     renderData.template = generateTemplate(DSL);
+    // console.timeEnd("generateTemplate")
     // 动态生成class，有顺序要求
     renderData.styles = getStyles(DSL.type);
     renderData.methods = getMethods(DSL.methods);

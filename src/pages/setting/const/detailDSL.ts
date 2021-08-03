@@ -216,25 +216,26 @@ const DSL = {
                   key: 'info',
                   label: '商品信息',
                   minWidth: 250,
-                  render: `<div class="goods-info df aic">
-                  <div class="pro-img df aic oh bgc-fff mr12">
-                    <el-popover
-                      placement="right"
-                      trigger="hover"
-                    >
-                      <div class="imgBox">
-                        <img :src="row.productImg" class="h200">
-                      </div>
-                      <img slot="reference" :src="row.productImg" class="aic">
-                    </el-popover>
-                  </div>
-                  <div>
-                    <div>
-                      <span>货号：</span><strong class="fw600">{{ row.productNo }}</strong>
-                    </div>
-                    <ellipsis-popover class="f1" :content="row.productName"></ellipsis-popover>
-                  </div>
-                </div>`,
+                  render: `<div>商品信息</div>`,
+                  //   render: `<div class="goods-info df aic">
+                  //   <div class="pro-img df aic oh bgc-fff mr12">
+                  //     <el-popover
+                  //       placement="right"
+                  //       trigger="hover"
+                  //     >
+                  //       <div class="imgBox">
+                  //         <img :src="row.productImg" class="h200">
+                  //       </div>
+                  //       <img slot="reference" :src="row.productImg" class="aic">
+                  //     </el-popover>
+                  //   </div>
+                  //   <div>
+                  //     <div>
+                  //       <span>货号：</span><strong class="fw600">{{ row.productNo }}</strong>
+                  //     </div>
+                  //     <ellipsis-popover class="f1" :content="row.productName"></ellipsis-popover>
+                  //   </div>
+                  // </div>`,
                 },
                 {
                   key: 'orderNo',

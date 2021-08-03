@@ -429,15 +429,15 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 renderData.data[`${item.key}Obj`] = item.enumObj;
               }
 
+              childStr = VueXML.CreateDom(
+                getDomName('span', 'native'),
+                'class="title"',
+                `${item.label}：`,
+              );
+              childStr += '\n';
               if (item.render) {
-                childStr = item.render;
+                childStr += item.render;
               } else {
-                childStr = VueXML.CreateDom(
-                  getDomName('span', 'native'),
-                  'class="title"',
-                  `${item.label}：`,
-                );
-                childStr += '\n';
                 childStr += renderMothod(item.key, dataKey);
               }
 

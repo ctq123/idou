@@ -144,6 +144,11 @@ export const ReactXML: any = {
         : ''
     }
     const Index = (props) => {
+      ${
+        renderData.componentProps.length
+          ? renderData.componentProps.join(';\n') + ';'
+          : ''
+      }
       ${renderData.useStates.join(';\n')};
       ${renderData.formRefs.length ? renderData.formRefs.join(';\n') + ';' : ''}
       ${
@@ -168,12 +173,10 @@ export const ReactXML: any = {
     `;
   },
   StatusTag: (status: any, tagObj: any) => {
-    return `<el-tag
-      v-if="${tagObj}[${status}]"
-      :type="(${tagObj}[${status}] || {}).tag"
+    return `${tagObj}[${status}] && <Tag color="(${tagObj}[${status}] || {}).tag"
     >
-      {{ (${tagObj}[${status}] || {}).value }}
-    </el-tag>
+      { (${tagObj}[${status}] || {}).value }
+    </Tag>
     `;
   },
   CreateDom: (name: any, attrStr: any, childStr: any) => {
@@ -219,6 +222,45 @@ export const VueTableRenderXML: any = {
   },
   renderDefault: (key: string, obj = 'row') => {
     return `{{ ${obj}.${key} }}`;
+  },
+};
+
+/**
+ * react表格渲染函数-源码片段
+ */
+export const ReactTableRenderXML: any = {
+  renderTime: (key: string, obj = 'row') => {
+    return `{ ${obj}.${key} ? moment(${obj}.${key}).format('YYYY-MM-DD HH:mm:ss') : '' }`;
+  },
+  renderAmount: (key: string, obj = 'row') => {
+    return `{ ${obj}.${key} ? Number(${obj}.${key}) / 100 : '-' }`;
+  },
+  renderOperate: (key: string, obj = 'row') => {
+    return `
+    <Button
+      type="link"
+      size="small"
+      onClick={handleView(${obj})}
+    >
+      查看
+    </Button>
+    <Button
+      type="link"
+      size="small"
+      onClick={handleEdit(${obj})}
+    >
+      编辑
+    </Button>       
+    `;
+  },
+  renderEllipsis: (key: string, obj = 'row') => {
+    return `{ ${obj}.${key} }`;
+  },
+  renderEnum: (key: string, obj = 'row') => {
+    return `{ ${key}Obj && ${key}Obj[${obj}.${key}] || '-' }`;
+  },
+  renderDefault: (key: string, obj = 'row') => {
+    return `{ ${obj}.${key} }`;
   },
 };
 

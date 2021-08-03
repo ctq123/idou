@@ -4,7 +4,7 @@ import Editor, { useMonaco } from '@monaco-editor/react';
 import { serialize, deserialize, prettierFormat, transformFunc } from '@/utils';
 interface IProps {
   value: any;
-  type?: 'component' | 'vue' | 'function' | 'html';
+  type?: 'component' | 'vue' | 'function' | 'html' | 'javascript' | 'less';
   height?: number;
   [key: string]: any;
 }
