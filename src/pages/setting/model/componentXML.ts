@@ -63,6 +63,75 @@ export const VueXML: any = {
 };
 
 /**
+ * vue3-组件源码片段
+ * https://vue3js.cn/docs/zh/style-guide/#%E7%BB%84%E4%BB%B6-%E5%AE%9E%E4%BE%8B%E7%9A%84%E9%80%89%E9%A1%B9%E9%A1%BA%E5%BA%8F%E6%8E%A8%E8%8D%90
+ */
+export const Vue3XML: any = {
+  VueTemplate: (renderData: any) => {
+    return `
+    <template>
+      ${renderData.template}
+    </template>
+    <script lang="ts">
+    ${renderData.imports.join(';\n')};
+
+    export default defineComponent({
+      ${
+        renderData.componentProps.length
+          ? '\nprops: {' + renderData.componentProps.join(',\n') + '},'
+          : ''
+      }
+      setup(props) {
+        ${
+          renderData.formRefs.length
+            ? renderData.formRefs.join(';\n') + ';'
+            : ''
+        }
+        ${renderData.useStates.join(';\n')};
+        ${
+          renderData.lifecycles.length
+            ? renderData.lifecycles.join(';\n') + ';'
+            : ''
+        }
+        ${renderData.methods.join(';\n')};
+
+        return {
+          ${renderData.exports.join(',\n')}
+        }
+      }
+    })
+    <script>
+
+    <style lang="scss" scoped>
+      ${renderData.styles.join('\n')}
+    </style>
+    `;
+  },
+  CrumbBack: (attrStr: any, childStr: any) => {
+    return `
+    <div class="go-back">
+      <i class="el-icon-back" ${attrStr}></i>
+      <span class="bread">${childStr}</span>
+    </div>
+    `;
+  },
+  StatusTag: (status: any, tagObj: any) => {
+    return `<el-tag
+      v-if="${tagObj}[${status}]"
+      :type="(${tagObj}[${status}] || {}).tag"
+    >
+      {{ (${tagObj}[${status}] || {}).value }}
+    </el-tag>
+    `;
+  },
+  CreateDom: (name: any, attrStr: any, childStr: any) => {
+    return `<${name} ${attrStr}>
+    ${childStr}
+    </${name}>`;
+  },
+};
+
+/**
  * react-组件源码片段
  */
 export const ReactXML: any = {

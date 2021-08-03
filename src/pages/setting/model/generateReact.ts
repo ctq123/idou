@@ -9,10 +9,10 @@ import {
 } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
-// /**
-//  * element-ui的前缀
-//  */
-// const elementUI = '';
+/**
+ * ui的前缀
+ */
+const prefixUI = '';
 
 let renderData: any = {
   reactCode: '',
@@ -76,14 +76,14 @@ const initData = () => {
 };
 
 // 转换componentName成对应的源码名称
-const getDomName = (componentType: any, componentName: string) => {
+const getDomName = (componentName: string, componentType: any = 'antd') => {
   switch (componentType) {
     case 'native':
       return componentName.toLowerCase();
     case 'custom':
     default:
       setAsyncImport(componentName);
-      return componentName;
+      return prefixUI + componentName;
   }
 };
 
@@ -102,6 +102,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
     setAsyncStyles(props.className);
     replaceObjKey(props, 'clearable', 'allowClear');
 
+    const eleName = getDomName(componentName, componentType);
     switch (componentName) {
       case 'Form':
         const formDataKey = dataKey || 'form';
@@ -151,12 +152,16 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 .join('');
 
               itemChildren = ReactXML.CreateDom(
-                'Form.Item',
+                getDomName('Form.Item'),
                 getPropsStr(itemProps),
                 itemChildren,
               );
 
-              return ReactXML.CreateDom('Col', `{ ...colProps }`, itemChildren);
+              return ReactXML.CreateDom(
+                getDomName('Col'),
+                `{ ...colProps }`,
+                itemChildren,
+              );
             })
             .join('\n');
 
@@ -173,9 +178,13 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
 
         if (type === 'search') {
           // 搜索组件
-          buttonItemsStr = ReactXML.CreateDom('Form.Item', '', buttonItemsStr);
           buttonItemsStr = ReactXML.CreateDom(
-            'Col',
+            getDomName('Form.Item'),
+            '',
+            buttonItemsStr,
+          );
+          buttonItemsStr = ReactXML.CreateDom(
+            getDomName('Col'),
             `{ ...colProps }`,
             buttonItemsStr,
           );
@@ -185,10 +194,14 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
         }
 
-        formChildStr = ReactXML.CreateDom('Row', `gutter={20}`, formChildStr);
+        formChildStr = ReactXML.CreateDom(
+          getDomName('Row'),
+          `gutter={20}`,
+          formChildStr,
+        );
 
         xml = ReactXML.CreateDom(
-          'Form',
+          eleName,
           getPropsStr(formProps),
           `${formChildStr}`,
         );
@@ -197,7 +210,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         setAsyncImport(componentName);
         const selectOptions = (options || [])
           .map((item: any) => {
-            return ReactXML.CreateDom('Select.Option', getPropsStr(item), '');
+            return ReactXML.CreateDom(
+              getDomName('Select.Option'),
+              getPropsStr(item),
+              '',
+            );
           })
           .join('\n');
         const selectProps = {
@@ -206,7 +223,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const selectAttr = `${getPropsStr(selectProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = ReactXML.CreateDom('Select', selectAttr, `\n${selectOptions}\n`);
+        xml = ReactXML.CreateDom(eleName, selectAttr, `\n${selectOptions}\n`);
         break;
       case 'RangePicker':
         setAsyncImport('DatePicker');
@@ -217,7 +234,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const rangePickerAttr = `${getPropsStr(rangepickerProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = ReactXML.CreateDom('DatePicker.RangePicker', rangePickerAttr, '');
+        xml = ReactXML.CreateDom(
+          getDomName('DatePicker.RangePicker'),
+          rangePickerAttr,
+          '',
+        );
         break;
       case 'RadioGroup':
         setAsyncImport('Radio');
@@ -227,7 +248,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             const itemProps = { ...item };
             // 剔除value
             delete itemProps.value;
-            return ReactXML.CreateDom(name, getPropsStr(itemProps), '');
+            return ReactXML.CreateDom(
+              getDomName(name),
+              getPropsStr(itemProps),
+              '',
+            );
           })
           .join('\n');
         const radioGroupProps: any = {
@@ -236,7 +261,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const radioGroupAttr = `${getPropsStr(radioGroupProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = ReactXML.CreateDom('Radio.Group', radioGroupAttr, radioOptions);
+        xml = ReactXML.CreateDom(
+          getDomName('Radio.Group'),
+          radioGroupAttr,
+          radioOptions,
+        );
         break;
       case 'Cascader':
         setAsyncImport('Cascader');
@@ -254,7 +283,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = ReactXML.CreateDom('Cascader', cascaderAttr, '');
+        xml = ReactXML.CreateDom(eleName, cascaderAttr, '');
         break;
       case 'AutoComplete':
         setAsyncImport('AutoComplete');
@@ -265,7 +294,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const autoCompleteAttr = `${getPropsStr(
           autoCompleteProps,
         )} ${autoCompleteEventStr}`;
-        xml = ReactXML.CreateDom('AutoComplete', autoCompleteAttr, '');
+        xml = ReactXML.CreateDom(eleName, autoCompleteAttr, '');
         break;
       case 'Table':
         const listKey = dataKey || 'list';
@@ -337,7 +366,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           ':columns': `${listKey}Columns`,
           ':dataSource': `${listKey}`,
         };
-        xml = ReactXML.CreateDom('Table', getPropsStr(tableProps), ``);
+        xml = ReactXML.CreateDom(eleName, getPropsStr(tableProps), ``);
         break;
       case 'Row':
         if (dataKey) {
@@ -373,7 +402,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 childStr = item.render;
               } else {
                 childStr = ReactXML.CreateDom(
-                  'span',
+                  getDomName('span', 'native'),
                   'className="title"',
                   `${item.label}：`,
                 );
@@ -388,12 +417,16 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 span: item.span ? item.span : 8,
                 ...item.props,
               };
-              return ReactXML.CreateDom('Col', getPropsStr(colProps), childStr);
+              return ReactXML.CreateDom(
+                getDomName('Col'),
+                getPropsStr(colProps),
+                childStr,
+              );
             }
           })
           .join('\n');
 
-        xml = ReactXML.CreateDom('Row', getPropsStr(props), rowChilds);
+        xml = ReactXML.CreateDom(eleName, getPropsStr(props), rowChilds);
         break;
       case 'Pagination':
         setAsyncImport('Pagination');
@@ -413,7 +446,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const paginationAttr = `{...${paginationDataKey}} ${getPropsStr(
           paginationPorps,
         )} ${paginationEventStr}`;
-        xml = ReactXML.CreateDom('Pagination', paginationAttr, '');
+        xml = ReactXML.CreateDom(eleName, paginationAttr, '');
         break;
       case 'CrumbBack':
         xml = ReactXML['CrumbBack'](getEventStr(schemaDSL), children);
@@ -443,7 +476,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               })
               .join('')
           : children || '';
-        const eleName = getDomName(componentType, componentName);
         xml = ReactXML.CreateDom(eleName, defaultAttr, defaultChildStr);
         break;
     }

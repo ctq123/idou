@@ -1,14 +1,6 @@
-// import prettier from 'prettier/esm/standalone.mjs';
-// import parserBabel from 'prettier/esm/parser-babel.mjs';
-// import parserHTML from 'prettier/esm/parser-html.mjs';
-// import parserCSS from 'prettier/esm/parser-postcss.mjs';
-// import parserGraphql from 'prettier/esm/parser-graphql.mjs';
 import { message } from 'antd';
-// import prettier from 'https://unpkg.com/prettier@2.3.0/esm/standalone.mjs';
-// import parserBabel from 'https://unpkg.com/prettier@2.3.0/esm/parser-babel.mjs';
-// import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
 
-import { VueXML, styleXML, VueTableRenderXML } from './componentXML';
+import { Vue3XML, styleXML, VueTableRenderXML } from './componentXML';
 import {
   prettierFormat,
   transformFunc,
@@ -20,14 +12,22 @@ import isFunction from 'lodash/isFunction';
 /**
  * ui的前缀
  */
-const prefixUI = 'el';
+const prefixUI = 'a';
 
 let renderData: any = {
-  vueCode: '',
+  reactCode: '',
   template: '',
   imports: [],
+  asyncImport: {},
+  exports: [],
+  asyncExports: {},
+  constOptions: [],
+  constImport: {},
+  formRefs: [],
+  formRefMap: {},
   componentProps: [],
   data: {},
+  useStates: [],
   computed: [],
   methods: [],
   asyncMethod: {},
@@ -39,14 +39,12 @@ let renderData: any = {
 };
 
 const lifeCycleMap: any = {
-  beforeCreate: 'beforeCreate',
-  created: 'created',
-  beforeMount: 'beforeMount',
-  mounted: 'mounted',
-  beforeUpdate: 'beforeUpdate',
-  updated: 'updated',
-  beforeDestroy: 'beforeDestroy',
-  destroyed: 'destroyed',
+  beforeMount: 'onBeforeMount',
+  mounted: 'onMounted',
+  beforeUpdate: 'onBeforeUpdate',
+  updated: 'onUpdated',
+  beforeDestroy: 'onBeforeUnmount',
+  destroyed: 'onUnmounted',
 };
 
 // 通用事件
@@ -62,9 +60,16 @@ const commonFunc = [
 
 const initData = () => {
   renderData = {
-    vueCode: '',
+    reactCode: '',
     template: '',
     imports: [],
+    asyncImport: {},
+    exports: [],
+    asyncExports: {},
+    constOptions: [],
+    constImport: {},
+    formRefMap: {},
+    formRefs: [],
     componentProps: [],
     data: {},
     computed: [],
@@ -79,7 +84,7 @@ const initData = () => {
 };
 
 // 转换componentName成对应的源码名称
-const getDomName = (componentName: string, componentType: any = 'element') => {
+const getDomName = (componentName: string, componentType: any = 'antdv') => {
   switch (componentType) {
     case 'native':
       return componentName.toLowerCase();
@@ -104,17 +109,21 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
   if (componentName) {
     setAsyncStyles(props.className);
     replaceObjKey(props, 'className', 'class');
+    replaceObjKey(props, 'clearable', 'allowClear');
 
     const eleName = getDomName(componentName, componentType);
     switch (componentName) {
       case 'Form':
         const formDataKey = dataKey || 'form';
+        const formRefKey = formDataKey + 'Ref';
         const rulesKey = formDataKey + 'Rules';
         const rulesObj: any = {};
         // 解决多个form公用数据问题
         renderData.data[formDataKey] = renderData.data[formDataKey]
           ? { ...renderData.data[formDataKey] }
           : {};
+
+        renderData.formRefMap[formRefKey] = formRefKey;
 
         const childs = children || [];
         const buttonItems = (list: any) =>
@@ -135,7 +144,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 label,
               };
               if (key) {
-                itemProps['prop'] = key;
+                itemProps['name'] = key;
                 if (formDataKey) {
                   renderData.data[formDataKey][key] =
                     initValue !== undefined ? initValue : '';
@@ -143,21 +152,22 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 // console.log('rules', rules);
                 // 生成rules
                 if (Array.isArray(rules)) {
-                  rulesObj[key] = rules;
+                  rulesObj['rules'] = rules;
                 }
               }
               let itemChildren = (item.children || [])
                 .map((child: any) => generateTemplate(child, vmodel))
                 .join('');
 
-              itemChildren = VueXML.CreateDom(
+              itemChildren = Vue3XML.CreateDom(
                 getDomName('FormItem'),
                 getPropsStr(itemProps),
                 itemChildren,
               );
-              return VueXML.CreateDom(
+
+              return Vue3XML.CreateDom(
                 getDomName('Col'),
-                `v-bind="colProps"`,
+                `{ ...colProps }`,
                 itemChildren,
               );
             })
@@ -167,6 +177,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           ...props,
           ':model': formDataKey,
           ref: formDataKey,
+          ':labelCol': '{ span: 6 }',
         };
 
         let buttonItemsStr = !childs[childs.length - 1].key
@@ -182,33 +193,17 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             ? { ...renderData.data[rulesKey], ...rulesObj }
             : rulesObj;
         }
-        if (type === 'search') {
-          // // 搜索组件
-          // // 搜索的处理，添加特定的组件
-          // buttonItemsStr = VueXML.CreateDom(
-          //   'template',
-          //   `v-slot:doBox`,
-          //   buttonItemsStr,
-          // );
-          // formItemsStr = VueXML.CreateDom(
-          //   'template',
-          //   `v-slot:content`,
-          //   formItemsStr,
-          // );
-          // formChildStr = VueXML.CreateDom(
-          //   'flex-search',
-          //   '',
-          //   `${formItemsStr}\n${buttonItemsStr}`,
-          // );
 
-          buttonItemsStr = VueXML.CreateDom(
+        if (type === 'search') {
+          // 搜索组件
+          buttonItemsStr = Vue3XML.CreateDom(
             getDomName('FormItem'),
             '',
             buttonItemsStr,
           );
-          buttonItemsStr = VueXML.CreateDom(
+          buttonItemsStr = Vue3XML.CreateDom(
             getDomName('Col'),
-            `v-bind="colProps"`,
+            `{ ...colProps }`,
             buttonItemsStr,
           );
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
@@ -217,13 +212,13 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
         }
 
-        formChildStr = VueXML.CreateDom(
+        formChildStr = Vue3XML.CreateDom(
           getDomName('Row'),
-          `:gutter="20"`,
+          `gutter={20}`,
           formChildStr,
         );
 
-        xml = VueXML.CreateDom(
+        xml = Vue3XML.CreateDom(
           eleName,
           getPropsStr(formProps),
           `${formChildStr}`,
@@ -232,8 +227,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
       case 'Select':
         const selectOptions = (options || [])
           .map((item: any) => {
-            return VueXML.CreateDom(
-              getDomName('Option'),
+            return Vue3XML.CreateDom(
+              getDomName('SelectOption'),
               getPropsStr(item),
               '',
             );
@@ -242,32 +237,20 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const selectProps = {
           ...props,
         };
-        if (vModel) {
-          selectProps['v-model'] = vModel;
-        }
         const selectAttr = `${getPropsStr(selectProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom(eleName, selectAttr, `\n${selectOptions}\n`);
+        xml = Vue3XML.CreateDom(eleName, selectAttr, `\n${selectOptions}\n`);
         break;
       case 'RangePicker':
         const rangepickerProps: any = {
-          type: 'daterange',
-          'unlink-panels': true,
-          'default-time': ['00:00:00', '23:59:59'],
-          'range-separator': '至',
-          'start-placeholder': '开始日期',
-          'end-placeholder': '结束日期',
           style: 'width: 100%',
           ...props,
         };
-        if (vModel) {
-          rangepickerProps['v-model'] = vModel;
-        }
         const rangePickerAttr = `${getPropsStr(rangepickerProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom(getDomName('DatePicker'), rangePickerAttr, '');
+        xml = Vue3XML.CreateDom(eleName, rangePickerAttr, '');
         break;
       case 'RadioGroup':
         const radioOptions = (options || [])
@@ -276,7 +259,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             const itemProps = { ...item };
             // 剔除value
             delete itemProps.value;
-            return VueXML.CreateDom(
+            return Vue3XML.CreateDom(
               getDomName(name),
               getPropsStr(itemProps),
               '',
@@ -286,19 +269,14 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const radioGroupProps: any = {
           ...props,
         };
-        if (vModel) {
-          radioGroupProps['v-model'] = vModel;
-        }
         const radioGroupAttr = `${getPropsStr(radioGroupProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom(eleName, radioGroupAttr, radioOptions);
+        xml = Vue3XML.CreateDom(eleName, radioGroupAttr, radioOptions);
         break;
       case 'Cascader':
         const cascaderProps: any = {
           options: options || [],
-          props: { multiple: true },
-          'collapse-tags': true,
           ...props,
         };
         if (vModel) {
@@ -306,101 +284,93 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           const dataKey1 = key + 'CategoryOptions';
           renderData.data[dataKey1] = options || [];
           delete cascaderProps.options;
-          cascaderProps[':options'] = dataKey1;
-          cascaderProps['v-model'] = vModel;
+          cascaderProps['options'] = `{ ${dataKey1} }`;
         }
         const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
           schemaDSL,
         )}`;
-        xml = VueXML.CreateDom(eleName, cascaderAttr, '');
+        xml = Vue3XML.CreateDom(eleName, cascaderAttr, '');
         break;
       case 'AutoComplete':
-        const autoCompleteEventStr = getEventStr(schemaDSL, {
-          onSearch: ':fetch-suggestions',
-        });
+        const autoCompleteEventStr = getEventStr(schemaDSL);
         const autoCompleteProps: any = {
           ...props,
         };
-        if (vModel) {
-          autoCompleteProps['v-model'] = vModel;
-        }
         const autoCompleteAttr = `${getPropsStr(
           autoCompleteProps,
         )} ${autoCompleteEventStr}`;
-        xml = VueXML.CreateDom(
-          getDomName('Autocomplete'),
-          autoCompleteAttr,
-          '',
-        );
+        xml = Vue3XML.CreateDom(eleName, autoCompleteAttr, '');
         break;
       case 'Table':
         const listKey = dataKey || 'list';
         renderData.data[listKey] = [];
 
-        let columns = '';
+        let columns = [];
         if (type === 'editTable') {
-          // 添加选择行
-          columns += VueXML.CreateDom(
-            getDomName('TableColumn'),
-            `type="selection" width="50"`,
-            '',
-          );
+          // // 添加选择行
+          // columns += Vue3XML.CreateDom(
+          //   'el-table-column',
+          //   `type="selection" width="50"`,
+          //   '',
+          // );
         }
-        columns += (children || [])
-          .map((item: any) => {
-            const newProps = { ...item };
-            const renderMothod =
-              VueTableRenderXML[item.renderKey] ||
-              VueTableRenderXML['renderDefault'];
-            let childStr = renderMothod(item.key);
+        columns = (children || []).map((item: any) => {
+          const newProps = { ...item };
+          // const renderMothod =
+          //   VueTableRenderXML[item.renderKey] ||
+          //   VueTableRenderXML['renderDefault'];
+          // let childStr = renderMothod(item.key);
+          let childStr = '';
 
-            if (item.key) {
-              delete newProps.key;
-              delete newProps.renderKey;
-            }
-            if (item.render) {
-              delete newProps.render;
-              childStr = item.render;
-            }
-            if (item.enumObj) {
-              renderData.data[`${item.key}Obj`] = item.enumObj;
-              delete newProps.enumObj;
-            }
-            if (Array.isArray(item.children)) {
-              // 编辑类型
-              delete newProps.children;
-              delete newProps.uuid;
-              const vmodel = listKey && item.key ? `row.${item.key}` : '';
-              childStr = (item.children || [])
-                .map((child: any) => generateTemplate(child, vmodel))
-                .join('');
-            }
-            // 重新扫描是否包含函数
-            checkFuncStr(childStr);
+          if (item.key) {
+            delete newProps.key;
+            delete newProps.renderKey;
+          }
+          if (item.label) {
+            delete newProps.label;
+          }
+          if (item.minWidth) {
+            delete newProps.minWidth;
+          }
+          if (item.render) {
+            childStr = item.render;
+          }
+          if (item.enumObj) {
+            renderData.data[`${item.key}Obj`] = item.enumObj;
+            delete newProps.enumObj;
+          }
+          if (Array.isArray(item.children)) {
+            // 编辑类型
+            delete newProps.children;
+            delete newProps.uuid;
+            const vmodel = listKey && item.key ? `row.${item.key}` : '';
+            childStr = (item.children || [])
+              .map((child: any) => generateTemplate(child, vmodel))
+              .join('');
+          }
+          // 重新扫描是否包含函数
+          checkFuncStr(childStr);
+          getPropsStr(newProps);
+          if (childStr) {
+            newProps.render = `(text, row) => (<>${childStr}</>)`;
+          }
+          return {
+            ...newProps,
+            title: item.label,
+            dataIndex: item.key,
+          };
+        });
 
-            childStr = VueXML.CreateDom(
-              getDomName('template', 'custom'),
-              `slot-scope="{ row }"`,
-              childStr,
-            );
-            return VueXML.CreateDom(
-              getDomName('TableColumn'),
-              getPropsStr(newProps),
-              childStr,
-            );
-          })
-          .join('\n');
+        renderData.data[`${listKey}Columns`] = columns;
 
         const tableProps = {
           border: true,
           ...props,
-          ':data': listKey,
+          pagination: false,
+          ':columns': `${listKey}Columns`,
+          ':dataSource': `${listKey}`,
         };
-        xml = VueXML.CreateDom(
-          eleName,
-          getPropsStr(tableProps),
-          `\n${columns}\n`,
-        );
+        xml = Vue3XML.CreateDom(eleName, getPropsStr(tableProps), ``);
         break;
       case 'Row':
         if (dataKey) {
@@ -433,9 +403,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               if (item.render) {
                 childStr = item.render;
               } else {
-                childStr = VueXML.CreateDom(
+                childStr = Vue3XML.CreateDom(
                   getDomName('span', 'native'),
-                  'class="title"',
+                  'className="title"',
                   `${item.label}：`,
                 );
                 childStr += '\n';
@@ -449,7 +419,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 span: item.span ? item.span : 8,
                 ...item.props,
               };
-              return VueXML.CreateDom(
+              return Vue3XML.CreateDom(
                 getDomName('Col'),
                 getPropsStr(colProps),
                 childStr,
@@ -458,30 +428,29 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           })
           .join('\n');
 
-        xml = VueXML.CreateDom(eleName, getPropsStr(props), rowChilds);
+        xml = Vue3XML.CreateDom(eleName, getPropsStr(props), rowChilds);
         break;
       case 'Pagination':
         const paginationDataKey = dataKey || 'pagination';
         renderData.data[paginationDataKey] = {
-          currentPage: 1,
+          current: 1,
           pageSize: 20,
           total: 0,
         };
         const paginationEventStr = getEventStr(schemaDSL, {
-          onPageChange: '@current-change',
+          onPageChange: 'onChange',
         });
         const paginationPorps = {
-          layout: 'total, prev, pager, next, jumper',
           ...props,
-          'v-bind': paginationDataKey,
+          showSizeChanger: false,
         };
-        const paginationAttr = `${getPropsStr(
+        const paginationAttr = `{...${paginationDataKey}} ${getPropsStr(
           paginationPorps,
         )} ${paginationEventStr}`;
-        xml = VueXML.CreateDom(eleName, paginationAttr, '');
+        xml = Vue3XML.CreateDom(eleName, paginationAttr, '');
         break;
       case 'CrumbBack':
-        xml = VueXML['CrumbBack'](getEventStr(schemaDSL), children);
+        xml = Vue3XML['CrumbBack'](getEventStr(schemaDSL), children);
         break;
       case 'StatusTag':
         // TODO 这个自定义设计需要改进
@@ -489,13 +458,12 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const key = statusKey.split('.').splice(-1)[0];
         const dataKey1 = key + 'Tag';
         renderData.data[dataKey1] = statusTagObj;
-        xml = VueXML['StatusTag'](statusKey, dataKey1);
+        xml = Vue3XML['StatusTag'](statusKey, dataKey1);
         break;
       default:
         if (dataKey && renderData.data[dataKey] === undefined) {
           renderData.data[dataKey] = '';
         }
-        vModel && (props['v-model'] = vModel);
         const defaultAttr = `${getPropsStr(props)} ${getEventStr(schemaDSL)}`;
         const defaultChildStr = Array.isArray(children)
           ? children
@@ -509,7 +477,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               })
               .join('')
           : children || '';
-        xml = VueXML.CreateDom(eleName, defaultAttr, defaultChildStr);
+        xml = Vue3XML.CreateDom(eleName, defaultAttr, defaultChildStr);
         break;
     }
   }
@@ -524,7 +492,24 @@ const getLifeCycle = (item: object = {}) => {
     .forEach(([k, v]) => {
       const name = lifeCycleMap[k];
       const { newFunc } = transformFunc(v, name || k);
-      lifeList.push(newFunc);
+      let funcStr = newFunc.replace(name, '');
+      let i = funcStr.indexOf('{');
+      let effectStr = '';
+      switch (name) {
+        case 'mounted':
+          effectStr = `useEffect(${funcStr.substr(0, i)} => ${funcStr.substr(
+            i,
+          )}, [])`;
+          break;
+        case 'beforeDestroy':
+          effectStr = `useEffect(() => {
+            return ${funcStr.substr(0, i)} => ${funcStr.substr(i)}
+          , [])`;
+          break;
+      }
+      if (effectStr) {
+        lifeList.push(effectStr);
+      }
     });
   return lifeList;
 };
@@ -551,11 +536,57 @@ const getComputed = (item: object = {}) => {
 
 const getImports = (item: object = {}) => {
   const ilist: any = [];
+  const hooks: any = [];
+  if (Object.keys(renderData.data).length) {
+    hooks.push('useState');
+  }
+  if (renderData.lifecycles.length) {
+    hooks.push('useEffect');
+  }
+  if (hooks.length) {
+    const importStr = `import { ${hooks.join(', ')} } from "react"`;
+    ilist.push(importStr);
+  }
   Object.entries(item).forEach(([k, v]) => {
     const importStr = `import ${k} from "${v}"`;
     ilist.push(importStr);
   });
+  Object.entries(renderData.asyncImport).forEach(([k, v]) => {
+    if (Array.isArray(v)) {
+      const importStr = `import { ${v.join(',')} } from "${k}"`;
+      ilist.push(importStr);
+    }
+  });
+  ilist.push(`import "./index.less"`);
   return ilist;
+};
+
+/**
+ * 引入子依赖包
+ * @returns
+ */
+const getConstOptions = () => {
+  const olist: any = [];
+  Object.entries(renderData.constImport).forEach(([k, v]) => {
+    if (Array.isArray(v)) {
+      const constStr = `const { ${v.join(',')} } = ${k}`;
+      olist.push(constStr);
+    }
+  });
+  return olist;
+};
+
+/**
+ * 子依赖包
+ * @param childCom
+ * @param component
+ */
+const setConstImport = (childCom: string, component: string) => {
+  if (!renderData.constImport[component]) {
+    renderData.constImport[component] = [childCom];
+  } else if (!renderData.constImport[component].includes(childCom)) {
+    renderData.constImport[component].push(childCom);
+  }
 };
 
 const getMethods = (item: object = {}) => {
@@ -567,7 +598,47 @@ const getMethods = (item: object = {}) => {
   Object.entries(renderData.asyncMethod).forEach(([_, v]) => {
     mlist.push(v);
   });
-  return mlist;
+  // 将async fuc() {} 转换成 const func = async () => {}
+  return mlist
+    .map((str: any) => {
+      if (str) {
+        const paramStartIndex = str.indexOf('(');
+        const paramEndIndex = str.indexOf('{');
+        const nameStr = str.substr(0, paramStartIndex);
+        const funcName = nameStr.replace('async ', '');
+        const paramStr = str.substr(0, paramEndIndex);
+        return `const ${funcName} = ${paramStr.replace(
+          funcName,
+          '',
+        )} => ${str.substr(paramEndIndex)}`;
+      }
+      return null;
+    })
+    .filter(Boolean);
+};
+
+const getFormRefs = () => {
+  const refs: any = [];
+  Object.keys(renderData.formRefMap).forEach((k) => {
+    const formStr = `const [ ${k} ] = Form.useForm()`;
+    refs.push(formStr);
+  });
+  return refs;
+};
+
+const getUseStates = () => {
+  const list: any = [];
+  Object.entries(renderData.data).forEach(([k, v]) => {
+    if (k) {
+      // 将首写字母变大写
+      const key = k.replace(/^\w/g, (c) => c.toUpperCase());
+      const useStateStr = `const [${k}, set${key}] = useState(${JSON.stringify(
+        v,
+      )})`;
+      list.push(useStateStr);
+    }
+  });
+  return list;
 };
 
 const getStyles = (type: string) => {
@@ -620,11 +691,10 @@ const getEventStr = (item: object, extraMap: any = {}) => {
       funcStr = funcStr ? `${funcStr} ` : funcStr;
       if (commonFunc.includes(k)) {
         // 通用的函数事件
-        const name = k.replace(/on/, '@').toLowerCase();
-        funcStr += `${name}="${newFuncName}"`;
+        funcStr += `${k}={${newFuncName}}`;
       } else if (extraMap[k]) {
         // 特定的函数事件
-        funcStr += `${extraMap[k]}="${newFuncName}"`;
+        funcStr += `${extraMap[k]}={${newFuncName}}`;
       }
       renderData.asyncMethod[newFuncName] = newFunc;
     }
@@ -662,17 +732,20 @@ const checkFuncStr = (str: string) => {
 const getPropsStr = (obj: any) => {
   return Object.entries(obj).reduce((pre, [k, v]) => {
     if (v === undefined || v === null) return pre;
+    if (k && k.startsWith(':')) {
+      return `${pre} ${k.substr(1)}={${v}}`;
+    }
     if (typeof v !== 'string') {
-      return `${pre} :${k}="${JSON.stringify(v).replace(/\"/g, "'")}"`;
+      return `${pre} ${k}={${JSON.stringify(v).replace(/\"/g, "'")}}`;
     } else {
       return `${pre} ${k}="${v}"`;
     }
   }, '');
 };
 
-const generateVue = () => {
-  const vueCode = VueXML.VueTemplate(renderData);
-  return prettierFormat(vueCode, 'vue');
+const generateReact = () => {
+  const reactCode = Vue3XML.ReactTemplate(renderData);
+  return prettierFormat(reactCode, 'babel');
 };
 
 const generateApi = () => {
@@ -684,6 +757,14 @@ const generateApi = () => {
   return prettierFormat(apiCode, 'babel');
 };
 
+const generateStyle = () => {
+  const styleCode = `
+    ${renderData.styles.join('\n')}
+  `;
+  return styleCode;
+  // return prettierFormat(styleCode, 'vue');
+};
+
 const getSourceCode = (DSL: any) => {
   try {
     initData();
@@ -692,14 +773,18 @@ const getSourceCode = (DSL: any) => {
     renderData.componentProps = getPageProps(DSL.componentProps);
     renderData.computed = getComputed(DSL.computed);
     renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
-    renderData.imports = getImports(DSL.imports);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;
     renderData.template = generateTemplate(DSL);
     // 动态生成class，有顺序要求
     renderData.styles = getStyles(DSL.type);
     renderData.methods = getMethods(DSL.methods);
-    renderData.vueCode = generateVue();
+    renderData.imports = getImports(DSL.imports);
+    renderData.formRefs = getFormRefs();
+    renderData.useStates = getUseStates();
+    renderData.constOptions = getConstOptions();
+    renderData.reactCode = generateReact();
+    renderData.styleCode = generateStyle();
     renderData.apiCode = generateApi();
     return renderData;
   } catch (e) {
