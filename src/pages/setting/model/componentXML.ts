@@ -67,12 +67,12 @@ export const VueXML: any = {
  * https://vue3js.cn/docs/zh/style-guide/#%E7%BB%84%E4%BB%B6-%E5%AE%9E%E4%BE%8B%E7%9A%84%E9%80%89%E9%A1%B9%E9%A1%BA%E5%BA%8F%E6%8E%A8%E8%8D%90
  */
 export const Vue3XML: any = {
-  VueTemplate: (renderData: any) => {
+  Vue3Template: (renderData: any) => {
     return `
     <template>
       ${renderData.template}
     </template>
-    <script lang="ts">
+    <script>
     ${renderData.imports.join(';\n')};
 
     export default defineComponent({
@@ -87,12 +87,14 @@ export const Vue3XML: any = {
             ? renderData.formRefs.join(';\n') + ';'
             : ''
         }
-        ${renderData.useStates.join(';\n')};
+        ${renderData.constData.join(';\n')};
+
         ${
           renderData.lifecycles.length
             ? renderData.lifecycles.join(';\n') + ';'
             : ''
         }
+        
         ${renderData.methods.join(';\n')};
 
         return {
@@ -100,7 +102,7 @@ export const Vue3XML: any = {
         }
       }
     })
-    <script>
+    </script>
 
     <style lang="scss" scoped>
       ${renderData.styles.join('\n')}
@@ -212,6 +214,46 @@ export const VueTableRenderXML: any = {
     >
       编辑
     </el-button>       
+    `;
+  },
+  renderEllipsis: (key: string, obj = 'row') => {
+    return `<ellipsis-popover class="f1" :content="${obj}.${key}"></ellipsis-popover>`;
+  },
+  renderEnum: (key: string, obj = 'row') => {
+    return `{{ ${key}Obj && ${key}Obj[${obj}.${key}] || '-' }}`;
+  },
+  renderDefault: (key: string, obj = 'row') => {
+    return `{{ ${obj}.${key} }}`;
+  },
+};
+
+/**
+ * 表格渲染函数-源码片段
+ */
+export const Vue3TableRenderXML: any = {
+  renderTime: (key: string, obj = 'row') => {
+    return `{{ ${obj}.${key} | formatTime }}`;
+  },
+  renderAmount: (key: string, obj = 'row') => {
+    return `{{ ${obj}.${key} ? Number(${obj}.${key}) / 100 : '-' }}`;
+  },
+  renderOperate: (key: string, obj = 'row') => {
+    return `
+    <a-button
+      type="text"
+      size="small"
+      @click="handleView(${obj})"
+    >
+      查看
+    </a-button>
+    <a-divider type="vertical" />
+    <a-button
+      type="text"
+      size="small"
+      @click="handleEdit(${obj})"
+    >
+      编辑
+    </a-button>       
     `;
   },
   renderEllipsis: (key: string, obj = 'row') => {

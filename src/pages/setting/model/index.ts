@@ -7,7 +7,8 @@ import { DSL as EditModalDSL } from '../const/editModalDSL';
 import { DSL as EditDSL } from '../const/editDSL';
 import { getUid } from '@/utils';
 import { getSourceCode as generateReactCode } from './generateReact';
-import { getSourceCode } from './generateVue';
+import { getSourceCode as generateVueCode } from './generateVue';
+import { getSourceCode as generateVue3Code } from './generateVue3';
 import { VueTableRenderXML } from './componentXML';
 interface IObject {
   [key: string]: any;
@@ -183,29 +184,38 @@ const reducer = (state: any, action: any) => {
       return { ...state, selectedComponent: data };
     case 'generate/vue2':
       const vue2DSL = cloneDeep(state.dsl);
-      const { vueCode, apiCode } = getSourceCode(vue2DSL) || {};
+      const { vue2Code, vue2ApiCode } = generateVueCode(vue2DSL) || {};
       // console.log('vueCode', vueCode);
-      if (!vueCode) return { ...state };
+      if (!vue2Code) return { ...state };
       return {
         ...state,
-        sourceCode: vueCode,
-        apiCode,
+        sourceCode: vue2Code,
+        apiCode: vue2ApiCode,
         showSourceCode: !state.showSourceCode,
         codeType: 'vue2',
       };
+    case 'generate/vue3':
+      const vue3DSL = cloneDeep(state.dsl);
+      const { vue3Code, vue3ApiCode } = generateVue3Code(vue3DSL) || {};
+      // console.log('vue3Code', vue3Code);
+      if (!vue3Code) return { ...state };
+      return {
+        ...state,
+        sourceCode: vue3Code,
+        apiCode: vue3ApiCode,
+        showSourceCode: !state.showSourceCode,
+        codeType: 'vue3',
+      };
     case 'generate/react':
       const reactDSL = cloneDeep(state.dsl);
-      const {
-        reactCode,
-        apiCode: apiCode2,
-        styleCode,
-      } = generateReactCode(reactDSL) || {};
+      const { reactCode, reactApiCode, styleCode } =
+        generateReactCode(reactDSL) || {};
       // console.log('reactCode', reactCode);
       if (!reactCode) return { ...state };
       return {
         ...state,
         sourceCode: reactCode,
-        apiCode: apiCode2,
+        apiCode: reactApiCode,
         styleCode,
         showSourceCode: !state.showSourceCode,
         codeType: 'react',

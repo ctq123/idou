@@ -768,12 +768,12 @@ const generateReact = () => {
 };
 
 const generateApi = () => {
-  const apiCode = `
+  const reactApiCode = `
     ${renderData.apiImports.join(';\n')}
 
     ${renderData.apis.join('\n')}
   `;
-  return prettierFormat(apiCode, 'babel');
+  return prettierFormat(reactApiCode, 'babel');
 };
 
 const generateStyle = () => {
@@ -805,7 +805,7 @@ const getSourceCode = (DSL: any) => {
     renderData.constOptions = getConstOptions();
     renderData.reactCode = generateReact();
     renderData.styleCode = generateStyle();
-    renderData.apiCode = generateApi();
+    renderData.reactApiCode = generateApi();
     return renderData;
   } catch (e) {
     console.error(e);

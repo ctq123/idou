@@ -1,6 +1,6 @@
 import { message } from 'antd';
 
-import { Vue3XML, styleXML, VueTableRenderXML } from './componentXML';
+import { Vue3XML, styleXML, Vue3TableRenderXML } from './componentXML';
 import {
   prettierFormat,
   transformFunc,
@@ -8,6 +8,7 @@ import {
   generateClassStyle,
 } from '@/utils';
 import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
 
 /**
  * ui的前缀
@@ -15,19 +16,19 @@ import isFunction from 'lodash/isFunction';
 const prefixUI = 'a';
 
 let renderData: any = {
-  reactCode: '',
+  vue3Code: '',
   template: '',
   imports: [],
   asyncImport: {},
   exports: [],
-  asyncExports: {},
+  asyncExport: {},
   constOptions: [],
   constImport: {},
   formRefs: [],
   formRefMap: {},
   componentProps: [],
   data: {},
-  useStates: [],
+  constData: [],
   computed: [],
   methods: [],
   asyncMethod: {},
@@ -60,12 +61,12 @@ const commonFunc = [
 
 const initData = () => {
   renderData = {
-    reactCode: '',
+    vue3Code: '',
     template: '',
     imports: [],
     asyncImport: {},
     exports: [],
-    asyncExports: {},
+    asyncExport: {},
     constOptions: [],
     constImport: {},
     formRefMap: {},
@@ -333,8 +334,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             let col: any = {};
             const newProps = { ...item };
             const renderMothod =
-              VueTableRenderXML[item.renderKey] ||
-              VueTableRenderXML['renderDefault'];
+              Vue3TableRenderXML[item.renderKey] ||
+              Vue3TableRenderXML['renderDefault'];
             let childStr = renderMothod(item.key);
 
             if (item.key) {
@@ -422,8 +423,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               return generateTemplate(item, vmodel);
             } else {
               const renderMothod =
-                VueTableRenderXML[item.renderKey] ||
-                VueTableRenderXML['renderDefault'];
+                Vue3TableRenderXML[item.renderKey] ||
+                Vue3TableRenderXML['renderDefault'];
               // let childStr = renderMothod(item.key);
               let childStr = '';
 
@@ -434,15 +435,15 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 renderData.data[`${item.key}Obj`] = item.enumObj;
               }
 
+              childStr = Vue3XML.CreateDom(
+                getDomName('span', 'native'),
+                'class="title"',
+                `${item.label}：`,
+              );
+              childStr += '\n';
               if (item.render) {
-                childStr = item.render;
+                childStr += item.render;
               } else {
-                childStr = Vue3XML.CreateDom(
-                  getDomName('span', 'native'),
-                  'className="title"',
-                  `${item.label}：`,
-                );
-                childStr += '\n';
                 childStr += renderMothod(item.key, dataKey);
               }
 
@@ -474,10 +475,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const paginationEventStr = getEventStr(schemaDSL);
         const paginationPorps = {
           ...props,
+          'v-bind': paginationDataKey,
           'v-model:current': `${paginationDataKey}.current`,
-          ':showTotal': 'total => 共 ${total} 条',
+          ':showTotal': '`total => 共 ${total} 条`',
         };
-        const paginationAttr = `{...${paginationDataKey}} ${getPropsStr(
+        const paginationAttr = `${getPropsStr(
           paginationPorps,
         )} ${paginationEventStr}`;
         xml = Vue3XML.CreateDom(eleName, paginationAttr, '');
@@ -497,6 +499,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         if (dataKey && renderData.data[dataKey] === undefined) {
           renderData.data[dataKey] = '';
         }
+        vModel && (props['v-model:value'] = vModel);
         const defaultAttr = `${getPropsStr(props)} ${getEventStr(schemaDSL)}`;
         const defaultChildStr = Array.isArray(children)
           ? children
@@ -527,22 +530,11 @@ const getLifeCycle = (item: object = {}) => {
       const { newFunc } = transformFunc(v, name || k);
       let funcStr = newFunc.replace(name, '');
       let i = funcStr.indexOf('{');
-      let effectStr = '';
-      switch (name) {
-        case 'mounted':
-          effectStr = `useEffect(${funcStr.substr(0, i)} => ${funcStr.substr(
-            i,
-          )}, [])`;
-          break;
-        case 'beforeDestroy':
-          effectStr = `useEffect(() => {
-            return ${funcStr.substr(0, i)} => ${funcStr.substr(i)}
-          , [])`;
-          break;
-      }
-      if (effectStr) {
-        lifeList.push(effectStr);
-      }
+      let effectStr = `${name}(${funcStr.substr(0, i)} => ${funcStr.substr(
+        i,
+      )})`;
+      lifeList.push(effectStr);
+      setAsyncImport(name);
     });
   return lifeList;
 };
@@ -569,17 +561,6 @@ const getComputed = (item: object = {}) => {
 
 const getImports = (item: object = {}) => {
   const ilist: any = [];
-  const hooks: any = [];
-  if (Object.keys(renderData.data).length) {
-    hooks.push('useState');
-  }
-  if (renderData.lifecycles.length) {
-    hooks.push('useEffect');
-  }
-  if (hooks.length) {
-    const importStr = `import { ${hooks.join(', ')} } from "react"`;
-    ilist.push(importStr);
-  }
   Object.entries(item).forEach(([k, v]) => {
     const importStr = `import ${k} from "${v}"`;
     ilist.push(importStr);
@@ -590,8 +571,44 @@ const getImports = (item: object = {}) => {
       ilist.push(importStr);
     }
   });
-  ilist.push(`import "./index.less"`);
+  // ilist.push(`import "./index.less"`);
   return ilist;
+};
+
+const getExports = (item: object = {}) => {
+  let elist: any = [];
+  Object.entries(renderData.asyncExport).forEach(([k, v]) => {
+    if (Array.isArray(v)) {
+      elist = elist.concat(v);
+    }
+  });
+  return elist;
+};
+
+/**
+ * 引出依赖包
+ * @param exportObj
+ * @param type 类型
+ */
+const setAsyncExport = (exportObj: string, type: string = 'method') => {
+  if (!renderData.asyncExport[type]) {
+    renderData.asyncExport[type] = [exportObj];
+  } else if (!renderData.asyncExport[type].includes(exportObj)) {
+    renderData.asyncExport[type].push(exportObj);
+  }
+};
+
+/**
+ * 引入依赖包
+ * @param importObj
+ * @param lib
+ */
+const setAsyncImport = (importObj: string, lib: string = 'vue') => {
+  if (!renderData.asyncImport[lib]) {
+    renderData.asyncImport[lib] = [importObj];
+  } else if (!renderData.asyncImport[lib].includes(importObj)) {
+    renderData.asyncImport[lib].push(importObj);
+  }
 };
 
 /**
@@ -640,6 +657,7 @@ const getMethods = (item: object = {}) => {
         const nameStr = str.substr(0, paramStartIndex);
         const funcName = nameStr.replace('async ', '');
         const paramStr = str.substr(0, paramEndIndex);
+        setAsyncExport(funcName, 'method');
         return `const ${funcName} = ${paramStr.replace(
           funcName,
           '',
@@ -652,23 +670,31 @@ const getMethods = (item: object = {}) => {
 
 const getFormRefs = () => {
   const refs: any = [];
+  if (Object.keys(renderData.formRefMap).length) {
+    setAsyncImport('ref');
+  }
   Object.keys(renderData.formRefMap).forEach((k) => {
-    const formStr = `const [ ${k} ] = Form.useForm()`;
+    const formStr = `const ${k} = ref()`;
+    setAsyncExport(k, 'formRef');
     refs.push(formStr);
   });
   return refs;
 };
 
-const getUseStates = () => {
+const getConstData = () => {
   const list: any = [];
   Object.entries(renderData.data).forEach(([k, v]) => {
     if (k) {
-      // 将首写字母变大写
-      const key = k.replace(/^\w/g, (c) => c.toUpperCase());
-      const useStateStr = `const [${k}, set${key}] = useState(${JSON.stringify(
-        v,
-      )})`;
-      list.push(useStateStr);
+      let constStr = '';
+      if (isObject(v) || Array.isArray(v)) {
+        setAsyncImport('reactive');
+        constStr = `const ${k} = reactive(${JSON.stringify(v)})`;
+      } else {
+        setAsyncImport('ref');
+        constStr = `const ${k} = ref(${v})`;
+      }
+      setAsyncExport(k, 'const');
+      list.push(constStr);
     }
   });
   return list;
@@ -724,10 +750,11 @@ const getEventStr = (item: object, extraMap: any = {}) => {
       funcStr = funcStr ? `${funcStr} ` : funcStr;
       if (commonFunc.includes(k)) {
         // 通用的函数事件
-        funcStr += `${k}={${newFuncName}}`;
+        const name = k.replace(/on/, '@').toLowerCase();
+        funcStr += `${name}="${newFuncName}"`;
       } else if (extraMap[k]) {
         // 特定的函数事件
-        funcStr += `${extraMap[k]}={${newFuncName}}`;
+        funcStr += `${extraMap[k]}="${newFuncName}"`;
       }
       renderData.asyncMethod[newFuncName] = newFunc;
     }
@@ -765,29 +792,26 @@ const checkFuncStr = (str: string) => {
 const getPropsStr = (obj: any) => {
   return Object.entries(obj).reduce((pre, [k, v]) => {
     if (v === undefined || v === null) return pre;
-    if (k && k.startsWith(':')) {
-      return `${pre} ${k.substr(1)}={${v}}`;
-    }
     if (typeof v !== 'string') {
-      return `${pre} ${k}={${JSON.stringify(v).replace(/\"/g, "'")}}`;
+      return `${pre} :${k}="${JSON.stringify(v).replace(/\"/g, "'")}"`;
     } else {
       return `${pre} ${k}="${v}"`;
     }
   }, '');
 };
 
-const generateReact = () => {
-  const reactCode = Vue3XML.ReactTemplate(renderData);
-  return prettierFormat(reactCode, 'babel');
+const generateVue3 = () => {
+  const vue3Code = Vue3XML.Vue3Template(renderData);
+  return prettierFormat(vue3Code, 'vue');
 };
 
 const generateApi = () => {
-  const apiCode = `
+  const vue3ApiCode = `
     ${renderData.apiImports.join(';\n')}
 
     ${renderData.apis.join('\n')}
   `;
-  return prettierFormat(apiCode, 'babel');
+  return prettierFormat(vue3ApiCode, 'babel');
 };
 
 const generateStyle = () => {
@@ -801,6 +825,7 @@ const generateStyle = () => {
 const getSourceCode = (DSL: any) => {
   try {
     initData();
+    setAsyncImport('defineComponent');
     const { apiList, apiImportList } = getApis(DSL.apis);
     renderData.data = DSL.dataSource || {};
     renderData.componentProps = getPageProps(DSL.componentProps);
@@ -811,14 +836,15 @@ const getSourceCode = (DSL: any) => {
     renderData.template = generateTemplate(DSL);
     // 动态生成class，有顺序要求
     renderData.styles = getStyles(DSL.type);
+    renderData.formRefs = getFormRefs();
+    renderData.constData = getConstData();
+    renderData.constOptions = getConstOptions();
     renderData.methods = getMethods(DSL.methods);
     renderData.imports = getImports(DSL.imports);
-    renderData.formRefs = getFormRefs();
-    renderData.useStates = getUseStates();
-    renderData.constOptions = getConstOptions();
-    renderData.reactCode = generateReact();
+    renderData.exports = getExports();
+    renderData.vue3Code = generateVue3();
     renderData.styleCode = generateStyle();
-    renderData.apiCode = generateApi();
+    renderData.vue3ApiCode = generateApi();
     return renderData;
   } catch (e) {
     console.error(e);

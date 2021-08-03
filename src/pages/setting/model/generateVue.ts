@@ -23,7 +23,7 @@ import isFunction from 'lodash/isFunction';
 const prefixUI = 'el';
 
 let renderData: any = {
-  vueCode: '',
+  vue2Code: '',
   template: '',
   imports: [],
   componentProps: [],
@@ -62,7 +62,7 @@ const commonFunc = [
 
 const initData = () => {
   renderData = {
-    vueCode: '',
+    vue2Code: '',
     template: '',
     imports: [],
     componentProps: [],
@@ -669,18 +669,18 @@ const getPropsStr = (obj: any) => {
   }, '');
 };
 
-const generateVue = () => {
-  const vueCode = VueXML.VueTemplate(renderData);
-  return prettierFormat(vueCode, 'vue');
+const generateVue2 = () => {
+  const vue2Code = VueXML.VueTemplate(renderData);
+  return prettierFormat(vue2Code, 'vue');
 };
 
 const generateApi = () => {
-  const apiCode = `
+  const vue2ApiCode = `
     ${renderData.apiImports.join(';\n')}
 
     ${renderData.apis.join('\n')}
   `;
-  return prettierFormat(apiCode, 'babel');
+  return prettierFormat(vue2ApiCode, 'babel');
 };
 
 const getSourceCode = (DSL: any) => {
@@ -698,8 +698,8 @@ const getSourceCode = (DSL: any) => {
     // 动态生成class，有顺序要求
     renderData.styles = getStyles(DSL.type);
     renderData.methods = getMethods(DSL.methods);
-    renderData.vueCode = generateVue();
-    renderData.apiCode = generateApi();
+    renderData.vue2Code = generateVue2();
+    renderData.vue2ApiCode = generateApi();
     return renderData;
   } catch (e) {
     console.error(e);

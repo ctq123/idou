@@ -19,6 +19,12 @@ const Header = () => {
           { fileName: 'api/index.js', fileCode: apiCode },
         ];
         break;
+      case 'vue3':
+        list = [
+          { fileName: 'index.vue', fileCode: sourceCode },
+          { fileName: 'api/index.js', fileCode: apiCode },
+        ];
+        break;
       case 'react':
         list = [
           { fileName: 'index.js', fileCode: sourceCode },
@@ -34,7 +40,7 @@ const Header = () => {
   }, [appContext.state.showSourceCode]);
 
   const handleGenerate = (type = 'vue2') => {
-    if (!['react', 'vue2'].includes(type)) return;
+    if (!['react', 'vue2', 'vue3'].includes(type)) return;
     appContext.dispatch({
       type: `generate/${type}`,
       data: {},
@@ -114,6 +120,13 @@ const Header = () => {
           onClick={() => handleGenerate('vue2')}
         >
           生成vue2源码
+        </Button>
+        <Button
+          type="primary"
+          id={'btn-generate-code-vue3'}
+          onClick={() => handleGenerate('vue3')}
+        >
+          生成vue3源码
         </Button>
         <Button
           type="primary"
