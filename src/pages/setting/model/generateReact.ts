@@ -81,8 +81,11 @@ const getDomName = (componentName: string, componentType: any = 'antd') => {
     case 'native':
       return componentName.toLowerCase();
     case 'custom':
+      return componentName;
     default:
-      setAsyncImport(componentName);
+      if (!(componentName.indexOf('.') > -1)) {
+        setAsyncImport(componentName);
+      }
       return prefixUI + componentName;
   }
 };

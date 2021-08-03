@@ -36,6 +36,7 @@ const DSL = {
             },
             {
               componentName: 'StatusTag',
+              componentType: 'custom',
               props: {
                 statusKey: 'record.status',
                 statusTagObj: {

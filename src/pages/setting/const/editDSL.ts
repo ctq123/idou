@@ -8,6 +8,7 @@ const DSL = {
   children: [
     {
       componentName: 'CrumbBack',
+      componentType: 'custom',
       props: {},
       isEdit: true,
       children: '编辑商品',
