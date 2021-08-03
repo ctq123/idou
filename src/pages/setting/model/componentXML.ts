@@ -110,18 +110,18 @@ export const Vue3XML: any = {
   CrumbBack: (attrStr: any, childStr: any) => {
     return `
     <div class="go-back">
-      <i class="el-icon-back" ${attrStr}></i>
+      <i class="a-icon-back" ${attrStr}></i>
       <span class="bread">${childStr}</span>
     </div>
     `;
   },
   StatusTag: (status: any, tagObj: any) => {
-    return `<el-tag
+    return `<a-tag
       v-if="${tagObj}[${status}]"
       :type="(${tagObj}[${status}] || {}).tag"
     >
       {{ (${tagObj}[${status}] || {}).value }}
-    </el-tag>
+    </a-tag>
     `;
   },
   CreateDom: (name: any, attrStr: any, childStr: any) => {

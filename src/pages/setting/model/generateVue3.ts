@@ -167,7 +167,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
 
               return Vue3XML.CreateDom(
                 getDomName('Col'),
-                `{ ...colProps }`,
+                `v-bind="colProps"`,
                 itemChildren,
               );
             })
@@ -203,7 +203,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           );
           buttonItemsStr = Vue3XML.CreateDom(
             getDomName('Col'),
-            `{ ...colProps }`,
+            `v-bind="colProps"`,
             buttonItemsStr,
           );
           formChildStr = `${formItemsStr}\n${buttonItemsStr}`;
@@ -214,7 +214,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
 
         formChildStr = Vue3XML.CreateDom(
           getDomName('Row'),
-          `gutter={20}`,
+          `:gutter="20"`,
           formChildStr,
         );
 
@@ -230,13 +230,16 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             return Vue3XML.CreateDom(
               getDomName('SelectOption'),
               getPropsStr(item),
-              '',
+              item.label,
             );
           })
           .join('\n');
         const selectProps = {
           ...props,
         };
+        if (vModel) {
+          selectProps['v-model:value'] = vModel;
+        }
         const selectAttr = `${getPropsStr(selectProps)} ${getEventStr(
           schemaDSL,
         )}`;
@@ -247,6 +250,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           style: 'width: 100%',
           ...props,
         };
+        if (vModel) {
+          rangepickerProps['v-model:value'] = vModel;
+        }
         const rangePickerAttr = `${getPropsStr(rangepickerProps)} ${getEventStr(
           schemaDSL,
         )}`;
@@ -269,6 +275,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const radioGroupProps: any = {
           ...props,
         };
+        if (vModel) {
+          radioGroupProps['v-model:value'] = vModel;
+        }
         const radioGroupAttr = `${getPropsStr(radioGroupProps)} ${getEventStr(
           schemaDSL,
         )}`;
@@ -284,7 +293,8 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           const dataKey1 = key + 'CategoryOptions';
           renderData.data[dataKey1] = options || [];
           delete cascaderProps.options;
-          cascaderProps['options'] = `{ ${dataKey1} }`;
+          cascaderProps[':options'] = dataKey1;
+          cascaderProps['v-model:value'] = vModel;
         }
         const cascaderAttr = `${getPropsStr(cascaderProps)} ${getEventStr(
           schemaDSL,
@@ -296,6 +306,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const autoCompleteProps: any = {
           ...props,
         };
+        if (vModel) {
+          autoCompleteProps['v-model:value'] = vModel;
+        }
         const autoCompleteAttr = `${getPropsStr(
           autoCompleteProps,
         )} ${autoCompleteEventStr}`;
@@ -305,72 +318,93 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         const listKey = dataKey || 'list';
         renderData.data[listKey] = [];
 
-        let columns = [];
+        let columns: any = [];
+        let columnsStr = [];
         if (type === 'editTable') {
           // // 添加选择行
-          // columns += Vue3XML.CreateDom(
-          //   'el-table-column',
+          // columns += VueXML.CreateDom(
+          //   getDomName('TableColumn'),
           //   `type="selection" width="50"`,
           //   '',
           // );
         }
-        columns = (children || []).map((item: any) => {
-          const newProps = { ...item };
-          // const renderMothod =
-          //   VueTableRenderXML[item.renderKey] ||
-          //   VueTableRenderXML['renderDefault'];
-          // let childStr = renderMothod(item.key);
-          let childStr = '';
+        columnsStr = (children || [])
+          .map((item: any) => {
+            let col: any = {};
+            const newProps = { ...item };
+            const renderMothod =
+              VueTableRenderXML[item.renderKey] ||
+              VueTableRenderXML['renderDefault'];
+            let childStr = renderMothod(item.key);
 
-          if (item.key) {
-            delete newProps.key;
-            delete newProps.renderKey;
-          }
-          if (item.label) {
-            delete newProps.label;
-          }
-          if (item.minWidth) {
-            delete newProps.minWidth;
-          }
-          if (item.render) {
-            childStr = item.render;
-          }
-          if (item.enumObj) {
-            renderData.data[`${item.key}Obj`] = item.enumObj;
-            delete newProps.enumObj;
-          }
-          if (Array.isArray(item.children)) {
-            // 编辑类型
-            delete newProps.children;
-            delete newProps.uuid;
-            const vmodel = listKey && item.key ? `row.${item.key}` : '';
-            childStr = (item.children || [])
-              .map((child: any) => generateTemplate(child, vmodel))
-              .join('');
-          }
-          // 重新扫描是否包含函数
-          checkFuncStr(childStr);
-          getPropsStr(newProps);
-          if (childStr) {
-            newProps.render = `(text, row) => (<>${childStr}</>)`;
-          }
-          return {
-            ...newProps,
-            title: item.label,
-            dataIndex: item.key,
-          };
-        });
+            if (item.key) {
+              delete newProps.key;
+              delete newProps.renderKey;
+            }
+            if (item.label) {
+              delete newProps.label;
+            }
+            if (item.minWidth) {
+              delete newProps.minWidth;
+            }
+            if (item.render) {
+              childStr = item.render;
+              delete newProps.render;
+            }
+            if (item.enumObj) {
+              renderData.data[`${item.key}Obj`] = item.enumObj;
+              delete newProps.enumObj;
+            }
+            if (Array.isArray(item.children)) {
+              // 编辑类型
+              delete newProps.children;
+              delete newProps.uuid;
+              const vmodel = listKey && item.key ? `row.${item.key}` : '';
+              childStr = (item.children || [])
+                .map((child: any) => generateTemplate(child, vmodel))
+                .join('');
+            }
+            // 重新扫描是否包含函数
+            checkFuncStr(childStr);
+            getPropsStr(newProps);
+            col = {
+              ...newProps,
+              title: item.label,
+              dataIndex: item.key,
+            };
+            if (!['', 'renderDefault'].includes(item.renderKey)) {
+              if (item.renderKey === 'renderOperate') {
+                col['slots'] = { customRender: 'action' };
+              } else {
+                col['slots'] = { customRender: item.key };
+              }
+              columns.push(col);
+              return Vue3XML.CreateDom(
+                getDomName('template', 'custom'),
+                `#${item.key}="{ record: row }"`,
+                childStr,
+              );
+            } else {
+              columns.push(col);
+              return null;
+            }
+          })
+          .filter(Boolean)
+          .join('\n');
 
         renderData.data[`${listKey}Columns`] = columns;
 
         const tableProps = {
-          border: true,
           ...props,
           pagination: false,
           ':columns': `${listKey}Columns`,
           ':dataSource': `${listKey}`,
         };
-        xml = Vue3XML.CreateDom(eleName, getPropsStr(tableProps), ``);
+        xml = Vue3XML.CreateDom(
+          eleName,
+          getPropsStr(tableProps),
+          `\n${columnsStr}\n`,
+        );
         break;
       case 'Row':
         if (dataKey) {
@@ -437,12 +471,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           pageSize: 20,
           total: 0,
         };
-        const paginationEventStr = getEventStr(schemaDSL, {
-          onPageChange: 'onChange',
-        });
+        const paginationEventStr = getEventStr(schemaDSL);
         const paginationPorps = {
           ...props,
-          showSizeChanger: false,
+          'v-model:current': `${paginationDataKey}.current`,
+          ':showTotal': 'total => 共 ${total} 条',
         };
         const paginationAttr = `{...${paginationDataKey}} ${getPropsStr(
           paginationPorps,

@@ -360,7 +360,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         renderData.data[`${listKey}Columns`] = columns;
 
         const tableProps = {
-          border: true,
           ...props,
           pagination: false,
           ':columns': `${listKey}Columns`,
@@ -408,6 +407,11 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 );
                 childStr += '\n';
                 childStr += renderMothod(item.key, dataKey);
+                console.log(
+                  'renderMothod',
+                  renderMothod,
+                  renderMothod(item.key, dataKey),
+                );
               }
 
               // 重新扫描是否包含函数

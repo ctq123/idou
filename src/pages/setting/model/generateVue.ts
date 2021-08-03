@@ -392,7 +392,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           .join('\n');
 
         const tableProps = {
-          border: true,
           ...props,
           ':data': listKey,
         };

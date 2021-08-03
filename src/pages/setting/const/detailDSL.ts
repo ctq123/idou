@@ -206,7 +206,10 @@ const DSL = {
             },
             {
               componentName: 'Table',
-              props: {},
+              props: {
+                size: 'small',
+                border: true,
+              },
               dataKey: 'list',
               children: [
                 {
