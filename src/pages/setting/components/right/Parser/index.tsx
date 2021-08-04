@@ -325,15 +325,18 @@ const Parser = () => {
                 return (
                   <>
                     <a>查看</a>
-                    <Divider type="vertical"></Divider>
-                    <a>编辑</a>
+                    <a style={{ marginLeft: 8 }}>编辑</a>
                   </>
                 );
               };
             }
             if (Array.isArray(item.children)) {
               col.render = () => {
-                return generateComponent(item.children[0], uuid, 0);
+                return (
+                  <>
+                    {item.children.map((c, i) => generateComponent(c, uuid, i))}
+                  </>
+                );
               };
             }
             return col;

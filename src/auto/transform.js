@@ -95,7 +95,7 @@ const checkFiledType = (item) => {
   let label = '';
   let fileType = 'default';
   let enumObj = {};
-  label = item.descriptio || item.title || 'null';
+  label = item.description || item.title || 'null';
   if (item.properties) {
     label = 'object=' + label;
   }
