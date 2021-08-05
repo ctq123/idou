@@ -116,7 +116,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           ? { ...renderData.data[formDataKey] }
           : {};
 
-        const childs = children || [];
+        const formChildren = children || [];
         const buttonItems = (list: any) =>
           list.map((item: any) => {
             if (!item) return '';
@@ -169,10 +169,10 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           ref: formDataKey,
         };
 
-        let buttonItemsStr = !childs[childs.length - 1].key
-          ? buttonItems(childs.splice(-1))
+        let buttonItemsStr = !formChildren[formChildren.length - 1].key
+          ? buttonItems(formChildren.splice(-1))
           : '';
-        let formItemsStr = formItems(childs);
+        let formItemsStr = formItems(formChildren);
         let formChildStr = null;
 
         // 生成rules
@@ -408,7 +408,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             : {};
         }
 
-        const rowChilds = (children || [])
+        const rowChildren = (children || [])
           .filter(Boolean)
           .map((item: any) => {
             if (item.componentName) {
@@ -457,7 +457,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           })
           .join('\n');
 
-        xml = VueXML.CreateDom(eleName, getPropsStr(props), rowChilds);
+        xml = VueXML.CreateDom(eleName, getPropsStr(props), rowChildren);
         break;
       case 'Pagination':
         const paginationDataKey = dataKey || 'pagination';

@@ -399,7 +399,7 @@ const Parser = () => {
             rowProps.onClick = (e: any) =>
               handleComponentClick(e, componentDSL, parentUuid, index);
           }
-          const colChilds = (children || [])
+          const colChildren = (children || [])
             .filter(Boolean)
             .map((item: any, i: number) => {
               if (item.componentName) {
@@ -418,7 +418,7 @@ const Parser = () => {
               }
             })
             .filter(Boolean);
-          return <Row2 {...rowProps}>{colChilds}</Row2>;
+          return <Row2 {...rowProps}>{colChildren}</Row2>;
         case 'CrumbBack':
           // const title: any = dataSource.title || '';
           const crumbbackProps = { ...props };
