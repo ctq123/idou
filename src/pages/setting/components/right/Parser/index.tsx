@@ -320,16 +320,6 @@ const Parser = () => {
               title: item.label,
               dataIndex: item.key,
             };
-            if (item.renderKey === 'renderOperate') {
-              col.render = () => {
-                return (
-                  <>
-                    <a>查看</a>
-                    <a style={{ marginLeft: 8 }}>编辑</a>
-                  </>
-                );
-              };
-            }
             if (Array.isArray(item.children)) {
               col.render = () => {
                 return (

@@ -6,6 +6,7 @@ import {
   transformFunc,
   replaceObjKey,
   generateClassStyle,
+  serialize,
 } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
@@ -90,7 +91,11 @@ const getDomName = (componentName: string, componentType: any = 'antd') => {
   }
 };
 
-const generateTemplate = (schemaDSL: any, vModel?: any) => {
+const generateTemplate = (
+  schemaDSL: any,
+  vModel?: any,
+  isGlobalParams?: any,
+) => {
   const {
     componentName,
     props,
@@ -125,7 +130,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           list.map((item: any) => {
             if (!item) return '';
             const itemChildren = (item.children || [])
-              .map((child: any) => generateTemplate(child))
+              .map((child: any) =>
+                generateTemplate(child, vModel, isGlobalParams),
+              )
               .join('');
             return itemChildren;
           });
@@ -151,7 +158,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 }
               }
               let itemChildren = (item.children || [])
-                .map((child: any) => generateTemplate(child, vmodel))
+                .map((child: any) =>
+                  generateTemplate(child, vmodel, isGlobalParams),
+                )
                 .join('');
 
               itemChildren = ReactXML.CreateDom(
@@ -319,11 +328,6 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             ReactTableRenderXML[item.renderKey] ||
             ReactTableRenderXML['renderDefault'];
           let childStr = renderMothod(item.key);
-          // let childStr = '';
-
-          if (item.renderKey === 'renderOperate') {
-            setAsyncImport('Button');
-          }
 
           if (item.key) {
             delete newProps.key;
@@ -342,25 +346,45 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             renderData.data[`${item.key}Obj`] = item.enumObj;
             delete newProps.enumObj;
           }
-          if (Array.isArray(item.children)) {
+          if (Array.isArray(item.children) && item.children.length) {
             // 编辑类型
             delete newProps.children;
             delete newProps.uuid;
-            const vmodel = listKey && item.key ? `row.${item.key}` : '';
+            const vmodel =
+              listKey && item.key && type === 'editTable'
+                ? `row.${item.key}`
+                : '';
             childStr = (item.children || [])
-              .map((child: any) => generateTemplate(child, vmodel))
+              .map((child: any) => generateTemplate(child, vmodel, true))
               .join('');
           }
           // 重新扫描是否包含函数
           checkFuncStr(childStr);
           getPropsStr(newProps);
-          return {
+          // const renderFunc = () => childStr
+          // function fn(obj: any) {
+          //   return new Function(`"use strict"; return (text: any, row: any) => { return ${obj} }`);
+          // }
+          // const a = fn(childStr)
+          const res = {
             ...newProps,
             title: item.label,
             dataIndex: item.key,
-            render: `(text, row) => (<div>${childStr}</div>)`,
           };
+          if (
+            item.renderKey !== 'renderDefault' ||
+            !ReactTableRenderXML[item.renderKey]
+          ) {
+            console.log('childStr', childStr);
+            // // TODO 转化函数包含全局变量的问题
+            // res.render = (text: any, row: any) => {
+            //   return `${childStr}`
+            // }
+          }
+          return res;
         });
+
+        // console.log("columns", columns)
 
         renderData.data[`${listKey}Columns`] = columns;
 
@@ -387,7 +411,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             if (item.componentName) {
               const vmodel =
                 dataKey && item.key ? `${dataKey}.${item.key}` : '';
-              return generateTemplate(item, vmodel);
+              return generateTemplate(item, vmodel, isGlobalParams);
             } else {
               const renderMothod =
                 ReactTableRenderXML[item.renderKey] ||
@@ -475,13 +499,17 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
         if (dataKey && renderData.data[dataKey] === undefined) {
           renderData.data[dataKey] = '';
         }
-        const defaultAttr = `${getPropsStr(props)} ${getEventStr(schemaDSL)}`;
+        const defaultAttr = `${getPropsStr(props)} ${getEventStr(
+          schemaDSL,
+          {},
+          isGlobalParams,
+        )}`;
         const defaultChildStr = Array.isArray(children)
           ? children
               .filter(Boolean)
               .map((t) => {
                 if (t.componentName) {
-                  return generateTemplate(t);
+                  return generateTemplate(t, vModel, isGlobalParams);
                 } else {
                   return t;
                 }
@@ -655,9 +683,7 @@ const getUseStates = () => {
     if (k) {
       // 将首写字母变大写
       const key = k.replace(/^\w/g, (c) => c.toUpperCase());
-      const useStateStr = `const [${k}, set${key}] = useState(${JSON.stringify(
-        v,
-      )})`;
+      const useStateStr = `const [${k}, set${key}] = useState(${serialize(v)})`;
       list.push(useStateStr);
     }
   });
@@ -706,20 +732,35 @@ const getApis = (item: object = {}) => {
   return { apiList, apiImportList };
 };
 
-const getEventStr = (item: object, extraMap: any = {}) => {
+/**
+ * 处理事件字符串
+ * @param item dsl
+ * @param extraMap 特定函数事件
+ * @param isGlobalParams 是否包含全局参数
+ * @returns
+ */
+const getEventStr = (
+  item: object,
+  extraMap: any = {},
+  isGlobalParams: any = false,
+) => {
   let funcStr = '';
   Object.entries(item).forEach(([k, v]) => {
     if ((typeof v === 'string' && v.includes('function')) || isFunction(v)) {
-      const { newFunc, newFuncName } = transformFunc(v);
+      const { newFunc, newFuncName, params = '' } = transformFunc(v);
+      const isValidParams = params.replace(/\(|\)/g, '').trim();
+      // 判断是否含有全局参数
+      const paramsStr = isValidParams && isGlobalParams ? params : '';
+      const funcName = newFuncName + paramsStr;
       funcStr = funcStr ? `${funcStr} ` : funcStr;
       if (commonFunc.includes(k)) {
         // 通用的函数事件
-        funcStr += `${k}={${newFuncName}}`;
+        funcStr += `${k}={${funcName}}`;
       } else if (extraMap[k]) {
         // 特定的函数事件
-        funcStr += `${extraMap[k]}={${newFuncName}}`;
+        funcStr += `${extraMap[k]}={${funcName}}`;
       }
-      renderData.asyncMethod[newFuncName] = newFunc;
+      renderData.asyncMethod[funcName] = newFunc;
     }
   });
   return funcStr;
@@ -758,7 +799,7 @@ const getPropsStr = (obj: any) => {
       return `${pre} ${k.substr(1)}={${v}}`;
     }
     if (typeof v !== 'string') {
-      return `${pre} ${k}={${JSON.stringify(v).replace(/\"/g, "'")}}`;
+      return `${pre} ${k}={${serialize(v).replace(/\"/g, "'")}}`;
     } else {
       return `${pre} ${k}="${v}"`;
     }
@@ -767,6 +808,7 @@ const getPropsStr = (obj: any) => {
 
 const generateReact = () => {
   const reactCode = ReactXML.ReactTemplate(renderData);
+  // console.log("reactCode", reactCode)
   return prettierFormat(reactCode, 'babel');
 };
 

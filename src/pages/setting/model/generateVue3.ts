@@ -96,7 +96,11 @@ const getDomName = (componentName: string, componentType: any = 'antdv') => {
   }
 };
 
-const generateTemplate = (schemaDSL: any, vModel?: any) => {
+const generateTemplate = (
+  schemaDSL: any,
+  vModel?: any,
+  isGlobalParams?: any,
+) => {
   const {
     componentName,
     props,
@@ -131,7 +135,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           list.map((item: any) => {
             if (!item) return '';
             const itemChildren = (item.children || [])
-              .map((child: any) => generateTemplate(child))
+              .map((child: any) =>
+                generateTemplate(child, vModel, isGlobalParams),
+              )
               .join('');
             return itemChildren;
           });
@@ -157,7 +163,9 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
                 }
               }
               let itemChildren = (item.children || [])
-                .map((child: any) => generateTemplate(child, vmodel))
+                .map((child: any) =>
+                  generateTemplate(child, vmodel, isGlobalParams),
+                )
                 .join('');
 
               itemChildren = Vue3XML.CreateDom(
@@ -360,9 +368,12 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
               // 编辑类型
               delete newProps.children;
               delete newProps.uuid;
-              const vmodel = listKey && item.key ? `row.${item.key}` : '';
+              const vmodel =
+                listKey && item.key && type === 'editTable'
+                  ? `row.${item.key}`
+                  : '';
               childStr = (item.children || [])
-                .map((child: any) => generateTemplate(child, vmodel))
+                .map((child: any) => generateTemplate(child, vmodel, true))
                 .join('');
             }
             // 重新扫描是否包含函数
@@ -420,7 +431,7 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
             if (item.componentName) {
               const vmodel =
                 dataKey && item.key ? `${dataKey}.${item.key}` : '';
-              return generateTemplate(item, vmodel);
+              return generateTemplate(item, vmodel, isGlobalParams);
             } else {
               const renderMothod =
                 Vue3TableRenderXML[item.renderKey] ||
@@ -500,13 +511,17 @@ const generateTemplate = (schemaDSL: any, vModel?: any) => {
           renderData.data[dataKey] = '';
         }
         vModel && (props['v-model:value'] = vModel);
-        const defaultAttr = `${getPropsStr(props)} ${getEventStr(schemaDSL)}`;
+        const defaultAttr = `${getPropsStr(props)} ${getEventStr(
+          schemaDSL,
+          {},
+          isGlobalParams,
+        )}`;
         const defaultChildStr = Array.isArray(children)
           ? children
               .filter(Boolean)
               .map((t) => {
                 if (t.componentName) {
-                  return generateTemplate(t);
+                  return generateTemplate(t, vModel, isGlobalParams);
                 } else {
                   return t;
                 }
@@ -742,21 +757,36 @@ const getApis = (item: object = {}) => {
   return { apiList, apiImportList };
 };
 
-const getEventStr = (item: object, extraMap: any = {}) => {
+/**
+ * 处理事件字符串
+ * @param item dsl
+ * @param extraMap 特定函数事件
+ * @param isGlobalParams 是否包含全局参数
+ * @returns
+ */
+const getEventStr = (
+  item: object,
+  extraMap: any = {},
+  isGlobalParams: any = false,
+) => {
   let funcStr = '';
   Object.entries(item).forEach(([k, v]) => {
     if ((typeof v === 'string' && v.includes('function')) || isFunction(v)) {
-      const { newFunc, newFuncName } = transformFunc(v);
+      const { newFunc, newFuncName, params = '' } = transformFunc(v);
+      const isValidParams = params.replace(/\(|\)/g, '').trim();
+      // 判断是否含有全局参数
+      const paramsStr = isValidParams && isGlobalParams ? params : '';
+      const funcName = newFuncName + paramsStr;
       funcStr = funcStr ? `${funcStr} ` : funcStr;
       if (commonFunc.includes(k)) {
         // 通用的函数事件
         const name = k.replace(/on/, '@').toLowerCase();
-        funcStr += `${name}="${newFuncName}"`;
+        funcStr += `${name}="${funcName}"`;
       } else if (extraMap[k]) {
         // 特定的函数事件
-        funcStr += `${extraMap[k]}="${newFuncName}"`;
+        funcStr += `${extraMap[k]}="${funcName}"`;
       }
-      renderData.asyncMethod[newFuncName] = newFunc;
+      renderData.asyncMethod[funcName] = newFunc;
     }
   });
   return funcStr;

@@ -198,24 +198,6 @@ export const VueTableRenderXML: any = {
   renderAmount: (key: string, obj = 'row') => {
     return `{{ ${obj}.${key} ? Number(${obj}.${key}) / 100 : '-' }}`;
   },
-  renderOperate: (key: string, obj = 'row') => {
-    return `
-    <el-button
-      type="text"
-      size="small"
-      @click="handleView(${obj})"
-    >
-      查看
-    </el-button>
-    <el-button
-      type="text"
-      size="small"
-      @click="handleEdit(${obj})"
-    >
-      编辑
-    </el-button>       
-    `;
-  },
   renderEllipsis: (key: string, obj = 'row') => {
     return `<ellipsis-popover class="f1" :content="${obj}.${key}"></ellipsis-popover>`;
   },
@@ -237,25 +219,6 @@ export const Vue3TableRenderXML: any = {
   renderAmount: (key: string, obj = 'row') => {
     return `{{ ${obj}.${key} ? Number(${obj}.${key}) / 100 : '-' }}`;
   },
-  renderOperate: (key: string, obj = 'row') => {
-    return `
-    <a-button
-      type="text"
-      size="small"
-      @click="handleView(${obj})"
-    >
-      查看
-    </a-button>
-    <a-divider type="vertical" />
-    <a-button
-      type="text"
-      size="small"
-      @click="handleEdit(${obj})"
-    >
-      编辑
-    </a-button>       
-    `;
-  },
   renderEllipsis: (key: string, obj = 'row') => {
     return `<ellipsis-popover class="f1" :content="${obj}.${key}"></ellipsis-popover>`;
   },
@@ -276,24 +239,6 @@ export const ReactTableRenderXML: any = {
   },
   renderAmount: (key: string, obj = 'row') => {
     return `{ ${obj}.${key} ? Number(${obj}.${key}) / 100 : '-' }`;
-  },
-  renderOperate: (key: string, obj = 'row') => {
-    return `
-    <Button
-      type="link"
-      size="small"
-      onClick={handleView(${obj})}
-    >
-      查看
-    </Button>
-    <Button
-      type="link"
-      size="small"
-      onClick={handleEdit(${obj})}
-    >
-      编辑
-    </Button>       
-    `;
   },
   renderEllipsis: (key: string, obj = 'row') => {
     return `{ ${obj}.${key} }`;

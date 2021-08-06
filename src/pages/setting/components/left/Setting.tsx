@@ -55,7 +55,8 @@ const Setting = (props: IProps) => {
   const [visible, setVisible] = useState(false);
   const [codeType, setCodeType] = useState('component') as any;
   const [codeValue, setCodeValue] = useState('');
-  const [codeKey, setCodeKey] = useState(-1);
+  const [codeKey, setCodeKey] = useState('');
+  const [codeIndex, setCodeIndex] = useState(-1);
   const [initValues, setInitValues] = useState({});
   const [modalProps, setModalProps] = useState({
     value: [] as any,
@@ -182,7 +183,7 @@ const Setting = (props: IProps) => {
       }
       setCodeValue(value);
     }
-    setCodeKey(index);
+    setCodeIndex(index);
     setCodeType(codeType);
     setVisible(true);
     if (index === -1) {
@@ -206,15 +207,14 @@ const Setting = (props: IProps) => {
     let newCode = code;
     setVisible(visible);
     if (props.component && !isEmpty(code)) {
-      if (codeKey > -1) {
+      if (codeIndex > -1) {
         if (codeType === 'html') {
-          children[codeKey].render = code;
-          newCode = props.component;
+          children[codeIndex].render = code;
         } else if (codeType === 'component') {
           // 改变原数据component.children
-          children.splice(codeKey, 1, code);
-          newCode = props.component;
+          children.splice(codeIndex, 1, code);
         }
+        newCode = props.component;
       }
       newCode['uuid'] = getUid(); // 更新uuid，让监听uuid变化的组件都能同步更新
       props.handleCB && props.handleCB(newCode);
@@ -231,8 +231,8 @@ const Setting = (props: IProps) => {
     });
     const configs = form.getFieldValue('configs');
     if (modalProps.contentType === 'changeOptions') {
-      if (codeKey > -1) {
-        configs[codeKey].children[0].options = (list || []).map(
+      if (codeIndex > -1) {
+        configs[codeIndex].children[0].options = (list || []).map(
           ({ key = '', label = '' }: any) => ({ value: key, label: label }),
         );
       }
@@ -241,8 +241,8 @@ const Setting = (props: IProps) => {
       (list || []).forEach(({ key = '', label = '' }: any) => {
         enumObj[key] = label;
       });
-      if (codeKey > -1) {
-        configs[codeKey].enumObj = enumObj;
+      if (codeIndex > -1) {
+        configs[codeIndex].enumObj = enumObj;
         form.setFieldsValue(configs);
       }
     }
@@ -256,7 +256,7 @@ const Setting = (props: IProps) => {
       const obj = { ...ComponentsDSL[comType] };
       configs[i].children = [obj];
       if (['du-select', 'du-radioGroup'].includes(comType)) {
-        setCodeKey(i);
+        setCodeIndex(i);
         setModalProps({
           visible: true,
           // @ts-ignore
@@ -281,15 +281,18 @@ const Setting = (props: IProps) => {
     console.log('handleRenderChange comType', comType);
     const configs = form.getFieldValue('configs');
     console.log('configs', configs);
+
+    setCodeKey(comType); // 强制刷新
     if (comType === 'renderEnum') {
       const value = configs[i].enumObj || defaultSelectOptions;
-      setCodeKey(i);
+      setCodeIndex(i);
       setModalProps({
         visible: true,
         value: Object.entries(value).map(([k, v]) => ({ key: k, label: v })),
         contentType: 'renderEnum',
       });
     }
+
     gtag('event', 'handleRenderChange', {
       event_category: 'Setting',
       event_action: `类型变更`,
@@ -318,6 +321,9 @@ const Setting = (props: IProps) => {
               }
               if (item.renderKey !== 'renderEnum' && obj.enumObj) {
                 delete obj.enumObj;
+              }
+              if (item.renderKey === 'renderOperate' && !obj.children) {
+                obj.children = [ComponentsDSL['du-tableOperateCol']];
               }
               if (obj.objKey) {
                 delete obj.objKey;
@@ -395,113 +401,124 @@ const Setting = (props: IProps) => {
   };
 
   const generateFormItem = (fields: any, remove: any, move: any, add: any) => {
-    // console.log('fields', fields);
     const prefix = dataKey
       ? componentName === 'Table'
         ? `row.`
         : `${dataKey}.`
       : undefined;
+    const configs = form.getFieldValue('configs');
+    // console.log("generateFormItem configs", configs)
     switch (componentName) {
       case 'Row':
       case 'Table':
         return (
           <>
-            {fields.map((field: any, i: number) => (
-              <div key={field.key} className={styles['list-item']}>
-                <Space align="baseline">
-                  <Form.Item
-                    {...field}
-                    style={{ width: 140 }}
-                    name={[field.name, 'label']}
-                    fieldKey={[field.fieldKey, 'label']}
-                    rules={[{ required: true, message: '请输入label' }]}
-                  >
-                    <Input placeholder="label" allowClear />
-                  </Form.Item>
+            {fields.map((field: any, i: number) => {
+              const item = configs[i] || {};
+              // console.log("item", item)
+              const isHideRenderEdit =
+                type === 'editTable' || item.renderKey === 'renderOperate';
+              return (
+                <div key={field.key} className={styles['list-item']}>
+                  <Space align="baseline">
+                    <Form.Item
+                      {...field}
+                      style={{ width: 140 }}
+                      name={[field.name, 'label']}
+                      fieldKey={[field.fieldKey, 'label']}
+                      rules={[{ required: true, message: '请输入label' }]}
+                    >
+                      <Input placeholder="label" allowClear />
+                    </Form.Item>
 
-                  <Form.Item
-                    {...field}
-                    name={[field.name, 'key']}
-                    fieldKey={[field.fieldKey, 'key']}
-                    rules={[{ required: true, message: '请输入key' }]}
-                  >
-                    <Input addonBefore={prefix} placeholder="key" allowClear />
-                  </Form.Item>
-                </Space>
-                <Space align="baseline">
-                  {type === 'editTable' ? (
                     <Form.Item
                       {...field}
-                      name={[field.name, 'type']}
-                      fieldKey={[field.fieldKey, 'type']}
-                      rules={[{ required: false, message: '请选择渲染类型' }]}
+                      name={[field.name, 'key']}
+                      fieldKey={[field.fieldKey, 'key']}
+                      rules={[{ required: true, message: '请输入key' }]}
                     >
-                      <Select
-                        style={{ width: 140 }}
-                        placeholder="渲染类型"
+                      <Input
+                        addonBefore={prefix}
+                        placeholder="key"
                         allowClear
-                        onChange={(val) => handleTypeChange(val, i)}
-                      >
-                        {TableComponents.map((item: any) => (
-                          <Option key={item.key} value={item.key}>
-                            {item.name}
-                          </Option>
-                        ))}
-                      </Select>
+                      />
                     </Form.Item>
-                  ) : (
-                    <Form.Item
-                      {...field}
-                      name={[field.name, 'renderKey']}
-                      fieldKey={[field.fieldKey, 'renderKey']}
-                      rules={[{ required: true, message: '请选择渲染类型' }]}
-                    >
-                      <Select
-                        style={{ width: 140 }}
-                        placeholder="渲染类型"
-                        allowClear
-                        onChange={(val) => handleRenderChange(val, i)}
+                  </Space>
+                  <Space align="baseline">
+                    {type === 'editTable' ? (
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'type']}
+                        fieldKey={[field.fieldKey, 'type']}
+                        rules={[{ required: false, message: '请选择渲染类型' }]}
                       >
-                        {Object.entries(colRenderObj).map(([k, v]: any) => (
-                          <Option key={k} value={k}>
-                            {v}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  )}
-                  <Form.Item>
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<ArrowUpOutlined />}
-                      onClick={() => move(i, i - 1)}
-                    />
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<ArrowDownOutlined />}
-                      onClick={() => move(i, i + 1)}
-                    />
-                    <Button
-                      type="link"
-                      size="small"
-                      icon={<DeleteOutlined />}
-                      onClick={() => remove(field.name)}
-                    />
-                    {type === 'editTable' ? null : (
-                      <Tooltip title="自定义源码渲染">
-                        <Button
-                          type="link"
-                          icon={<FormOutlined />}
-                          onClick={() => handleShowCode('html', i)}
-                        ></Button>
-                      </Tooltip>
+                        <Select
+                          style={{ width: 140 }}
+                          placeholder="渲染类型"
+                          allowClear
+                          onChange={(val) => handleTypeChange(val, i)}
+                        >
+                          {TableComponents.map((item: any) => (
+                            <Option key={item.key} value={item.key}>
+                              {item.name}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                    ) : (
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'renderKey']}
+                        fieldKey={[field.fieldKey, 'renderKey']}
+                        rules={[{ required: true, message: '请选择渲染类型' }]}
+                      >
+                        <Select
+                          style={{ width: 140 }}
+                          placeholder="渲染类型"
+                          allowClear
+                          onChange={(val) => handleRenderChange(val, i)}
+                        >
+                          {Object.entries(colRenderObj).map(([k, v]: any) => (
+                            <Option key={k} value={k}>
+                              {v}
+                            </Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
                     )}
-                  </Form.Item>
-                </Space>
-              </div>
-            ))}
+                    <Form.Item>
+                      <Button
+                        type="link"
+                        size="small"
+                        icon={<ArrowUpOutlined />}
+                        onClick={() => move(i, i - 1)}
+                      />
+                      <Button
+                        type="link"
+                        size="small"
+                        icon={<ArrowDownOutlined />}
+                        onClick={() => move(i, i + 1)}
+                      />
+                      <Button
+                        type="link"
+                        size="small"
+                        icon={<DeleteOutlined />}
+                        onClick={() => remove(field.name)}
+                      />
+                      {isHideRenderEdit ? null : (
+                        <Tooltip title="自定义源码渲染">
+                          <Button
+                            type="link"
+                            icon={<FormOutlined />}
+                            onClick={() => handleShowCode('html', i)}
+                          ></Button>
+                        </Tooltip>
+                      )}
+                    </Form.Item>
+                  </Space>
+                </div>
+              );
+            })}
             <Form.Item>
               <Button
                 type="dashed"

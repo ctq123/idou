@@ -82,9 +82,11 @@ export const prettierFormat = (str: string | null, parser: string) => {
  */
 export const transformFunc = (func: any, newFuncName = '') => {
   const funcStr = func.toString();
-  const start = funcStr.indexOf('function ') + 9;
-  const end = funcStr.indexOf('(');
-  const funcName = funcStr.slice(start, end);
+  const funcStartIndex = funcStr.indexOf('function ') + 9;
+  const paramsStartIndex = funcStr.indexOf('(');
+  const paramsEndIndex = funcStr.indexOf(')');
+  const funcName = funcStr.slice(funcStartIndex, paramsStartIndex);
+  const params = funcStr.slice(paramsStartIndex, paramsEndIndex + 1);
   let newFunc = funcStr.replace('function ', '');
   let funcBodyStart = funcStr.indexOf('{') + 1;
   let funcBodyEnd = funcStr.lastIndexOf('}');
@@ -92,7 +94,7 @@ export const transformFunc = (func: any, newFuncName = '') => {
   if (newFuncName) {
     newFunc = newFunc.replace(funcName, newFuncName);
   }
-  return { newFunc, newFuncName: newFuncName || funcName, funcBody };
+  return { newFunc, newFuncName: newFuncName || funcName, params, funcBody };
 };
 
 /**
@@ -218,6 +220,20 @@ export const toHump = (s: string) => {
  */
 export const toLine = (s: string) => {
   return s.replace(/([A-Z])/g, '-$1').toLowerCase();
+};
+
+/**
+ * 处理JSON.stringify
+ * @param s
+ * @returns
+ */
+export const JSONtoString = (s: any) => {
+  return JSON.stringify(s, function (k, v) {
+    if (typeof v === 'function') {
+      return v.toString();
+    }
+    return v;
+  });
 };
 
 /**

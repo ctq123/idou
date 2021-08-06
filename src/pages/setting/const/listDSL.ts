@@ -334,11 +334,42 @@ const DSL = {
               renderKey: 'renderTime',
             },
             {
-              key: '-',
+              key: 'action',
               label: '操作',
               minWidth: 100,
               fixed: 'right',
               renderKey: `renderOperate`,
+              children: [
+                {
+                  componentName: 'div',
+                  componentType: 'native',
+                  props: {},
+                  children: [
+                    {
+                      componentName: 'Button',
+                      props: {
+                        type: 'text',
+                      },
+                      children: '查看',
+                      onClick: `function handleView(row) {}`,
+                    },
+                    {
+                      componentName: 'Divider',
+                      props: {
+                        direction: 'vertical',
+                      },
+                    },
+                    {
+                      componentName: 'Button',
+                      props: {
+                        type: 'text',
+                      },
+                      children: '编辑',
+                      onClick: `function handleEdit(row) {}`,
+                    },
+                  ],
+                },
+              ],
             },
           ],
         },
