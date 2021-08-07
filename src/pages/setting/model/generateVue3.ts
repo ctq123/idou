@@ -10,12 +10,8 @@ import {
 import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 
-/**
- * ui的前缀
- */
-const prefixUI = 'a';
-
 let renderData: any = {
+  prefixUI: 'a',
   vue3Code: '',
   template: '',
   imports: [],
@@ -59,8 +55,9 @@ const commonFunc = [
   'onSearch',
 ];
 
-const initData = () => {
+const initData = (prefixUI: string) => {
   renderData = {
+    prefixUI: prefixUI,
     vue3Code: '',
     template: '',
     imports: [],
@@ -92,7 +89,10 @@ const getDomName = (componentName: string, componentType: any = 'antdv') => {
     case 'custom':
       return componentName;
     default:
-      return prefixUI + componentName.replace(/([A-Z])/g, '-$1').toLowerCase();
+      return (
+        renderData.prefixUI +
+        componentName.replace(/([A-Z])/g, '-$1').toLowerCase()
+      );
   }
 };
 
@@ -852,9 +852,9 @@ const generateStyle = () => {
   // return prettierFormat(styleCode, 'vue');
 };
 
-const getSourceCode = (DSL: any) => {
+const getSourceCode = (DSL: any, prefixUI: string) => {
   try {
-    initData();
+    initData('a');
     setAsyncImport('defineComponent');
     const { apiList, apiImportList } = getApis(DSL.apis);
     renderData.data = DSL.dataSource || {};

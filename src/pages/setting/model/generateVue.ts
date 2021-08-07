@@ -17,12 +17,8 @@ import {
 } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
-/**
- * ui的前缀
- */
-const prefixUI = 'el';
-
 let renderData: any = {
+  prefixUI: 'el',
   vue2Code: '',
   template: '',
   imports: [],
@@ -60,8 +56,9 @@ const commonFunc = [
   'onSearch',
 ];
 
-const initData = () => {
+const initData = (prefixUI: string) => {
   renderData = {
+    prefixUI: prefixUI,
     vue2Code: '',
     template: '',
     imports: [],
@@ -86,7 +83,10 @@ const getDomName = (componentName: string, componentType: any = 'element') => {
     case 'custom':
       return componentName;
     default:
-      return prefixUI + componentName.replace(/([A-Z])/g, '-$1').toLowerCase();
+      return (
+        renderData.prefixUI +
+        componentName.replace(/([A-Z])/g, '-$1').toLowerCase()
+      );
   }
 };
 
@@ -715,9 +715,9 @@ const generateApi = () => {
   return prettierFormat(vue2ApiCode, 'babel');
 };
 
-const getSourceCode = (DSL: any) => {
+const getSourceCode = (DSL: any, prefixUI: string) => {
   try {
-    initData();
+    initData('el');
     const { apiList, apiImportList } = getApis(DSL.apis);
     renderData.data = DSL.dataSource || {};
     renderData.componentProps = getPageProps(DSL.componentProps);

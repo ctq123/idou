@@ -14,10 +14,55 @@ export const tabs = [
   { code: 'component', label: '组件' },
   { code: 'setting', label: '设置' },
   { code: 'request', label: '请求' },
+  { code: 'uilib', label: 'UI库' },
 ];
 
 const domain = getDomain();
 const baseUrl = `https://cdn.${domain}.com/node-common`;
+
+/**
+ * UI库
+ */
+export const UILib: any = {
+  react: [
+    {
+      prefixUI: '',
+      name: 'Ant Design',
+      libUrl: 'https://ant.design/components/overview-cn/',
+      iconUrl:
+        'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+    },
+  ],
+  vue2: [
+    {
+      prefixUI: 'el',
+      name: 'Element UI',
+      libUrl: 'https://element.eleme.io/#/zh-CN/component/installation',
+      iconUrl: `${baseUrl}/3f4f24f336036d47968bb94f0a87fe36.png`,
+    },
+    {
+      prefixUI: 'a',
+      name: 'Ant Design Vue',
+      libUrl: 'https://1x.antdv.com/docs/vue/introduce-cn',
+      iconUrl: 'https://alicdn.antdv.com/v2/assets/logo.1ef800a8.svg',
+    },
+  ],
+  vue3: [
+    {
+      prefixUI: 'el',
+      name: 'Element Plus UI',
+      libUrl: 'https://element-plus.org/#/zh-CN/component/installation',
+      iconUrl: `${baseUrl}/3f4f24f336036d47968bb94f0a87fe36.png`,
+    },
+    {
+      prefixUI: 'a',
+      name: 'Ant Design Vue',
+      libUrl: 'https://2x.antdv.com/components/overview-cn/',
+      iconUrl: 'https://alicdn.antdv.com/v2/assets/logo.1ef800a8.svg',
+    },
+  ],
+};
+
 /**
  * 模版
  */

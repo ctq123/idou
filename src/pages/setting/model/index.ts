@@ -131,6 +131,7 @@ const initState = {
   apiCode: null,
   styleCode: null,
   codeType: 'vue2',
+  prefixUI: 'el',
   showSourceCode: false,
   dslType: 'list',
   VueTableRenderXML,
@@ -184,7 +185,8 @@ const reducer = (state: any, action: any) => {
       return { ...state, selectedComponent: data };
     case 'generate/vue2':
       const vue2DSL = cloneDeep(state.dsl);
-      const { vue2Code, vue2ApiCode } = generateVueCode(vue2DSL) || {};
+      const { vue2Code, vue2ApiCode } =
+        generateVueCode(vue2DSL, state.prefixUI) || {};
       // console.log('vueCode', vueCode);
       if (!vue2Code) return { ...state };
       return {
@@ -196,7 +198,8 @@ const reducer = (state: any, action: any) => {
       };
     case 'generate/vue3':
       const vue3DSL = cloneDeep(state.dsl);
-      const { vue3Code, vue3ApiCode } = generateVue3Code(vue3DSL) || {};
+      const { vue3Code, vue3ApiCode } =
+        generateVue3Code(vue3DSL, state.prefixUI) || {};
       // console.log('vue3Code', vue3Code);
       if (!vue3Code) return { ...state };
       return {
@@ -209,7 +212,7 @@ const reducer = (state: any, action: any) => {
     case 'generate/react':
       const reactDSL = cloneDeep(state.dsl);
       const { reactCode, reactApiCode, styleCode } =
-        generateReactCode(reactDSL) || {};
+        generateReactCode(reactDSL, state.prefixUI) || {};
       // console.log('reactCode', reactCode);
       if (!reactCode) return { ...state };
       return {
@@ -224,6 +227,8 @@ const reducer = (state: any, action: any) => {
       const newDSL2 = cloneDeep(state.dsl);
       newDSL2.apis = apis;
       return { ...state, dsl: newDSL2 };
+    case 'dsl/uilib/update':
+      return { ...state, codeType: data.codeType, prefixUI: data.prefixUI };
     case 'dsl/type/update':
       let newTypeDSL = null;
       switch (data.dslType) {

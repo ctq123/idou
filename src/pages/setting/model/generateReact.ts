@@ -10,12 +10,8 @@ import {
 } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
-/**
- * ui的前缀
- */
-const prefixUI = '';
-
 let renderData: any = {
+  prefixUI: '',
   reactCode: '',
   template: '',
   imports: [],
@@ -53,8 +49,9 @@ const commonFunc = [
   'onSearch',
 ];
 
-const initData = () => {
+const initData = (prefixUI: string) => {
   renderData = {
+    prefixUI: prefixUI,
     reactCode: '',
     template: '',
     imports: [],
@@ -87,7 +84,7 @@ const getDomName = (componentName: string, componentType: any = 'antd') => {
       if (!(componentName.indexOf('.') > -1)) {
         setAsyncImport(componentName);
       }
-      return prefixUI + componentName;
+      return renderData.prefixUI + componentName;
   }
 };
 
@@ -375,7 +372,7 @@ const generateTemplate = (
             item.renderKey !== 'renderDefault' ||
             !ReactTableRenderXML[item.renderKey]
           ) {
-            console.log('childStr', childStr);
+            // console.log('childStr', childStr);
             // // TODO 转化函数包含全局变量的问题
             // res.render = (text: any, row: any) => {
             //   return `${childStr}`
@@ -828,9 +825,9 @@ const generateStyle = () => {
   return prettierFormat(styleCode, 'less');
 };
 
-const getSourceCode = (DSL: any) => {
+const getSourceCode = (DSL: any, prefixUI: string) => {
   try {
-    initData();
+    initData('');
     const { apiList, apiImportList } = getApis(DSL.apis);
     renderData.data = DSL.dataSource || {};
     renderData.componentProps = getPageProps(DSL.componentProps);

@@ -5,6 +5,7 @@ import { Context } from '@/pages/setting/model';
 import { ModuleComponents } from '../../const/componentDSL';
 import Setting from './Setting';
 import Request from './Request';
+import UILib from './UILib';
 import styles from './index.less';
 
 const { TabPane } = Tabs;
@@ -69,6 +70,13 @@ const Left = () => {
         },
       });
     }
+  };
+
+  const handleUICB = (data: any) => {
+    appContext.dispatch({
+      type: 'dsl/uilib/update',
+      data,
+    });
   };
 
   const addComponent = (item: any) => {
@@ -142,6 +150,14 @@ const Left = () => {
           <Request
             dsl={appContext.state.dsl}
             handleCB={(apis: any) => handleRequestCB(apis)}
+          />
+        );
+      case 'uilib':
+        return (
+          <UILib
+            codeType={appContext.state.codeType}
+            prefixUI={appContext.state.prefixUI}
+            handleCB={(data: any) => handleUICB(data)}
           />
         );
       default:
