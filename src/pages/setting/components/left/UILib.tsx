@@ -36,9 +36,6 @@ const UILibCom = (props: IProps) => {
   };
 
   const onsubmit = () => {
-    message.warn('功能尚在开发中……');
-    return;
-    // TODO
     if (!code || !(UI === '' || UI)) {
       message.error('请选择有效值');
       return;
@@ -83,7 +80,7 @@ const UILibCom = (props: IProps) => {
         </div>
       </div>
 
-      <Button type="primary" size="small" onClick={onsubmit}>
+      <Button type="primary" disabled size="small" onClick={onsubmit}>
         提交
       </Button>
     </div>
