@@ -23,17 +23,23 @@ import styles from './CodeDrawer.less';
 interface IProps {
   valueList: any[];
   visible: boolean;
-  type?: 'vue' | 'html' | 'javascript' | 'less';
   handleCB?: any;
 }
 
 const { TabPane } = Tabs;
 const SourceCodeDrawer = (props: IProps) => {
-  const { valueList = [], handleCB, type = 'vue' } = props;
+  const { valueList = [], handleCB } = props;
   const [tab, setTab] = useState('0');
   const [modalVisible, setModalVisible] = useState(false);
+  // const [monacoLanguage, setMonacoLanguage] = useState('javascript')
   const codeRef: any = React.useRef(null);
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (props.visible) {
+      setTab('0');
+    }
+  }, [props.visible]);
 
   const onClose = () => {
     handleCB && handleCB({ visible: false });
@@ -61,6 +67,7 @@ const SourceCodeDrawer = (props: IProps) => {
       value: 1,
     });
   };
+
   const handleDown = () => {
     form.resetFields();
     setModalVisible(true);
@@ -70,6 +77,7 @@ const SourceCodeDrawer = (props: IProps) => {
       value: 1,
     });
   };
+
   const handleDownloadCode = (folderName: string, cb: any) => {
     try {
       const code = codeRef.current.getEditorValue();
@@ -100,11 +108,13 @@ const SourceCodeDrawer = (props: IProps) => {
       value: 1,
     });
   };
+
   const onFinish = async () => {
     const values = await form.validateFields();
     // values
     handleDownloadCode(values.folderName, () => setModalVisible(false));
   };
+
   const titleNode = () => (
     <div className={styles['title-con']}>
       <div className={styles['title']}>源码</div>
@@ -128,6 +138,36 @@ const SourceCodeDrawer = (props: IProps) => {
       </div>
     </div>
   );
+
+  const generateTab = () => {
+    return (valueList || []).map((item, i) => {
+      const { fileName = '', fileCode = '' } = item || {};
+      const pointerIndex = fileName.lastIndexOf('.');
+      const fileType = fileName.substring(pointerIndex + 1);
+      let language;
+      switch (fileType) {
+        case 'vue':
+          language = 'html';
+          break;
+        case 'less':
+          language = 'less';
+          break;
+        default:
+          language = 'javascript';
+          break;
+      }
+      return (
+        <TabPane tab={fileName} key={i.toString()}>
+          <CodeEditor
+            value={fileCode}
+            language={language}
+            ref={(ref: any) => (codeRef.current = ref)}
+          />
+        </TabPane>
+      );
+    });
+  };
+
   return (
     <Drawer
       title={titleNode()}
@@ -140,15 +180,7 @@ const SourceCodeDrawer = (props: IProps) => {
       headerStyle={{ padding: 8 }}
     >
       <Tabs activeKey={tab} onChange={(k) => setTab(k)}>
-        {valueList.map((item, i) => (
-          <TabPane tab={item.fileName} key={i.toString()}>
-            <CodeEditor
-              value={item.fileCode}
-              type={type}
-              ref={(ref: any) => (codeRef.current = ref)}
-            />
-          </TabPane>
-        ))}
+        {generateTab()}
       </Tabs>
 
       <Modal

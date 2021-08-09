@@ -72,7 +72,7 @@ export const Vue3XML: any = {
     <template>
       ${renderData.template}
     </template>
-    <script>
+    <script lang="ts">
     ${renderData.imports.join(';\n')};
 
     export default defineComponent({

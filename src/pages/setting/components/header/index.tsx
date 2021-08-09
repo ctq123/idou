@@ -9,6 +9,7 @@ const Header = () => {
   const appContext: any = useContext(Context);
   const [visible, setVisible] = useState(false);
   const [codeList, setCodeList] = useState([]);
+  const [codeType, setCodeType] = useState();
   useEffect(() => {
     const { sourceCode, apiCode, styleCode, codeType } = appContext.state;
     let list: any = [];
@@ -27,7 +28,7 @@ const Header = () => {
         break;
       case 'react':
         list = [
-          { fileName: 'index.js', fileCode: sourceCode },
+          { fileName: 'index.jsx', fileCode: sourceCode },
           { fileName: 'api/index.js', fileCode: apiCode },
           { fileName: 'index.less', fileCode: styleCode },
         ];
@@ -36,6 +37,7 @@ const Header = () => {
     if (sourceCode) {
       setCodeList(list);
       setVisible(true);
+      setCodeType(codeType);
     }
   }, [appContext.state.showSourceCode]);
 
@@ -138,7 +140,6 @@ const Header = () => {
         <SourceCodeDrawer
           valueList={codeList}
           visible={visible}
-          type={'vue'}
           handleCB={(val: any) => handleCodeCB(val)}
         />
       </div>

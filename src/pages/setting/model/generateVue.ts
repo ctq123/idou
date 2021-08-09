@@ -703,7 +703,7 @@ const getPropsStr = (obj: any) => {
 
 const generateVue2 = () => {
   const vue2Code = VueXML.VueTemplate(renderData);
-  return prettierFormat(vue2Code, 'vue');
+  return prettierFormat(vue2Code, 'vue2');
 };
 
 const generateApi = () => {

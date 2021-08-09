@@ -841,7 +841,7 @@ const getPropsStr = (obj: any) => {
 
 const generateVue3 = () => {
   const vue3Code = Vue3XML.Vue3Template(renderData);
-  return prettierFormat(vue3Code, 'vue');
+  return prettierFormat(vue3Code, 'vue3');
 };
 
 const generateApi = () => {
@@ -858,7 +858,6 @@ const generateStyle = () => {
     ${renderData.styles.join('\n')}
   `;
   return styleCode;
-  // return prettierFormat(styleCode, 'vue');
 };
 
 const getSourceCode = (DSL: any, prefixUI: string) => {

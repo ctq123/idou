@@ -815,7 +815,7 @@ const getPropsStr = (obj: any) => {
 const generateReact = () => {
   const reactCode = ReactXML.ReactTemplate(renderData);
   // console.log("reactCode", reactCode)
-  return prettierFormat(reactCode, 'babel');
+  return prettierFormat(reactCode, 'react');
 };
 
 const generateApi = () => {

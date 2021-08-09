@@ -1,10 +1,11 @@
 import React, { PureComponent } from 'react';
 import { message } from 'antd';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { serialize, deserialize, prettierFormat, transformFunc } from '@/utils';
+import { serialize, deserialize, prettierFormat } from '@/utils';
 interface IProps {
   value: any;
-  type?: 'component' | 'vue' | 'function' | 'html' | 'javascript' | 'less';
+  type?: 'component' | 'function' | 'html';
+  language?: string;
   height?: number;
   [key: string]: any;
 }
@@ -29,7 +30,6 @@ class CodeEditor extends PureComponent<IProps> {
         return prettierFormat(val, 'html');
       case 'function':
         return prettierFormat(val, 'babel');
-      case 'vue':
       default:
         return val;
     }
@@ -87,8 +87,7 @@ class CodeEditor extends PureComponent<IProps> {
   };
 
   render() {
-    const { value, type, height } = this.props;
-    const language = type === 'vue' ? `html` : `javascript`;
+    const { value, language = 'javascript', height } = this.props;
 
     return (
       <Editor

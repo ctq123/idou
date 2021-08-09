@@ -10,6 +10,7 @@ import prettier from 'prettier/esm/standalone.mjs';
 import parserBabel from 'prettier/esm/parser-babel.mjs';
 import parserHTML from 'prettier/esm/parser-html.mjs';
 import parserCSS from 'prettier/esm/parser-postcss.mjs';
+import parserTypeScript from 'prettier/esm/parser-typescript.mjs';
 import parserFlow from 'prettier/esm/parser-flow.mjs';
 
 /**
@@ -46,15 +47,27 @@ export const deserialize = (code: any) => {
 /**
  * 处理格式
  * @param str
- * @param parser
+ * @param type
  * @returns
  */
-export const prettierFormat = (str: string | null, parser: string) => {
+export const prettierFormat = (str: string | null, type: string) => {
   if (!str) return str;
   let plugins = [];
-  switch (parser) {
-    case 'vue':
+  let parser = type;
+  if (type.startsWith('vue')) {
+    parser = 'vue';
+  } else if (type === 'react') {
+    parser = 'babel';
+  }
+  switch (type) {
+    case 'vue2':
       plugins = [parserHTML, parserBabel, parserCSS];
+      break;
+    case 'vue3':
+      plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
+      break;
+    case 'react':
+      plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
       break;
     case 'html':
       plugins = [parserHTML, parserBabel];
@@ -71,6 +84,7 @@ export const prettierFormat = (str: string | null, parser: string) => {
     plugins,
     printWidth: 80,
     singleQuote: true,
+    jsxSingleQuote: true,
   });
 };
 
