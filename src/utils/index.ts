@@ -54,19 +54,14 @@ export const prettierFormat = (str: string | null, type: string) => {
   if (!str) return str;
   let plugins = [];
   let parser = type;
-  if (type.startsWith('vue')) {
-    parser = 'vue';
-  } else if (type === 'react') {
-    parser = 'babel';
-  }
   switch (type) {
     case 'vue2':
-      plugins = [parserHTML, parserBabel, parserCSS];
-      break;
     case 'vue3':
+      parser = 'vue';
       plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
       break;
     case 'react':
+      parser = 'babel';
       plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
       break;
     case 'html':
@@ -130,7 +125,7 @@ export const replaceObjKey = (obj: any, oldKey: any, newKey: any) => {
  * 替换字符串
  * @param s
  * @param fromReg 匹配的正则表达式
- * @param toStr 替换成的字符串
+ * @param toStr 要替换的函数或字符串
  * @returns
  */
 export const replaceStr = (s: any, fromReg: any, toStr: any) => {
