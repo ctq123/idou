@@ -27,7 +27,7 @@ let renderData: any = {
   computed: [],
   methods: [],
   asyncMethod: {},
-  lifecycles: [],
+  lifeCycles: [],
   styles: [],
   asyncStyle: {},
   apiImports: [],
@@ -67,7 +67,7 @@ const initData = (prefixUI: string) => {
     computed: [],
     methods: [],
     asyncMethod: {},
-    lifecycles: [],
+    lifeCycles: [],
     styles: [],
     asyncStyle: {},
     apiImports: [],
@@ -722,7 +722,7 @@ const getSourceCode = (DSL: any, prefixUI: string) => {
     renderData.data = DSL.dataSource || {};
     renderData.componentProps = getPageProps(DSL.componentProps);
     renderData.computed = getComputed(DSL.computed);
-    renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
+    renderData.lifeCycles = getLifeCycle(DSL.lifeCycle);
     renderData.imports = getImports(DSL.imports);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;

@@ -23,8 +23,8 @@ export const VueXML: any = {
             ? '\ncomputed: {' + renderData.computed.join(',\n') + '},'
             : ''
         }${
-      renderData.lifecycles.length
-        ? renderData.lifecycles.join(',\n') + ','
+      renderData.lifeCycles.length
+        ? renderData.lifeCycles.join(',\n') + ','
         : ''
     }
         methods: {
@@ -90,8 +90,8 @@ export const Vue3XML: any = {
         ${renderData.constData.join(';\n')};
 
         ${
-          renderData.lifecycles.length
-            ? renderData.lifecycles.join(';\n') + ';'
+          renderData.lifeCycles.length
+            ? renderData.lifeCycles.join(';\n') + ';'
             : ''
         }
         
@@ -154,8 +154,8 @@ export const ReactXML: any = {
       ${renderData.useStates.join(';\n')};
       ${renderData.formRefs.length ? renderData.formRefs.join(';\n') + ';' : ''}
       ${
-        renderData.lifecycles.length
-          ? renderData.lifecycles.join(';\n') + ';'
+        renderData.lifeCycles.length
+          ? renderData.lifeCycles.join(';\n') + ';'
           : ''
       }
       ${renderData.methods.join(';\n')};

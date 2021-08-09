@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Radio, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import styles from './UILib.less';
 import { UILib } from '../../const';
 
@@ -24,12 +25,20 @@ const UILibCom = (props: IProps) => {
     const val = e.target.value;
     setCode(val);
     if (Array.isArray(UILib[val]) && UILib[val].length) {
-      const item = UILib[val][0];
+      const item = val === 'vue3' ? UILib[val][1] : UILib[val][0];
       setUI(item.prefixUI);
     }
   };
 
+  const addUI = () => {
+    message.warn('功能尚在开发中……');
+    // TODO
+  };
+
   const onsubmit = () => {
+    message.warn('功能尚在开发中……');
+    return;
+    // TODO
     if (!code || !(UI === '' || UI)) {
       message.error('请选择有效值');
       return;
@@ -66,9 +75,15 @@ const UILibCom = (props: IProps) => {
             <span>{item.name}</span>
           </div>
         ))}
+        <div
+          className={`${styles['ui']} ${styles['icon-con']}`}
+          onClick={() => addUI()}
+        >
+          <PlusOutlined />
+        </div>
       </div>
 
-      <Button disabled type="primary" size="small" onClick={onsubmit}>
+      <Button type="primary" size="small" onClick={onsubmit}>
         提交
       </Button>
     </div>

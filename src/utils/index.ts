@@ -113,6 +113,19 @@ export const replaceObjKey = (obj: any, oldKey: any, newKey: any) => {
 };
 
 /**
+ * 替换字符串
+ * @param s
+ * @param fromReg 匹配的正则表达式
+ * @param toStr 替换成的字符串
+ * @returns
+ */
+export const replaceStr = (s: any, fromReg: any, toStr: any) => {
+  return [undefined, null].includes(s)
+    ? s
+    : s.toString().replace(fromReg, toStr);
+};
+
+/**
  * 根据class名称生成css样式
  * @param cls class名称
  * @returns

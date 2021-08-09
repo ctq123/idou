@@ -7,6 +7,7 @@ import {
   replaceObjKey,
   generateClassStyle,
   serialize,
+  replaceStr,
 } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
@@ -26,7 +27,7 @@ let renderData: any = {
   computed: [],
   methods: [],
   asyncMethod: {},
-  lifecycles: [],
+  lifeCycles: [],
   styles: [],
   asyncStyle: {},
   apiImports: [],
@@ -65,7 +66,7 @@ const initData = (prefixUI: string) => {
     computed: [],
     methods: [],
     asyncMethod: {},
-    lifecycles: [],
+    lifeCycles: [],
     styles: [],
     asyncStyle: {},
     apiImports: [],
@@ -544,6 +545,8 @@ const getLifeCycle = (item: object = {}) => {
           break;
       }
       if (effectStr) {
+        // 替换内部字符串
+        effectStr = replaceStr(effectStr, /this\./g, '');
         lifeList.push(effectStr);
       }
     });
@@ -575,7 +578,7 @@ const getImports = (item: object = {}) => {
   if (Object.keys(renderData.data).length) {
     hooks.push('useState');
   }
-  if (renderData.lifecycles.length) {
+  if (renderData.lifeCycles.length) {
     hooks.push('useEffect');
   }
   if (hooks.length) {
@@ -638,16 +641,22 @@ const setConstImport = (childCom: string, component: string) => {
 };
 
 const getMethods = (item: object = {}) => {
-  const mlist: any = [];
+  let mList: any = [];
   Object.entries(item).forEach(([k, v]) => {
     const { newFunc } = transformFunc(v);
-    mlist.push(newFunc);
+    mList.push(newFunc);
   });
   Object.entries(renderData.asyncMethod).forEach(([_, v]) => {
-    mlist.push(v);
+    mList.push(v);
+  });
+  // 替换函数内部字符串
+  mList = mList.map((s: any) => {
+    s = replaceStr(s, 'this.form = {}', 'setForm({})');
+    s = replaceStr(s, /this\./g, '');
+    return s;
   });
   // 将async fuc() {} 转换成 const func = async () => {}
-  return mlist
+  return mList
     .map((str: any) => {
       if (str) {
         const paramStartIndex = str.indexOf('(');
@@ -832,7 +841,7 @@ const getSourceCode = (DSL: any, prefixUI: string) => {
     renderData.data = DSL.dataSource || {};
     renderData.componentProps = getPageProps(DSL.componentProps);
     renderData.computed = getComputed(DSL.computed);
-    renderData.lifecycles = getLifeCycle(DSL.lifeCycle);
+    renderData.lifeCycles = getLifeCycle(DSL.lifeCycle);
     renderData.apiImports = apiImportList;
     renderData.apis = apiList;
     // console.time("generateTemplate")

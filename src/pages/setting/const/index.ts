@@ -52,7 +52,7 @@ export const UILib: any = {
       prefixUI: 'el',
       name: 'Element Plus UI',
       libUrl: 'https://element-plus.org/#/zh-CN/component/installation',
-      iconUrl: `${baseUrl}/3f4f24f336036d47968bb94f0a87fe36.png`,
+      iconUrl: `${baseUrl}/27fa8f4a2a5405682c276053ac51f1db.png`,
     },
     {
       prefixUI: 'a',
