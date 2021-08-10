@@ -258,6 +258,15 @@ export const JSONtoString = (s: any) => {
   });
 };
 
+// export const JSONtoParse = (s: any) => {
+//   return JSON.parse(s, function (k, v) {
+//     if (v && v.toString().indexOf('function') > -1) {
+//       return v.toString().replace(/\"/g, '');
+//     }
+//     return v;
+//   });
+// }
+
 /**
  * 对象转换成字符串，function,date,reg不出现丢失
  */
