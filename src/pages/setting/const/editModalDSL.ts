@@ -219,7 +219,7 @@ const DSL = {
             }
             const params = { ...this.form }
             deleteEmptyParam(params)
-            await API.updateRecord(params, this)
+            await API.updateRecord(params)
           }`,
         },
       ],
@@ -270,13 +270,11 @@ const DSL = {
     imports: {
       UmiRequest: '@du/umi-request',
     },
-    updateRecord: `function updateRecord(params, vm) {
+    updateRecord: `function updateRecord(params) {
       return UmiRequest.request({
         method: 'POST',
         url: '/api/v1/h5/oversea/backend/product/update',
         data: params,
-        vm,
-        loading: 'submitLoading'
       })
     }`,
     getRecordDetail: `function getRecordDetail(params) {

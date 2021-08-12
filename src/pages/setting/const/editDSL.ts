@@ -281,7 +281,7 @@ const DSL = {
                   params.detailList = this.multipleSelection
                   deleteEmptyParam(params)
           
-                  const { code } = await API.updateRecord(params, this)
+                  const { code } = await API.updateRecord(params)
                   if (code === 200) {
                     this.$message.success('提交成功')
                     this.isReturnDirect = true
@@ -330,7 +330,7 @@ const DSL = {
   methods: {
     getRecordDetail: `async function getRecordDetail() {
       const params = { id: this.recordId }
-      const { code, data } = await API.getRecordDetail(params, this)
+      const { code, data } = await API.getRecordDetail(params)
       if (code === 200 && data) {
         this.form = data
       }
@@ -344,13 +344,11 @@ const DSL = {
     imports: {
       UmiRequest: '@du/umi-request',
     },
-    updateRecord: `function updateRecord(params, vm) {
+    updateRecord: `function updateRecord(params) {
       return UmiRequest.request({
         method: 'POST',
         url: '/api/v1/h5/oversea/backend/product/update',
         data: params,
-        vm,
-        loading: 'submitLoading'
       })
     }`,
     getRecordDetail: `function getRecordDetail(params) {
@@ -358,8 +356,6 @@ const DSL = {
         method: 'POST',
         url: '/api/v1/h5/oversea/backend/product/detail',
         data: params,
-        vm,
-        loading: 'loading'
       })
     }`,
   },

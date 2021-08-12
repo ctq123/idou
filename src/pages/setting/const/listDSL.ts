@@ -415,7 +415,7 @@ const DSL = {
         page: this.pagination.currentPage,
       })
       deleteEmptyParam(params)
-      const res = await API.queryList(params, this)
+      const res = await API.queryList(params)
       if (res.code === 200 && res.data) {
         this.list = res.data.list
         this.pagination.total = res.data.total
