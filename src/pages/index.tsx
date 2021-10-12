@@ -7,8 +7,4 @@
  */
 import Setting from './setting';
 
-const IndexPage = () => {
-  return <Setting />;
-};
-
-export default IndexPage;
+export default Setting;

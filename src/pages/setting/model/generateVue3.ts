@@ -2,7 +2,6 @@ import { message } from 'antd';
 
 import { Vue3XML, styleXML, Vue3TableRenderXML } from './componentXML';
 import {
-  prettierFormat,
   transformFunc,
   replaceObjKey,
   generateClassStyle,

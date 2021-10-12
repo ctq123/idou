@@ -18,6 +18,55 @@
 
     gtag('config', 'G-VKY1SQRD13');
   </script>
+  <script type="module">
+    import prettier from "https://unpkg.com/prettier@2.4.1/esm/standalone.mjs";
+    import parserBabel from "https://unpkg.com/prettier@2.4.1/esm/parser-babel.mjs";
+    import parserHTML from "https://unpkg.com/prettier@2.4.1/esm/parser-html.mjs";
+    import parserCSS from "https://unpkg.com/prettier@2.4.1/esm/parser-postcss.mjs";
+    import parserTypeScript from "https://unpkg.com/prettier@2.4.1/esm/parser-typescript.mjs";
+  
+    // 全局变量
+    function prettierFormat(str, type) {
+      if (!str) return str;
+      let plugins = [];
+      let parser = type;
+      switch (type) {
+        case 'vue2':
+        case 'vue3':
+          parser = 'vue';
+          plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
+          break;
+        case 'react':
+          parser = 'babel';
+          plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
+          break;
+        case 'html':
+          plugins = [parserHTML, parserBabel];
+          break;
+        case 'less':
+          plugins = [parserHTML, parserCSS];
+          break;
+        default:
+          plugins = [parserBabel];
+      }
+
+      return prettier.format(str, {
+        parser,
+        plugins,
+        printWidth: 80,
+        singleQuote: true,
+        jsxSingleQuote: true,
+      });
+    };
+    window.prettierFormat = prettierFormat;
+  </script>
+  <!-- <script type="module">
+    import * as JSZIP from "https://unpkg.com/jszip@3.7.1/dist/jszip.min.js";
+  
+    // 全局变量
+    window.JSZIP = JSZIP;
+    console.log("JSZIP", JSZIP)
+  </script> -->
 </head>
 <body>
   <div id="root"></div>

@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import { message } from 'antd';
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { serialize, deserialize, prettierFormat } from '@/utils';
+import { serialize, deserialize } from '@/utils';
 interface IProps {
   value: any;
   type?: 'component' | 'function' | 'html';

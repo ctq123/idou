@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import GenerateVue from './GenerateVue';
 import GenerateReact from './GenerateReact';
 import Online from './online';
+import ErrorBoundary from '../ErrorBoundary';
 
 export default function CodePage() {
   const vueEl = useRef(null);
@@ -17,11 +18,17 @@ export default function CodePage() {
 
   return (
     <div>
-      <GenerateVue ref={vueEl} showGenerateButton={true} />
+      <ErrorBoundary>
+        <GenerateVue ref={vueEl} showGenerateButton={true} />
+      </ErrorBoundary>
       <br />
-      <GenerateReact ref={reactEl} showGenerateButton={false} />
+      <ErrorBoundary>
+        <GenerateReact ref={reactEl} showGenerateButton={false} />
+      </ErrorBoundary>
       <br />
-      <Online generateCode={(type: any) => generateCode(type)} />
+      <ErrorBoundary>
+        <Online generateCode={(type: any) => generateCode(type)} />
+      </ErrorBoundary>
     </div>
   );
 }

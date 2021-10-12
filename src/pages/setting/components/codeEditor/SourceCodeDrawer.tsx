@@ -9,15 +9,11 @@ import {
   Input,
   Tabs,
 } from 'antd';
-import {
-  SaveOutlined,
-  CopyOutlined,
-  DownloadOutlined,
-} from '@ant-design/icons';
+import { CopyOutlined, DownloadOutlined } from '@ant-design/icons';
 import copy from 'copy-to-clipboard';
+import JSZIP from 'jszip';
 import CodeEditor from './index';
 import { serialize, deserialize } from '@/utils';
-import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import styles from './CodeDrawer.less';
 interface IProps {
@@ -84,7 +80,7 @@ const SourceCodeDrawer = (props: IProps) => {
       const val = serialize(code, { space: 2 });
       const str = deserialize(val);
 
-      const zip = new JSZip();
+      const zip = new JSZIP();
       let fold: any = zip.folder(folderName);
       valueList.forEach((item, i) => {
         if (i === Number(tab)) {
@@ -94,7 +90,7 @@ const SourceCodeDrawer = (props: IProps) => {
         }
       });
       // fold.file('index.vue', str);
-      zip.generateAsync({ type: 'blob' }).then(function (content) {
+      zip.generateAsync({ type: 'blob' }).then(function (content: any) {
         saveAs(content, 'code.zip');
         cb && cb();
       });

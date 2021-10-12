@@ -5,7 +5,7 @@
  * @LastEditors: chengtianqing
  * @Description:
  */
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const lastDataCache: any = {};
 /**
@@ -32,7 +32,7 @@ const createMockData = (keyStr: string, i: number) => {
     },
     {
       keys: ['time'],
-      value: moment().subtract(i, 'days').format('YYYY-MM-DD HH:mm:ss'),
+      value: dayjs().subtract(i, 'days').format('YYYY-MM-DD HH:mm:ss'),
     },
   ];
   for (let i = 0; i < mockTypes.length; i++) {

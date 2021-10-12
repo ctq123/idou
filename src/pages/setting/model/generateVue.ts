@@ -1,20 +1,7 @@
-// import prettier from 'prettier/esm/standalone.mjs';
-// import parserBabel from 'prettier/esm/parser-babel.mjs';
-// import parserHTML from 'prettier/esm/parser-html.mjs';
-// import parserCSS from 'prettier/esm/parser-postcss.mjs';
-// import parserGraphql from 'prettier/esm/parser-graphql.mjs';
 import { message } from 'antd';
-// import prettier from 'https://unpkg.com/prettier@2.3.0/esm/standalone.mjs';
-// import parserBabel from 'https://unpkg.com/prettier@2.3.0/esm/parser-babel.mjs';
-// import parserHTML from 'https://unpkg.com/prettier@2.3.0/esm/parser-html.mjs';
 
 import { VueXML, styleXML, VueTableRenderXML } from './componentXML';
-import {
-  prettierFormat,
-  transformFunc,
-  replaceObjKey,
-  generateClassStyle,
-} from '@/utils';
+import { transformFunc, replaceObjKey, generateClassStyle } from '@/utils';
 import isFunction from 'lodash/isFunction';
 
 let renderData: any = {

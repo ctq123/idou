@@ -2,7 +2,6 @@ import { message } from 'antd';
 
 import { ReactXML, styleXML, ReactTableRenderXML } from './componentXML';
 import {
-  prettierFormat,
   transformFunc,
   replaceObjKey,
   generateClassStyle,
