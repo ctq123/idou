@@ -6,11 +6,6 @@
  * @Description:
  */
 import serialize from 'serialize-javascript';
-// import prettier from 'prettier/esm/standalone.mjs';
-// import parserBabel from 'prettier/esm/parser-babel.mjs';
-// import parserHTML from 'prettier/esm/parser-html.mjs';
-// import parserCSS from 'prettier/esm/parser-postcss.mjs';
-// import parserTypeScript from 'prettier/esm/parser-typescript.mjs';
 
 /**
  * 获取域
@@ -42,45 +37,6 @@ export const getUid = () => Math.random().toString(36).slice(-8);
 export const deserialize = (code: any) => {
   return eval('(' + code + ')');
 };
-
-// /**
-//  * 处理格式
-//  * @param str
-//  * @param type
-//  * @returns
-//  */
-// export const prettierFormat = (str: string | null, type: string) => {
-//   if (!str) return str;
-//   let plugins = [];
-//   let parser = type;
-//   switch (type) {
-//     case 'vue2':
-//     case 'vue3':
-//       parser = 'vue';
-//       plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
-//       break;
-//     case 'react':
-//       parser = 'babel';
-//       plugins = [parserHTML, parserBabel, parserCSS, parserTypeScript];
-//       break;
-//     case 'html':
-//       plugins = [parserHTML, parserBabel];
-//       break;
-//     case 'less':
-//       plugins = [parserHTML, parserCSS];
-//       break;
-//     default:
-//       plugins = [parserBabel];
-//   }
-
-//   return prettier.format(str, {
-//     parser,
-//     plugins,
-//     printWidth: 80,
-//     singleQuote: true,
-//     jsxSingleQuote: true,
-//   });
-// };
 
 /**
  * 获取function

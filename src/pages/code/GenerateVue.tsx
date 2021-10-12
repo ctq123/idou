@@ -3,15 +3,6 @@ import React, { PureComponent } from 'react';
 import { Button, Drawer } from 'antd';
 import { DSL } from './dsl';
 
-import prettier from 'prettier/esm/standalone.mjs';
-// import parserBabel from "prettier/esm/parser-babel.mjs";
-import parserHTML from 'prettier/esm/parser-html.mjs';
-
-// prettier.format("const html = /* HTML */ `<DIV> </DIV>`", {
-//   parser: "babel",
-//   plugins: [parserBabel],
-// });
-
 const DSLStr = JSON.stringify(DSL, function (_, v) {
   if (typeof v === 'function') {
     return v.toString();
@@ -266,12 +257,7 @@ class GenerateVue extends PureComponent<IProps> {
           }
           </style>
       `;
-    return prettier.format(vueCode, {
-      parser: 'vue',
-      plugins: [parserHTML],
-      printWidth: 80,
-      singleQuote: true,
-    });
+    return prettierFormat(vueCode, 'vue');
   };
 
   handleGenerate = () => {

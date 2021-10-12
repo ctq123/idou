@@ -3,10 +3,6 @@ import React, { PureComponent } from 'react';
 import { Button, Drawer } from 'antd';
 import { DSL } from './dsl';
 
-import prettier from 'prettier/esm/standalone.mjs';
-import parserBabel from "prettier/esm/parser-babel.mjs";
-import parserHTML from 'prettier/esm/parser-html.mjs';
-
 interface IProps {
   generateCode?: any;
   showGenerateButton?: boolean;
@@ -31,19 +27,23 @@ let renderData = {
   formRefs: [],
 };
 
-let submitName = 'submit'
+let submitName = 'submit';
 export default class GenerateReact extends PureComponent<IProps> {
   state = {
     visible: false,
   };
 
   generateReact = () => {
-    const antdComs = Object.keys(renderData.antdComponentMap)
+    const antdComs = Object.keys(renderData.antdComponentMap);
     if (antdComs && antdComs.length) {
-      renderData.imports.unshift(`import { ${antdComs.join(', ')} } from 'antd'`)
+      renderData.imports.unshift(
+        `import { ${antdComs.join(', ')} } from 'antd'`,
+      );
     }
     if (renderData.formRefs.length) {
-      renderData.imports.unshift(`import { FormInstance } from 'antd/lib/form'`)
+      renderData.imports.unshift(
+        `import { FormInstance } from 'antd/lib/form'`,
+      );
     }
 
     const reactCode = `
@@ -63,12 +63,7 @@ export default class GenerateReact extends PureComponent<IProps> {
           }
         }
       `;
-    return prettier.format(reactCode, {
-      parser: 'babel-ts',
-      plugins: [parserBabel],
-      printWidth: 80,
-      singleQuote: true,
-    });
+    return prettierFormat(reactCode, 'react');
   };
 
   generateTemplate = (schemaDSL: any) => {
@@ -88,12 +83,13 @@ export default class GenerateReact extends PureComponent<IProps> {
         .join(' ');
 
     let xml = '';
-    switch(componentName) {
+    switch (componentName) {
       case 'Page':
         renderData.data = dataSource || {};
         if (dataSource.pagination['currentPage']) {
-          renderData.data['pagination']['current'] = dataSource.pagination['currentPage']
-          delete renderData.data.pagination.currentPage
+          renderData.data['pagination']['current'] =
+            dataSource.pagination['currentPage'];
+          delete renderData.data.pagination.currentPage;
         }
         this.getLifeCycle(lifeCycle);
         this.getMethods(methods);
@@ -102,17 +98,19 @@ export default class GenerateReact extends PureComponent<IProps> {
           .map((item: any) => this.generateTemplate(item))
           .join('\n');
         xml = `<div class='main-container'>\n${childStr}\n</div>`;
-        break
+        break;
       case 'Form':
-        this.pushComponent('Form')
-        this.pushComponent('Row')
-        this.pushComponent('Col')
-        const formDataKey = dataKey || 'form'
-        renderData.data[formDataKey] = {}
-        const formRef = `formRef${renderData.antdComponentMap[componentName]}`
-        renderData.formRefs.push(`${formRef} = React.createRef<FormInstance>()\n`)
-        
-        const initialValues = {}
+        this.pushComponent('Form');
+        this.pushComponent('Row');
+        this.pushComponent('Col');
+        const formDataKey = dataKey || 'form';
+        renderData.data[formDataKey] = {};
+        const formRef = `formRef${renderData.antdComponentMap[componentName]}`;
+        renderData.formRefs.push(
+          `${formRef} = React.createRef<FormInstance>()\n`,
+        );
+
+        const initialValues = {};
 
         const formItems = (children || [])
           .map((item: any) => {
@@ -122,10 +120,10 @@ export default class GenerateReact extends PureComponent<IProps> {
               : `label="${label}"`;
             if (key) {
               // @ts-ignore
-              renderData.data[formDataKey][key] = ''
+              renderData.data[formDataKey][key] = '';
               if (initValue !== undefined) {
-                renderData.data[formDataKey][key] = initValue
-                initialValues[key] = initValue
+                renderData.data[formDataKey][key] = initValue;
+                initialValues[key] = initValue;
               }
             }
             const itemChildren = (item.children || [])
@@ -149,20 +147,20 @@ export default class GenerateReact extends PureComponent<IProps> {
           <Row gutter={24}>
             ${formItems}
           </Row>
-        </Form>`
-        break
+        </Form>`;
+        break;
       case 'Table':
-        this.pushComponent(componentName)
-        const listKey = dataKey || 'list'
-        renderData.data[listKey] = []
+        this.pushComponent(componentName);
+        const listKey = dataKey || 'list';
+        renderData.data[listKey] = [];
         const columns = (children || []).map((item: any) => {
           return {
             ...item,
             title: item.label,
-            dataIndex: item.key
-          }
-        })
-        renderData.data['columns'] = columns
+            dataIndex: item.key,
+          };
+        });
+        renderData.data['columns'] = columns;
 
         xml = `
         <Table
@@ -183,37 +181,37 @@ export default class GenerateReact extends PureComponent<IProps> {
       case 'Pagination':
         this.getEventStr(schemaDSL, {
           onPageChange: 'handleTableChange',
-        })
+        });
         break;
       case 'Button':
-        this.pushComponent(componentName)
+        this.pushComponent(componentName);
         const buttonEventStr = this.getEventStr(schemaDSL);
         xml = `<Button ${objStr(props)} ${buttonEventStr}>${children}</Button>`;
         break;
       case 'Input':
-        this.pushComponent(componentName)
+        this.pushComponent(componentName);
         const commonEventStr = this.getEventStr(schemaDSL);
         xml = `<${componentName} ${objStr(props)} ${commonEventStr} />`;
         break;
       default:
-        xml = ''
+        xml = '';
     }
 
     return xml + '\n';
   };
 
-  pushComponent = (componentName='') => {
+  pushComponent = (componentName = '') => {
     if (!renderData.antdComponentMap[componentName]) {
-      renderData.antdComponentMap[componentName] = 1
+      renderData.antdComponentMap[componentName] = 1;
     } else {
-      renderData.antdComponentMap[componentName]++
+      renderData.antdComponentMap[componentName]++;
     }
-  }
+  };
 
   getLifeCycle = (item: object) => {
     Object.entries(item).forEach(([_, v]) => {
       const { newFunc } = this.transformFunc(v);
-        // @ts-ignore
+      // @ts-ignore
       renderData.lifecycles.push(newFunc);
     });
   };
@@ -238,12 +236,22 @@ export default class GenerateReact extends PureComponent<IProps> {
     let funcStr = '';
     Object.entries(item).forEach(([k, v]) => {
       if (typeof v === 'string' && v.includes('function')) {
-        const { newFunc, newFuncName, args } = this.transformFunc(v, extraMap[k]);
-        if (k === 'onClick' && item?.componentName === 'Button' && item?.props?.htmlType === 'submit') {// 需要将事件绑定到Form上
-          submitName = newFuncName
+        const { newFunc, newFuncName, args } = this.transformFunc(
+          v,
+          extraMap[k],
+        );
+        if (
+          k === 'onClick' &&
+          item?.componentName === 'Button' &&
+          item?.props?.htmlType === 'submit'
+        ) {
+          // 需要将事件绑定到Form上
+          submitName = newFuncName;
         } else {
           funcStr = funcStr ? `${funcStr} ` : funcStr;
-          funcStr += args ? `${k}="this.${newFuncName}.bind(this, ${args})"` : `${k}="this.${newFuncName}.bind(this)"`;
+          funcStr += args
+            ? `${k}="this.${newFuncName}.bind(this, ${args})"`
+            : `${k}="this.${newFuncName}.bind(this)"`;
         }
         // @ts-ignore
         renderData.methods.push(newFunc);
@@ -258,7 +266,7 @@ export default class GenerateReact extends PureComponent<IProps> {
     const end = funcStr.indexOf('(');
     const end2 = funcStr.indexOf(')');
     const funcName = funcStr.slice(start, end);
-    const args = funcStr.slice(end+1, end2);
+    const args = funcStr.slice(end + 1, end2);
     let newFunc = funcStr.slice(start);
     if (newFuncName) {
       newFunc = newFunc.replace(funcName, newFuncName);
@@ -296,28 +304,29 @@ export default class GenerateReact extends PureComponent<IProps> {
     const schema = JSON.parse(DSLStr);
     renderData.template = this.generateTemplate(schema);
     renderData.codeStr = this.generateReact();
-    return renderData.codeStr
-  }
+    return renderData.codeStr;
+  };
 
   render() {
-    const { showGenerateButton } = this.props
+    const { showGenerateButton } = this.props;
     return (
-      showGenerateButton && 
-      <>
-        <Button type="primary" onClick={() => this.handleGenerate()}>
-          生成React文件
-        </Button>
-        <Drawer
-          title="Basic Drawer"
-          placement="right"
-          closable={false}
-          onClose={() => this.setState({ visible: false })}
-          width={800}
-          visible={this.state.visible}
-        >
-          <pre>{renderData.codeStr}</pre>
-        </Drawer>
-      </>
+      showGenerateButton && (
+        <>
+          <Button type="primary" onClick={() => this.handleGenerate()}>
+            生成React文件
+          </Button>
+          <Drawer
+            title="Basic Drawer"
+            placement="right"
+            closable={false}
+            onClose={() => this.setState({ visible: false })}
+            width={800}
+            visible={this.state.visible}
+          >
+            <pre>{renderData.codeStr}</pre>
+          </Drawer>
+        </>
+      )
     );
   }
 }
