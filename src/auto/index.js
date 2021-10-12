@@ -73,7 +73,7 @@ const handleApiData = async () => {
   apiData = {};
   await getBrowser();
   const page = await browser.newPage();
-  await page.setViewport({ width: 1366, height: 768 });
+  await page.setViewport({ width: 1350, height: 800 });
   await page.goto(
     `https://sso.${domain}.com/?returnUrl=https://mock.${domain}.com/#/login`,
   );
