@@ -45,7 +45,7 @@ const autoEditPage = async () => {
     browser.close();
     return;
   }
-  await page.setViewport({ width: 1440, height: 900 });
+  await page.setViewport({ width: 1350, height: 800 });
   const navigationPromise = page.waitForNavigation();
   await page.goto(platformUrl);
   await navigationPromise;
