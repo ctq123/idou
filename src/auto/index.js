@@ -30,7 +30,7 @@ const getBrowser = async () => {
   if (!browser) {
     browser = await puppeteer.launch({
       headless: false, //有浏览器界面启动
-      args: [`--window-size=1440,900`],
+      args: [`--window-size=1350,800`],
     });
   }
   return browser;
