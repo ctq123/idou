@@ -5,7 +5,7 @@
 idou项目是一个低代码开发平台，通过配置化，最终输出的是源码（vue2/react），也可以将它理解为代码生成器。
 https://idou100.netlify.app
 
-![图片](./banner.png)
+![图片](./banner1.png)
 ### 开始
 
 安装

@@ -19,7 +19,8 @@ const domain = 'S.H.I.Z.H.U.A.N.G.-.I.N.C'.split('.').join('').toLowerCase();
 // const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140446`;// 详情
 // const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140456`; // 编辑
 // const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140494`;// 列表
-const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140361`;
+// const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140436`;// 简单列表
+const mockUrl = `https://mock.${domain}.com/project/2492/interface/api/140436`;
 const platformUrl = `https://idou100.netlify.app`;
 // const platformUrl = `http://localhost:8000/setting`;
 let apiData = {};
@@ -203,11 +204,11 @@ const handleApiData = async () => {
   }
 };
 
-// // 真实爬接口
-// handleApiData();
+// 真实爬接口
+handleApiData();
 
-// 测试mock接口
-apiData = cloneDeep(mockApiData.listData);
-apiData = transform.transData(apiData);
-console.log('apiData', apiData);
-autoEditPage();
+// // 测试mock接口
+// apiData = cloneDeep(mockApiData.listData);
+// apiData = transform.transData(apiData);
+// console.log('apiData', apiData);
+// autoEditPage();

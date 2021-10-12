@@ -5,7 +5,7 @@
 The idou（idol）project is a low-code development platform. Through configuration, the final output is vue2 source code, which can also be understood as a code generator. 
 https://idou100.netlify.app
 
-![图片](./banner.png)
+![图片](./banner1.png)
 ### Start
 
 install
