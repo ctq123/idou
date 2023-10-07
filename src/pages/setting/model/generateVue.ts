@@ -344,10 +344,10 @@ const generateTemplate = (
         columns += (children || [])
           .map((item: any) => {
             const newProps = { ...item };
-            const renderMothod =
+            const renderMethod =
               VueTableRenderXML[item.renderKey] ||
               VueTableRenderXML['renderDefault'];
-            let childStr = renderMothod(item.key);
+            let childStr = renderMethod(item.key);
             if (item.key) {
               delete newProps.key;
               delete newProps.renderKey;
@@ -416,10 +416,10 @@ const generateTemplate = (
                 dataKey && item.key ? `${dataKey}.${item.key}` : '';
               return generateTemplate(item, vmodel, isGlobalParams);
             } else {
-              const renderMothod =
+              const renderMethod =
                 VueTableRenderXML[item.renderKey] ||
                 VueTableRenderXML['renderDefault'];
-              // let childStr = renderMothod(item.key);
+              // let childStr = renderMethod(item.key);
               let childStr = '';
 
               if (item.key && dataKey) {
@@ -438,7 +438,7 @@ const generateTemplate = (
               if (item.render) {
                 childStr += item.render;
               } else {
-                childStr += renderMothod(item.key, dataKey);
+                childStr += renderMethod(item.key, dataKey);
               }
 
               // 重新扫描是否包含函数
